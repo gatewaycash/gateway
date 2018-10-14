@@ -1,0 +1,15 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: helvetica;
+  background-image:url("https://gateway.cash/images/background.svg");
+  background-repeat: no-repeat;
+  background-color: #EEEEEE;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+html {
+  height: 100%
+}
