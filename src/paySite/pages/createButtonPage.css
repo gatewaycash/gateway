@@ -18,4 +18,14 @@
   align: left;
   text-align: left;
   padding: 0.5em;
+  word-wrap: break-word;
+  box-shadow: 0.2em 0.2em 0.4em #99c;
+}
+
+.payment {
+	padding: 0.5em;
+	word-wrap: break-word;
+	border: 0.1em solid black;
+	border-radius: 0.5em;
+	display: block;
 }

@@ -1,18 +1,20 @@
 import React, {Component} from 'react'
 
-import './createButtonPage.css'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
+
+import PayButton from './../../payButton/PayButton.js'
+import './createButtonPage.css'
 
 class CreateButtonPage extends Component {
 
   state = {
     merchantID: 'loading',
     paymentID: 'donation',
-    buttonText: 'Send a tip',
-    dialogTitle: 'Sent a Tip!',
+    buttonText: 'Donate',
+    dialogTitle: 'Make a Donation',
     currency: 'BCH',
-    amount: '0.0001'
+    amount: '0.01'
   }
 
   constructor (props) {
@@ -34,14 +36,6 @@ class CreateButtonPage extends Component {
       }
     }
     xhr.send('')
-  }
-	
-	componentDidMount () {
-		alert('test')
-  	const script = document.createElement("script")
-    script.src = "https://gateway.cash/pay.js"
-    script.async = true
-    document.body.appendChild(script)
   }
 	
   handleChange = () => {
@@ -221,56 +215,48 @@ class CreateButtonPage extends Component {
           	If you like this project and want to see it get even better for both
           	merchants and customers, please consider a donation.
           </p>
-          <div
-  					className="payButton"
-  					id="pay-unique-id-162168"
+          <center>
+          <PayButton
   					merchantID="ef0fcea08bfa9cb0"
   					paymentID="donation-0.001"
   					currency="BCH"
   					amount="0.001"
   					buttonText="Donate 0.001 BCH"
   					dialogTitle="Make a Donation"
-					></div>
-					<div
-  					className="payButton"
-  					id="pay-unique-id-146549"
+					/>
+					<PayButton
   					merchantID="ef0fcea08bfa9cb0"
   					paymentID="donation-0.01"
   					currency="BCH"
   					amount="0.01"
   					buttonText="Donate 0.01 BCH"
   					dialogTitle="Make a Donation"
-					></div>
-					<div
-  					className="payButton"
-  					id="pay-unique-id-495435"
+					/>
+					<PayButton
   					merchantID="ef0fcea08bfa9cb0"
   					paymentID="donation-0.05"
   					currency="BCH"
   					amount="0.05"
   					buttonText="Donate 0.05 BCH"
   					dialogTitle="Make a Donation"
-					></div>
-					<div
-  					className="payButton"
-  					id="pay-unique-id-462198"
+					/>
+					<PayButton
   					merchantID="ef0fcea08bfa9cb0"
   					paymentID="donation-0.25"
   					currency="BCH"
   					amount="0.25"
   					buttonText="Donate 0.25 BCH"
   					dialogTitle="Make a Donation"
-					></div>
-					<div
-  					className="payButton"
-  					id="pay-unique-id-651238"
+					/>
+					<PayButton
   					merchantID="ef0fcea08bfa9cb0"
   					paymentID="donation-1"
   					currency="BCH"
   					amount="1"
   					buttonText="Donate 1 BCH"
   					dialogTitle="Make a Donation"
-					></div>
+					/>
+					</center>
         </div>
       )
     }

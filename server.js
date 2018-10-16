@@ -324,7 +324,7 @@ app.get('/api/getpayments', (req, res) => {
   if (!req.session.loggedIn) {
     res.send('Log in first')
   } else {
-    var sql = 'select paymentAddress, created, paymentID, paidAmount, paymentTXID, transferTXID from payments where merchantID = ? and transferTXID is not null'
+    var sql = 'select paymentAddress, created, paymentID, paidAmount, paymentTXID, transferTXID from payments where merchantID = ? and transferTXID is not null order by created desc limit 100'
     conn.query(sql, [req.session.merchantID], (err, result) => {
       if (err) { throw err }
       var response = []
@@ -340,7 +340,7 @@ app.get('/api/getunpaidpayments', (req, res) => {
   if(!req.session.loggedIn) {
     res.send('log in first')
   } else {
-    var sql = 'select paymentAddress, created, paymentID from payments where merchantID = ?'
+    var sql = 'select paymentAddress, created, paymentID, paidAmount, paymentTXID, transferTXID from payments where merchantID = ? order by created desc limit 100'
     conn.query(sql, [req.session.merchantID], (err, result) => {
       if (err) { throw err }
       var response = []

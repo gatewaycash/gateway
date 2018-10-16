@@ -21,31 +21,43 @@ class PayButton extends Component {
   }
 
   handleClick = () => {
+  	console.log('Gateway: Creating payment request')
     var requestURL = 'https://gateway.cash/api/pay?merchantID='+this.props.merchantID+'&paymentID='+this.props.paymentID
     var xhr = new XMLHttpRequest()
     xhr.open('GET', requestURL)
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
     xhr.onload = () => {
-      if (xhr.status === 200) {
-          this.sock = io('wss://bitcoincash.blockexplorer.com') // TODO change to bitcoin.com
-          this.sock.on('connect', () => {
-            this.sock.emit('subscribe', 'inv')
-            this.setState({address: xhr.responseText, dialogOpen: true})
-          })
-          this.sock.on('disconnect', () => {
-            console.error('Gateway: Payment server disconnected')
-            this.setState({dialogOpen: false})
-          })
-          this.sock.on('error', () => {
-            console.error('Gateway: Error listening for payments')
-            this.setState({dialogOpen: false})
-          })
-          this.sock.on('tx', (data) => {
-            this.handlePayment(data)
-          })
-          console.log('Gateway: Creating payment request')
-      }else {
-          console.error('Gateway: Failed to create invoice')
+      if (xhr.status === 200 && xhr.readyState === 4) {
+      	var response = xhr.responseText.toString()
+      	if (!response.startsWith('bitcoincash:')) {
+      		var errorText = 'We\'re sorry, but an error is preventing you from '
+      		errorText += 'making your payment. For help, please contact the '
+      		errorText += 'merchant, or send an email to support@gateway.cash.\n\n'
+      		errorText += 'The error was:\n\n' + response
+      		alert(errorText)
+      		console.error('Payment error', response)
+      	} else {
+      		console.log('Gateway: Pay to adress', response)
+      		this.setState({address: response, dialogOpen: true})
+      		// TODO change to rest.bitcoin.com
+        	this.sock = io('wss://bitcoincash.blockexplorer.com')
+        	this.sock.on('connect', () => {
+        	  this.sock.emit('subscribe', 'inv')
+        	})
+        	this.sock.on('disconnect', () => {
+        	  console.log('Gateway: Payment server disconnected')
+          	console.log('Gateway: This does not mean that your payment failed')
+          	this.setState({dialogOpen: false})
+        	})
+        	this.sock.on('error', () => {
+          	console.error('Gateway: Error listening for payments')
+          	console.log('Gateway: This does not mean that your payment failed')
+          	this.setState({dialogOpen: false})
+        	})
+        	this.sock.on('tx', (data) => {
+          	this.handlePayment(data)
+        	})
+      	}
       }
     }
     xhr.send()
@@ -53,8 +65,14 @@ class PayButton extends Component {
 
   handleClose = () => {
     this.sock.close()
-    console.log('Gateway: Payment canceled')
-    this.setState({dialogOpen: false})
+    var newState = {}
+    newState.dialogOpen = false
+    if (this.state.paymentComplete) {
+    	newState.paymentComplete = false
+    } else {
+    	console.log('Gateway: Payment canceled')
+    }
+    this.setState(newState)
   }
 
   handlePayment = (data) => {
@@ -190,11 +208,12 @@ class PayButton extends Component {
       )
     }
     return (
-      <div>
+      <div style={{display: 'inline-block', padding: '0.25em'}}>
         <Button
           onClick={this.handleClick}
           variant="contained"
-          color="primary" >
+          color="primary"
+        >
           {this.props.buttonText}
         </Button>
         {dialog}
