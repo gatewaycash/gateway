@@ -179,8 +179,9 @@ app.get('/api/password', (req, res) => {
       }
     })
   } else { // search by username
+  	console.log(req.session)
     var sql = 'select * from users where username = ?'
-    conn.query(sql, [res.session.username], (err, result) => {
+    conn.query(sql, [req.session.username], (err, result) => {
       if (err) { throw err }
       if (result.length !== 1) {
         res.send('Incorrect username')
