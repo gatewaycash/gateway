@@ -78,3 +78,9 @@ typings/
 
 
 # End of https://www.gitignore.io/api/node
+
+# Do not include sessions
+sessions/
+
+# Do not include build artifacts
+public/
