@@ -142,6 +142,7 @@ app.get('/api/login', (req, res) => {
         if (result.length !== 1) {
           res.send('No match')
         } else {
+        	req.session.username = query.value
           res.send('login')
         }
       })
