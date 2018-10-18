@@ -32,5 +32,16 @@
   padding: 0.5em;
   word-wrap: break-word;
   box-shadow: 0.2em 0.2em 0.4em #99c;
-  margin: 0.5em;
+  margin-bottom: 1em;
+  margin-top: 1em;
+}
+
+.payment a {
+	color: blue;
+	text-decoration: none;
+}
+
+.payment a:visited {
+	color: blue;
+	text-decoration: none;
 }

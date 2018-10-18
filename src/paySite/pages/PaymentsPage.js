@@ -61,17 +61,17 @@ class PaymentsPage extends Component {
 				var html = ''
 				for (var i = 0; i < payments.length; i++) {
 					html += `<div class="payment">`
-					html += '<b>Created:</b>' + payments[i].created + '<br/>'
-					html += '<b>Payment ID:</b>' + payments[i].paymentID + '<br/>'
-					html += '<b>Address:</b><a href="https://explorer.bitcoin.com/'
+					html += '<b>Created:</b> ' + payments[i].created + '<br/>'
+					html += '<b>Payment ID:</b> ' + payments[i].paymentID + '<br/>'
+					html += '<b>Address:</b> <a href="https://explorer.bitcoin.com/'
 					html += 'bch/address/' + payments[i].paymentAddress + '"'
 					html += 'target="_blank">' + payments[i].paymentAddress + '</a><br/>'
-					html += '<b>Payment TXID:</b><a href="https://explorer.bitcoin.com/'
+					html += '<b>Payment TXID:</b> <a href="https://explorer.bitcoin.com/'
 					html += 'bch/tx/' + payments[i].paymentTXID + '" target="_blank">'
 					html += payments[i].paymentTXID + '</a><br/>'
-					html += '<b>Payment Amount:</b>'
+					html += '<b>Payment Amount:</b> '
 					html += parseInt(payments[i].paidAmount)/100000000 + ' BCH<br/>'
-					html += '<b>Transfer TXID:</b><a href="https://explorer.bitcoin.com/'
+					html += '<b>Transfer TXID:</b> <a href="https://explorer.bitcoin.com/'
 					html += 'bch/tx/' + payments[i].transferTXID + '" target="_blank">'
 					html += payments[i].transferTXID + '</a><br/>'
 					html += `</div>`

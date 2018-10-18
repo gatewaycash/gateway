@@ -20,22 +20,27 @@ class PayButton extends Component {
     }
   }
 
+	showError = (error) => {
+		var errorText = 'We\'re sorry, but an error is preventing you from '
+    errorText += 'making your payment. For help, please contact the '
+    errorText += 'merchant, or send an email to support@gateway.cash.\n\n'
+    errorText += 'The error was:\n\n' + error
+    alert(errorText)
+    console.error('Payment error', errorText)
+	}
+
   handleClick = () => {
   	console.log('Gateway: Creating payment request')
-    var requestURL = 'https://gateway.cash/api/pay?merchantID='+this.props.merchantID+'&paymentID='+this.props.paymentID
+    var requestURL = 'https://gateway.cash/api/pay?merchantID='
+    requestURL += this.props.merchantID + '&paymentID=' + this.props.paymentID
     var xhr = new XMLHttpRequest()
     xhr.open('GET', requestURL)
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
     xhr.onload = () => {
-      if (xhr.status === 200 && xhr.readyState === 4) {
+      if (xhr.readyState === 4) {
       	var response = xhr.responseText.toString()
       	if (!response.startsWith('bitcoincash:')) {
-      		var errorText = 'We\'re sorry, but an error is preventing you from '
-      		errorText += 'making your payment. For help, please contact the '
-      		errorText += 'merchant, or send an email to support@gateway.cash.\n\n'
-      		errorText += 'The error was:\n\n' + response
-      		alert(errorText)
-      		console.error('Payment error', response)
+      		this.showError(response)
       	} else {
       		console.log('Gateway: Pay to adress', response)
       		this.setState({address: response, dialogOpen: true})
@@ -137,11 +142,11 @@ class PayButton extends Component {
                 marginTop:'-1.5em',
               }}
             >
-              Send {this.props.amount} Bitcoin Cash (BCH) to this address to
-              complete your payment:
+              Send {this.props.amount <= 0 ? 'some' : this.props.amount}
+              Bitcoin Cash (BCH) to this address to complete your payment
             </p>
             <img
-              src={"https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + this.state.address + '?amount=' + this.props.amount}
+              src={"https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + this.state.address + this.props.amount <= 0 ? '' : '?amount=' + this.props.amount}
               alt="Payment QR code"
               style={{
                 width:'15em',
