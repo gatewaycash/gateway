@@ -121,6 +121,12 @@ class PayButton extends Component {
   render () {
     var dialog = <Dialog></Dialog>
     if (this.state.paymentComplete === false) {
+    	var qrCodePaymentUrl = "https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + this.state.address
+    	var walletUrl = this.state.address
+    	if (this.props.amount > 0) {
+    		qrCodePaymentUrl += '?amount=' + this.props.amount
+    		walletUrl += '?amount=' + this.props.amount
+    	}
       dialog = (
         <Dialog
           open={this.state.dialogOpen}
@@ -142,11 +148,11 @@ class PayButton extends Component {
                 marginTop:'-1.5em',
               }}
             >
-              Send {this.props.amount <= 0 ? 'some' : this.props.amount}
+              Send {this.props.amount <= 0 ? 'some ' : this.props.amount}
               Bitcoin Cash (BCH) to this address to complete your payment
             </p>
             <img
-              src={"https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + this.state.address + this.props.amount <= 0 ? '' : '?amount=' + this.props.amount}
+              src={qrCodePaymentUrl}
               alt="Payment QR code"
               style={{
                 width:'15em',
@@ -169,7 +175,7 @@ class PayButton extends Component {
             <Button
               variant="contained"
               color="primary"
-              href={this.state.address + '?amount=' + this.props.amount} >
+              href={walletUrl} >
               OPEN WALLET
             </Button>
             </center>
