@@ -58,18 +58,25 @@ class PaymentsPage extends Component {
 		} else {
 			try {
 				payments = JSON.parse(payments)
-				var returnValue = ''
+				var html = ''
 				for (var i = 0; i < payments.length; i++) {
-					returnValue += `<div class="payment">`
-					returnValue += '<p>Created: ' + payments[i].created + '</p>'
-					returnValue += '<p>Payment ID: ' + payments[i].paymentID + '</p>'
-					returnValue += '<p>Address: ' + payments[i].paymentAddress + '</p>'
-					returnValue += '<p>TXID: ' + payments[i].paymentTXID + '</p>'
-					returnValue += '<p>Amount: ' + payments[i].paidAmount + '</p>'
-					returnValue += '<p>Transfer TXID: ' + payments[i].transferTXID + '</p>'
-					returnValue += `</div>`
+					html += `<div class="payment">`
+					html += '<b>Created:</b>' + payments[i].created + '<br/>'
+					html += '<b>Payment ID:</b>' + payments[i].paymentID + '<br/>'
+					html += '<b>Address:</b><a href="https://explorer.bitcoin.com/'
+					html += 'bch/address/' + payments[i].paymentAddress + '"'
+					html += 'target="_blank">' + payments[i].paymentAddress + '</a><br/>'
+					html += '<b>Payment TXID:</b><a href="https://explorer.bitcoin.com/'
+					html += 'bch/tx/' + payments[i].paymentTXID + '" target="_blank">'
+					html += payments[i].paymentTXID + '</a><br/>'
+					html += '<b>Payment Amount:</b>'
+					html += parseInt(payments[i].paidAmount)/100000000 + ' BCH<br/>'
+					html += '<b>Transfer TXID:</b><a href="https://explorer.bitcoin.com/'
+					html += 'bch/tx/' + payments[i].transferTXID + '" target="_blank">'
+					html += payments[i].transferTXID + '</a><br/>'
+					html += `</div>`
 				}
-				return returnValue
+				return html
 			}catch (e) {
 				return 'loading...'
 			}
