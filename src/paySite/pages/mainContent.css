@@ -2,7 +2,7 @@
   align: center;
   text-align: center;
   position: fixed;
-  top: 40%;
+  top: 20%;
   left: 50%;
   -webkit-transform: translate(-50%, -50%);
   -moz-transform: translate(-50%, -50%);
@@ -13,4 +13,7 @@
   font-family: helvetica;
   font-weight: bold;
   font-size: 2em;
+}
+.logoImage {
+	width: 10em;
 }

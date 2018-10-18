@@ -13,6 +13,7 @@ import SettingsPage from './pages/SettingsPage.js'
 // include resource files in the build
 import paySound from './res/ding.mp3'
 import background from './res/background.svg'
+import Favicon from './res/favicon.svg'
 
 class Site extends Component {
 

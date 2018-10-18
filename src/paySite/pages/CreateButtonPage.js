@@ -14,7 +14,7 @@ class CreateButtonPage extends Component {
     buttonText: 'Donate',
     dialogTitle: 'Make a Donation',
     currency: 'BCH',
-    amount: '0.01'
+    amount: '-1'
   }
 
   constructor (props) {
@@ -138,7 +138,7 @@ class CreateButtonPage extends Component {
             onChange={this.handleChange}
             id="amountField"
             label="Amount"
-            helperText="Amount (in units of display currency)"
+            helperText="Amount in units of display currency. -1 for any amount"
             type="number"
             value={this.state.amount}
           />

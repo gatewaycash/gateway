@@ -30,54 +30,52 @@ class PayButton extends Component {
 	}
 
   handleClick = () => {
-  	console.log('Gateway: Creating payment request')
-    var requestURL = 'https://gateway.cash/api/pay?merchantID='
-    requestURL += this.props.merchantID + '&paymentID=' + this.props.paymentID
-    var xhr = new XMLHttpRequest()
-    xhr.open('GET', requestURL)
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
-    xhr.onload = () => {
-      if (xhr.readyState === 4) {
-      	var response = xhr.responseText.toString()
-      	if (!response.startsWith('bitcoincash:')) {
-      		this.showError(response)
-      	} else {
-      		console.log('Gateway: Pay to adress', response)
-      		this.setState({address: response, dialogOpen: true})
-      		// TODO change to rest.bitcoin.com
-        	this.sock = io('wss://bitcoincash.blockexplorer.com')
-        	this.sock.on('connect', () => {
-        	  this.sock.emit('subscribe', 'inv')
-        	})
-        	this.sock.on('disconnect', () => {
-        	  console.log('Gateway: Payment server disconnected')
-          	console.log('Gateway: This does not mean that your payment failed')
-          	this.setState({dialogOpen: false})
-        	})
-        	this.sock.on('error', () => {
-          	console.error('Gateway: Error listening for payments')
-          	console.log('Gateway: This does not mean that your payment failed')
-          	this.setState({dialogOpen: false})
-        	})
-        	this.sock.on('tx', (data) => {
-          	this.handlePayment(data)
-        	})
+  	if (this.state.paymentComplete) {
+  		this.setState({dialogOpen: true})
+  	} else {
+  		console.log('Gateway: Creating payment request')
+    	var requestURL = 'https://gateway.cash/api/pay?merchantID='
+    	requestURL += this.props.merchantID + '&paymentID=' + this.props.paymentID
+    	var xhr = new XMLHttpRequest()
+    	xhr.open('GET', requestURL)
+    	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+		  xhr.onload = () => {
+      	if (xhr.readyState === 4) {
+      		var response = xhr.responseText.toString()
+      		if (!response.startsWith('bitcoincash:')) {
+      			this.showError(response)
+     			} else {
+     				console.log('Gateway: Pay to adress', response)
+     				this.setState({address: response, dialogOpen: true})
+      			// TODO change to rest.bitcoin.com
+      		 	this.sock = io('wss://bitcoincash.blockexplorer.com')
+      		 	this.sock.on('connect', () => {
+        		  this.sock.emit('subscribe', 'inv')
+     	  		})
+     	  		this.sock.on('disconnect', () => {
+     	  		  console.log('Gateway: Payment server disconnected')
+      		    console.log('Gateway: This does not mean that your payment failed')
+      		  })
+      		 	this.sock.on('error', () => {
+      		   	console.error('Gateway: Error listening for payments')
+        	  	console.log('Gateway: This does not mean that your payment failed')
+     	  		})
+     	  		this.sock.on('tx', (data) => {
+     	  	  	this.handlePayment(data)
+      		  })
+      		}
       	}
-      }
-    }
-    xhr.send()
+    	}
+    	xhr.send()
+  	}
   }
 
   handleClose = () => {
     this.sock.close()
-    var newState = {}
-    newState.dialogOpen = false
-    if (this.state.paymentComplete) {
-    	newState.paymentComplete = false
-    } else {
+    if (this.state.paymentComplete === false) {
     	console.log('Gateway: Payment canceled')
     }
-    this.setState(newState)
+    this.setState({dialogOpen: false})
   }
 
   handlePayment = (data) => {
@@ -148,8 +146,8 @@ class PayButton extends Component {
                 marginTop:'-1.5em',
               }}
             >
-              Send {this.props.amount <= 0 ? 'some ' : this.props.amount}
-              Bitcoin Cash (BCH) to this address to complete your payment
+              Send {this.props.amount <= 0 ? 'some' : this.props.amount} Bitcoin
+              Cash (BCH) to this address to complete your payment
             </p>
             <img
               src={qrCodePaymentUrl}

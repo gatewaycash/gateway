@@ -27,8 +27,12 @@ class StartPage extends Component {
   render () {
     return (
       <div className="mainContent">
+      	<img
+      		className="logoImage"
+      		alt="Gateway Logo"
+      		src="https://gateway.cash/images/favicon.svg"
+      	/>
         <h1 className="mainHeading">Simple Bitcoin Payments</h1>
-        <p>BETA: Proceed with caution (not yet complete, things might be broken)</p>
         <Button
           onClick={this.handleClick}
           variant="contained"

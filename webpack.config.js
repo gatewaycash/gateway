@@ -121,7 +121,7 @@ const config = {
       enabled: true // disable if opening file:// URLs with a browser locally
     }),
     new FaviconsWebpackPlugin({
-      logo: path.join(__dirname, 'src/paySite/res/background.svg'),
+      logo: path.join(__dirname, 'src/paySite/res/favicon.svg'),
       prefix: 'icons/',
       inject: true,
       background: '#223',
