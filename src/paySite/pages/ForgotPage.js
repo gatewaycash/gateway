@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 
-import './mainContent.css'
+import './../MainContent.css'
 
 class ForgotPage extends Component {
   render () {

@@ -3,15 +3,18 @@ import React, { Component} from 'react'
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 
-import './createButtonPage.css'
+import NavigationMenu from './../NavigationMenu.js'
+
+import './../MainContent.css'
 
 class SettingsPage extends Component {
 	
+	state = {
+		username: 'loading...'
+	}
+	
 	constructor (props) {
 		super (props)
-		this.state = {
-			username: 'loading...'
-		}
 		var xhr = new XMLHttpRequest()
 		xhr.open('GET', 'https://gateway.cash/api/getusername')
 		xhr.onload = () => {
@@ -26,37 +29,13 @@ class SettingsPage extends Component {
 		xhr.send()
 	}
 	
-	handleCreateButton = () => {
-    this.props.updateView('createbutton')
-  }
-  
-  handleViewPayments = () => {
-    this.props.updateView('payments')
-  }
-	
 	render () {
-		
 		return (
 			<div className='container'>
-				<center>
-					<h1>Settings</h1>
-					<Button
-            onClick={this.handleCreateButton}
-          >
-            Create Button
-          </Button>
-          <Button
-          	onClick={this.handleViewPayments}
-          >
-          	View Payments
-          </Button>
-          <Button
-          	variant="contained"
-          	color="primary"
-          >
-            Settings
-          </Button>
-				</center>
+				<NavigationMenu
+				  page="Settings"
+				  updateView={this.props.updateView}
+				/>
 				<h2>Display Currency</h2>
 				<p>
 					Bitcoin Cash (BCH) units will always be displayed. In places like the
@@ -83,7 +62,7 @@ class SettingsPage extends Component {
 						<li>Not begin with another username</li>
 						<li>Not contain special characters {'({[<\'"\\,!@#|$%^./"\'>]})'}</li>
 						<li>Not contain spaces, tabs or return characters</li>
-						<li>NOT BE EQUAL TO ANOTHER PERSONS ADDRESS *couhJason*cough :)</li>
+						<li>Not be equal to another person's address</li>
 					</ul>
 				</p>
 				<h3>Change Username</h3>

@@ -2,16 +2,19 @@ import React, {Component} from 'react'
 
 import Button from '@material-ui/core/Button'
 
-import './createButtonPage.css'
+import './../MainContent.css'
+
+import NavigationMenu from './../NavigationMenu.js'
 
 class PaymentsPage extends Component {
 
+  state = {
+    showUnpaid: false,
+    payments: 'loading...'
+  }
+
   constructor (props) {
     super(props)
-    this.state = {
-      showUnpaid: false,
-      payments: 'loading...'
-    }
     var xhr = new XMLHttpRequest()
     xhr.open('GET', 'https://gateway.cash/api/getpayments')
     xhr.onload = () => {
@@ -21,14 +24,6 @@ class PaymentsPage extends Component {
       }
     }
     xhr.send()
-  }
-
-  handleCreateButton = () => {
-    this.props.updateView('createbutton')
-  }
-
-  handleSettings = () => {
-    this.props.updateView('settings')
   }
   
   toggleView = () => {
@@ -76,7 +71,7 @@ class PaymentsPage extends Component {
 					html += payments[i].transferTXID + '</a><br/>'
 					html += `</div>`
 				}
-				return html
+				return payments.length > 0 ? html : 'No payments yet'
 			}catch (e) {
 				return 'loading...'
 			}
@@ -86,32 +81,33 @@ class PaymentsPage extends Component {
   render () {
     return (
       <div className="container">
-        <center>
-          <h1>Your Payments</h1>
-          <Button
-            onClick={this.handleCreateButton}
-          >
-            Create Button
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-          >
-            View Payments
-          </Button>
-          <Button
-            onClick={this.handleSettings}
-          >
-            Settings
-          </Button>
-        </center>
+        <NavigationMenu
+          page="View Payments"
+          updateView={this.props.updateView}
+        />
         <h2>Payments</h2>
         <p>
         	Below is a list of payments amde to your merchant account. They are
         	sorted by date, the most recent payments appearing at the top.
         </p>
-        <div dangerouslySetInnerHTML={{__html: this.parsePayments(this.state.payments)}}>
+        <div
+          dangerouslySetInnerHTML={{
+            __html: this.parsePayments(this.state.payments)
+          }}
+        >
         </div>
+        <center>
+          <Button
+        	  color="primary"
+        	  onClick={this.toggleView}
+          >
+        	  {
+        	  	this.state.showUnpaid ?
+        	  	'Show Only Processed Payments' :
+        	  	'Include all Unpaid Payments'
+        	  }
+          </Button>
+        </center>
         <h2>About Unpaid and Unprocessed Payments</h2>
         <p>
         	Unpaid and unprocessed payments usually occur when a customer clicks
@@ -119,19 +115,6 @@ class PaymentsPage extends Component {
         	Pending payments (payments that haven't yet been processed) will also
         	fall into this category.
         </p>
-        <center>
-        <Button
-        	variant="contained"
-        	color="primary"
-        	onClick={this.toggleView}
-        >
-        	{
-        		this.state.showUnpaid ?
-        		'Show Only Processed Payments' :
-        		'Include all Unpaid Payments'
-        	}
-        </Button>
-        </center>
       </div>
     )
   }

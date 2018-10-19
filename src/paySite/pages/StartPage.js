@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 
 import Button from '@material-ui/core/Button'
 
-import './mainContent.css'
+import './../MainContent.css'
 
 class StartPage extends Component {
 	

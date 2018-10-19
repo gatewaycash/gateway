@@ -20,7 +20,7 @@ class Site extends Component {
   constructor (props) {
     super (props)
     this.state = {
-      currentPage: 'start'
+      currentPage: 'createbutton'
     }
     this.updateView = this.updateView.bind(this)
   }
