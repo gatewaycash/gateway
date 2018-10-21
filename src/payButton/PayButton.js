@@ -121,7 +121,7 @@ class PayButton extends Component {
     	QRURL += '&amount=' + this.props.amount
     	walletURL += '&amount=' + this.props.amount
     }
-    var dialogTitle = this.props.dialogTitle === undefined ? 'Complete You Payment' : this.props.dialogTitle
+    var dialogTitle = (typeof this.props.dialogTitle === "undefined") ? 'Complete Your Payment' : this.props.dialogTitle
     return this.state.paymentComplete ? (
       <Dialog
         open={this.state.dialogOpen}
@@ -215,7 +215,7 @@ class PayButton extends Component {
   }
   
   render () {
-    var buttonText = this.props.buttonText === undefined ? 'Donate' : this.props.buttonText
+    var buttonText = (typeof this.props.buttonText === "undefined") ? 'Donate' : this.props.buttonText
     return (
       <div style={{display: 'inline-block', padding: '0.25em'}}>
         <Button
