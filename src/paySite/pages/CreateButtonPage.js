@@ -67,7 +67,7 @@ class CreateButtonPage extends Component {
       callbackURL = callbackURL.toString().substr(0, 64)
       this.setState({
         dialogTitle: dialogTitle,
-        paymentID: paymentiD,
+        paymentID: paymentID,
         callbackURL: callbackURL
       })
     }
@@ -275,7 +275,7 @@ class CreateButtonPage extends Component {
 	      <PayButton
 	        merchantID={this.state.merchantID}
 	        buttonText={this.state.buttonText}
-	        amount={this.state.amount}
+	        amount={this.state.anyAmount ? '0' : this.state.amount}
 	        currency={this.state.currency}
 	        dialogTitle={this.state.dialogTitle}
 	        paymentID={this.state.paymentID}

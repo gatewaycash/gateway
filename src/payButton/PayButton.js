@@ -11,13 +11,10 @@ import io from 'socket.io-client'
 
 class PayButton extends Component {
 
-  constructor (props) {
-    super(props)
-    this.state = {
-      dialogOpen: false,
-      paymentComplete: false,
-      address: 'loading...'
-    }
+  state = {
+    dialogOpen: false,
+    paymentComplete: false,
+    address: 'loading...'
   }
 
 	showError = (error) => {
@@ -115,107 +112,110 @@ class PayButton extends Component {
     }
     xhr.send()
   }
-
-  render () {
-    var dialog = <Dialog></Dialog>
-    if (this.state.paymentComplete === false) {
-    	var qrCodePaymentUrl = "https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=" + this.state.address
-    	var walletUrl = this.state.address
-    	if (this.props.amount > 0) {
-    		qrCodePaymentUrl += '?amount=' + this.props.amount
-    		walletUrl += '?amount=' + this.props.amount
-    	}
-      dialog = (
-        <Dialog
-          open={this.state.dialogOpen}
-          keepMounted
-          onClose={this.handleClose}
-        >
-          <DialogTitle>
+  
+  renderDialog = () => {
+    var QRURL = "https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl="
+    QRURL += this.state.address + '?label=Payment'
+    var walletURL = this.state.address + '?label=Payment'
+    if (typeof this.props.amount !== undefined && this.props.amount > 0) {
+    	QRURL += '&amount=' + this.props.amount
+    	walletURL += '&amount=' + this.props.amount
+    }
+    var dialogTitle = this.props.dialogTitle === undefined ? 'Complete You Payment' : this.props.dialogTitle
+    return this.state.paymentComplete ? (
+      <Dialog
+        open={this.state.dialogOpen}
+        keepMounted
+        onClose={this.handleClose}
+      >
+        <DialogTitle>
           <center>
-            {this.props.dialogTitle}
+            Thank You!
           </center>
-          </DialogTitle>
-          <DialogContent>
+        </DialogTitle>
+        <DialogContent>
           <DialogContentText>
             <center>
-            <p
-              style={{
-                marginLeft:'0.5em',
-                marginRight:'0.5em',
-                marginTop:'-1.5em',
-              }}
-            >
-              Send {this.props.amount <= 0 ? 'some' : this.props.amount} Bitcoin
-              Cash (BCH) to this address to complete your payment
-            </p>
-            <img
-              src={qrCodePaymentUrl}
-              alt="Payment QR code"
-              style={{
-                width:'15em',
-                margin:'auto',
-                marginTop:'-1em',
-                marginBottom:'-1.5em',
-                align:'center'
-              }}
-            />
-            <p style={{
-                width:'17em',
-                fontFamily:'monospace',
-                fontSize:'0.8em',
-                lineHeight:'100%',
-                wordWrap:'break-word'
-              }}
-            >
-              {this.state.address}
-            </p>
-            <Button
-              variant="contained"
-              color="primary"
-              href={walletUrl} >
-              OPEN WALLET
-            </Button>
+              <Done
+                style={{
+                  width:'10em',
+                  height:'10em'
+                }}
+              />
+              <p
+                style={{
+                  marginLeft:'1em',
+                  marginRight:'1em'
+                }}
+              >
+                Your payment has been received.
+              </p>
             </center>
           </DialogContentText>
-          </DialogContent>
-        </Dialog>
-      )
-    } else { // payment has been completed
-      dialog = (
-        <Dialog
-          open={this.state.dialogOpen}
-          keepMounted
-          onClose={this.handleClose}
-        >
-          <DialogTitle>
+        </DialogContent>
+      </Dialog>
+    ) : (
+      <Dialog
+        open={this.state.dialogOpen}
+        keepMounted
+        onClose={this.handleClose}
+      >
+        <DialogTitle>
+          <center>
+            {dialogTitle}
+          </center>
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
             <center>
-              Thank You!
+              <p
+                style={{
+                  marginLeft:'0.5em',
+                  marginRight:'0.5em',
+                  marginTop:'-1.5em',
+                }}
+              >
+              Send {(this.props.amount === undefined || this.props.amount <= 0) ? 'some' : this.props.amount} Bitcoin
+              Cash (BCH) to this address to complete your payment
+              </p>
+              <img
+                src={QRURL}
+                alt="Payment QR code"
+                style={{
+                  width:'15em',
+                  margin:'auto',
+                  marginTop:'-1em',
+                  marginBottom:'-1.5em',
+                  align:'center'
+                }}
+              />
+              <p
+                style={{
+                  width:'17em',
+                  fontFamily:'monospace',
+                  fontSize:'0.8em',
+                  lineHeight:'100%',
+                  wordWrap:'break-word'
+                }}
+              >
+              {this.state.address}
+              </p>
+              <Button
+                variant="contained"
+                color="primary"
+                href={walletURL}
+              >
+                OPEN WALLET
+              </Button>
             </center>
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              <center>
-                <Done
-                  style={{
-                    width:'10em',
-                    height:'10em'
-                  }}
-                />
-                <p
-                  style={{
-                    marginLeft:'1em',
-                    marginRight:'1em'
-                  }}
-                >
-                  Your payment has been received.
-                </p>
-              </center>
-            </DialogContentText>
-          </DialogContent>
-        </Dialog>
-      )
-    }
+          </DialogContentText>
+        </DialogContent>
+      </Dialog>
+    )
+  }
+  
+  render () {
+    var buttonText = this.props.buttonText === undefined ? 'Donate' : this.props.buttonText
     return (
       <div style={{display: 'inline-block', padding: '0.25em'}}>
         <Button
@@ -223,9 +223,9 @@ class PayButton extends Component {
           variant="contained"
           color="primary"
         >
-          {this.props.buttonText}
+          {buttonText}
         </Button>
-        {dialog}
+        {this.renderDialog()}
       </div>
     )
   }
