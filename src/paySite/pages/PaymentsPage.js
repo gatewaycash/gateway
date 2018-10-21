@@ -1,6 +1,9 @@
 import React, {Component} from 'react'
 
 import Button from '@material-ui/core/Button'
+import Paper from '@material-ui/core/Paper'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Switch from '@material-ui/core/Switch'
 
 import './../MainContent.css'
 
@@ -85,6 +88,7 @@ class PaymentsPage extends Component {
           page="View Payments"
           updateView={this.props.updateView}
         />
+        <Paper className="paper">
         <h2>Payments</h2>
         <p>
         	Below is a list of payments amde to your merchant account. They are
@@ -108,13 +112,14 @@ class PaymentsPage extends Component {
         	  }
           </Button>
         </center>
-        <h2>About Unpaid and Unprocessed Payments</h2>
+        <h3>About Unpaid and Unprocessed Payments</h3>
         <p>
         	Unpaid and unprocessed payments usually occur when a customer clicks
         	on a payment button but then closes it without making a payment.
         	Pending payments (payments that haven't yet been processed) will also
         	fall into this category.
         </p>
+        </Paper>
       </div>
     )
   }

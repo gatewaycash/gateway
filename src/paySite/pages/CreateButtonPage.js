@@ -4,9 +4,11 @@ import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import MenuItem from '@material-ui/core/MenuItem'
 import menu from '@material-ui/core/Menu'
+import Paper from '@material-ui/core/Paper'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Switch from '@material-ui/core/Switch'
 
 import './../MainContent.css'
-import './CreateButtonPage.css'
 
 import NavigationMenu from './../NavigationMenu.js'
 import PayButton from './../../payButton/PayButton.js'
@@ -17,10 +19,12 @@ class CreateButtonPage extends Component {
     merchantID: 'loading',
     paymentID: 'donation',
     buttonText: 'Donate',
-    dialogTitle: 'Make a Donation',
+    dialogTitle: 'Complete Your Payment',
     currency: 'BCH',
-    amount: '0',
-    advanced: false
+    amount: '0.01',
+    advanced: false,
+    anyAmount: true,
+    callbackURL: 'None'
   }
 
   constructor (props) {
@@ -48,22 +52,70 @@ class CreateButtonPage extends Component {
 	}
 	
   handleChange = () => {
+    var buttonText = document.getElementById('buttonTextField').value.toString()
+    buttonText = buttonText.substr(0, 25)
     this.setState({
-      buttonText: document.getElementById('buttonTextField').value,
-      amount: document.getElementById('amountField').value,
-      currency: document.getElementById('currencyField').value
+      buttonText: buttonText,
+      anyAmount: document.getElementById('allowanyfield').checked
     })
     if (this.state.advanced) {
+      var dialogTitle = document.getElementById('dialogTitleField').value
+      dialogTitle = dialogTitle.toString().substr(0, 40)
+      var paymentID = document.getElementById('paymentIDField').value
+      paymentID = paymentID.toString().substr(0, 32)
+      var callbackURL = document.getElementById('callbackURLField').value
+      callbackURL = callbackURL.toString().substr(0, 64)
       this.setState({
-        dialogTitle: document.getElementById('dialogTitleField').value,
-        paymentID: document.getElementById('paymentIDField').value
+        dialogTitle: dialogTitle,
+        paymentID: paymentiD,
+        callbackURL: callbackURL
+      })
+    }
+    if (this.state.anyAmount === false) {
+      var currency = document.getElementById('currencyField').value
+      currency = currency.toString().substr(0, 3).toUpperCase()
+      this.setState({
+        amount: Math.abs(document.getElementById('amountField').value),
+        currency: currency
       })
     }
   }
 
 	renderCreationForm = () => {
+	  var amountAndCurrency = this.state.anyAmount ? null : (
+	    <div>
+	      <TextField
+          style={{
+            width:'70%',
+            float:'left'
+          }}
+          onChange={this.handleChange}
+          id="amountField"
+          label="Amount"
+          helperText="Amount in units of display currency"
+          type="number"
+          value={this.state.amount}
+        />
+        <TextField
+          style={{
+            width:'30%',
+            float:'right'
+          }}
+          onChange={this.handleChange}
+          id="currencyField"
+          label="Currency"
+          helperText="BCH, USD, EUR..."
+          maxLength={3}
+          value={this.state.currency}
+        />
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+      </div>
+	  )
 		return (
-			<div className="creationForm">
+			<Paper className="paper">
 				<h2>Customize Your Button</h2>
         <p>
         	Use the settings below to change various aspects of your payment
@@ -82,41 +134,32 @@ class CreateButtonPage extends Component {
           maxLength={25}
           value={this.state.buttonText}
         />
-        <TextField
-          style={{
-            width:'66%',
-            float:'left',
-          }}
-          onChange={this.handleChange}
-          id="amountField"
-          label="Amount"
-          helperText="Amount in units of display currency. -1 for any amount"
-          type="number"
-          value={this.state.amount}
+        <br/>
+        <br/>
+        <FormControlLabel
+          control={
+            <Switch
+              id='allowanyfield'
+              checked={this.state.anyAmount}
+              onChange={this.handleChange}
+              color="primary"
+            />
+          }
+          label="Allow any amount"
         />
-        <TextField
-          style={{
-            width:'33%',
-            float:'right',
-          }}
-          onChange={this.handleChange}
-          id="currencyField"
-          label="Currency"
-          helperText="BCH, USD, EUR..."
-          maxLength={3}
-          value={this.state.currency}
-        />
+        {amountAndCurrency}
         {this.renderAdvancedOptions()}
-    	</div>
+    	</Paper>
 		)
 	}
 	
 	renderAdvancedOptions = () => {
 		return this.state.advanced ? (
     	<div>
+    	  <br/>
     		<TextField
           style={{
-            width:'100%'
+            width: '100%'
 	        }}
   	      onChange={this.handleChange}
   	      id="dialogTitleField"
@@ -125,6 +168,8 @@ class CreateButtonPage extends Component {
           maxLength={25}
           value={this.state.dialogTitle}
 	       />
+	       <br/>
+	       <br/>
   	     <TextField
   	       style={{
   	         width:'100%'
@@ -136,9 +181,28 @@ class CreateButtonPage extends Component {
   	       maxLength={32}
   	       value={this.state.paymentID}
   	     />
+  	     <br/>
+  	     <br/>
+  	     <TextField
+  	       style={{
+  	         width:'100%'
+  	       }}
+  	       onChange={this.handleChange}
+  	       id="callbackURLField"
+  	       label="Callback URL"
+  	       helperText="We'll notify this URL when a payment is made (see below)"
+  	       maxLength={64}
+  	       value={this.state.callbackURL}
+  	     />
+  	     <br/>
+  	     <br/>
   	  </div>
     ) : (
       <div>
+        <p>
+          If you're looking for more advanced functionality, you can further
+          customize your button with some additional tweaks.
+        </p>
         <center>
     	    <Button
             color="primary"
@@ -155,16 +219,17 @@ class CreateButtonPage extends Component {
     var buttonCode = '<div\n  class="payButton"\n'
     buttonCode += '  id="pay-' + Math.floor(Math.random() * 100000) + '"\n'
     buttonCode += '  merchantID="' + this.state.merchantID + '"\n'
-    if (this.state.buttonText.toString().toLowerCase() !== 'donate') {
+    if (this.state.buttonText.toString() !== 'Donate') {
       buttonCode += '  buttonText="' + this.state.buttonText + '"\n'
     }
-    if (this.state.amount !== '0') {
+    if (this.state.amount !== '0' && this.state.anyAmount === false) {
       buttonCode += '  amount="' + this.state.amount + '"\n'
     }
-    if (this.state.currency.toString().toLowerCase() !== 'bch') {
+    if (this.state.currency.toString().toLowerCase() !== 'bch' &&
+        this.state.anyAmount === false) {
       buttonCode += '  currency="' + this.state.currency + '"\n'
     }
-    if (this.state.dialogTitle.toString().toLowerCase() !== 'make a donation') {
+    if (this.state.dialogTitle.toString() !== 'Complete Your Payment') {
       buttonCode += '  dialogTitle="' + this.state.dialogTitle + '"\n'
     }
     if (this.state.paymentID !== 'donation') {
@@ -172,7 +237,7 @@ class CreateButtonPage extends Component {
     }
     buttonCode += '></div>'
 		return (
-		  <div>
+		  <Paper className="paper">
 	  		<h2>Generated Code</h2>
         <p>
           Add this line of HTML once on each page you want to accept
@@ -193,13 +258,37 @@ class CreateButtonPage extends Component {
         	Feel free to change any of the values in the above code block
           except your merchant ID, which is how you'll get paid.
         </p>
-      </div>
+      </Paper>
 		)
+	}
+	 
+  renderPreviewButton = () => {
+	  return (
+	    <Paper className="paper">
+	      <h2>Button Preview</h2>
+  	    <p>
+	        This is what your finished button will look like and how it will
+	        behave. Payments made to the button on this page will be sent to your
+	        address.
+	      </p>
+	      <center>
+	      <PayButton
+	        merchantID={this.state.merchantID}
+	        buttonText={this.state.buttonText}
+	        amount={this.state.amount}
+	        currency={this.state.currency}
+	        dialogTitle={this.state.dialogTitle}
+	        paymentID={this.state.paymentID}
+	      />
+	      </center>
+	    </Paper>
+	  )
 	}
 	 
 	renderMoreInfo = () => {
 	  return (
 	    <div>
+	    <Paper className="paper">
 	      <h2>More Info About Payment IDs</h2>
         <p>
         	The optional Payment ID property can be used to help you keep
@@ -209,6 +298,8 @@ class CreateButtonPage extends Component {
           order number. Since payment IDs show up in the View Payments page,
           you'll know which orders have been paid for and are ready to ship.
         </p>
+      </Paper>
+      <Paper className="paper">
         <h2>A Note on How Payments Are Processed</h2>
         <p>
          	The site generates an addrress for each payment and securely stores
@@ -224,10 +315,20 @@ class CreateButtonPage extends Component {
         	selected amount will also be deducted as well. All other funds go
         	to your address.
         </p>
+      </Paper>
+			</div>
+	  )
+	}
+	 
+	renderSupportProject = () => {
+	  return (
+	    <Paper className="paper">
         <h2>Support the Project</h2>
         <p>
         	If you like this project and want to see it get even better for both
-        	merchants and customers, please consider a donation.
+        	merchants and customers, please consider a donation. Optionally, you
+        	can also choose to donate a portion of each payment made to your
+        	merchant account from Settings.
         </p>
         <center>
         <PayButton
@@ -239,7 +340,7 @@ class CreateButtonPage extends Component {
   				dialogTitle="Make a Donation"
 				/>
 				</center>
-			</div>
+			</Paper>
 	  )
 	}
 	 
@@ -250,9 +351,19 @@ class CreateButtonPage extends Component {
           page="Create a Button"
           updateView={this.props.updateView}
         />
-        {this.renderCreationForm()}
-        {this.renderGeneratedCode()}
-        {this.renderMoreInfo()}
+        <div className="leftPanel">
+          {this.renderCreationForm()}
+        </div>
+        <div className="rightPanel">
+          {this.renderGeneratedCode()}
+          {this.renderPreviewButton()}
+        </div>
+        <div className="leftPanel">
+          {this.renderMoreInfo()}
+        </div>
+        <div className="rightPanel">
+          {this.renderSupportProject()}
+        </div>
       </div>
     )
   }

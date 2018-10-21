@@ -67,3 +67,28 @@
 	color: blue;
 	text-decoration: none;
 }
+
+.leftPanel {
+  float: left;
+  display: block;
+  width: 49.3%;
+}
+.rightPanel {
+  float: right;
+  display: block;
+  width: 49.3%;
+}
+.paper {
+  padding: 1em;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+@media only screen and ( max-width: 60em ){
+  .leftPanel {
+    width: 100%;
+  }
+  .rightPanel {
+    width: 100%;
+  }
+}

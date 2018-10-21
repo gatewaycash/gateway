@@ -2,6 +2,11 @@ import React, { Component} from 'react'
 
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
+import MenuItem from '@material-ui/core/MenuItem'
+import menu from '@material-ui/core/Menu'
+import Paper from '@material-ui/core/Paper'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Switch from '@material-ui/core/Switch'
 
 import NavigationMenu from './../NavigationMenu.js'
 
@@ -36,6 +41,8 @@ class SettingsPage extends Component {
 				  page="Settings"
 				  updateView={this.props.updateView}
 				/>
+				<div className="leftPanel">
+				<Paper className="paper">
 				<h2>Display Currency</h2>
 				<p>
 					Bitcoin Cash (BCH) units will always be displayed. In places like the
@@ -45,6 +52,10 @@ class SettingsPage extends Component {
 					the time the payment was made.
 				</p>
 				<p>(unimplemented)</p>
+				</Paper>
+				</div>
+				<div class="rightPanel">
+				<Paper className="paper">
 				<h2>Username</h2>
 				<p>
 					Your username can be used as a more convenient way to log into
@@ -86,6 +97,10 @@ class SettingsPage extends Component {
         		Update Username (unimplemented)
         	</Button>
         </center>
+        </Paper>
+        </div>
+        <div class="leftPanel">
+        <Paper className="paper">
         <h2>Supporting the Project</h2>
         <p>
         	If you'd like tu suppot the project and help fund my college
@@ -94,6 +109,8 @@ class SettingsPage extends Component {
         	support you're able to provide is much appreciated.
         </p>
         <p>(unimplemented)</p>
+        </Paper>
+        </div>
 			</div>
 		)
 		

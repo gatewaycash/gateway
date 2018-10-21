@@ -6,7 +6,8 @@
   "scripts": {
     "start": "pm2 start server.js",
     "stop": "pm2 stop server.js",
-    "build": "webpack --mode production"
+    "build": "webpack --mode production",
+    "dev": "webpack --mode development"
   },
   "repository": {
     "type": "git",
