@@ -290,7 +290,7 @@ class PayButton extends Component {
   }
   
   render () {
-    updateData()
+    this.updateData()
     return (
       <div style={{display: 'inline-block', padding: '0.25em'}}>
         <Button
