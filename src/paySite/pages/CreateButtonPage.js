@@ -74,8 +74,16 @@ class CreateButtonPage extends Component {
     if (this.state.anyAmount === false) {
       var currency = document.getElementById('currencyField').value
       currency = currency.toString().substr(0, 3).toUpperCase()
+      var amount = Math.abs(document.getElementById('amountField').value)
+      amount = amount.toString()
+      while (amount.startsWith('0')) {
+        amount = amount.substr(1)
+      }
+      if (amount.startsWith('.')) {
+        amount = '0' + amount
+      }
       this.setState({
-        amount: Math.abs(document.getElementById('amountField').value),
+        amount: amount,
         currency: currency
       })
     }
@@ -336,6 +344,7 @@ class CreateButtonPage extends Component {
         <center>
         <PayButton
   				merchantID="ef0fcea08bfa9cb0"
+  				buttonText="Support gateway.cash"
 				/>
 				</center>
 			</Paper>

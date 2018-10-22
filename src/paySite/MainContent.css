@@ -72,12 +72,22 @@
   float: left;
   display: block;
   width: 49.3%;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
 }
+
 .rightPanel {
   float: right;
   display: block;
   width: 49.3%;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
 }
+
 .paper {
   padding: 1em;
   margin-top: 1em;
@@ -88,6 +98,7 @@
   .leftPanel {
     width: 100%;
   }
+  
   .rightPanel {
     width: 100%;
   }

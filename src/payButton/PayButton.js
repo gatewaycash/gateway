@@ -17,8 +17,16 @@ class PayButton extends Component {
     address: 'loading...'
   }
   
-  constructor(props) {
-    super(props)
+	showError = (error) => {
+		var errorText = 'We\'re sorry, but an error is preventing you from '
+    errorText += 'making your payment. For help, please contact the '
+    errorText += 'merchant, or send an email to support@gateway.cash.\n\n'
+    errorText += 'The error was:\n\n' + error
+    alert(errorText)
+    console.error('Payment error', errorText)
+	}
+  
+  updateData = () => {
     // set default value for this.buttonText if not provided
     this.buttonText = this.props.buttonText
     if (this.buttonText === '' || 
@@ -91,15 +99,6 @@ class PayButton extends Component {
     }
   }
   
-	showError = (error) => {
-		var errorText = 'We\'re sorry, but an error is preventing you from '
-    errorText += 'making your payment. For help, please contact the '
-    errorText += 'merchant, or send an email to support@gateway.cash.\n\n'
-    errorText += 'The error was:\n\n' + error
-    alert(errorText)
-    console.error('Payment error', errorText)
-	}
-
   handleClick = () => {
   	if (this.state.paymentComplete) {
   		this.setState({dialogOpen: true})
@@ -291,6 +290,7 @@ class PayButton extends Component {
   }
   
   render () {
+    updateData()
     return (
       <div style={{display: 'inline-block', padding: '0.25em'}}>
         <Button
