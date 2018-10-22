@@ -64,7 +64,7 @@ class CreateButtonPage extends Component {
       var paymentID = document.getElementById('paymentIDField').value
       paymentID = paymentID.toString().substr(0, 32)
       var callbackURL = document.getElementById('callbackURLField').value
-      callbackURL = callbackURL.toString().substr(0, 64)
+      callbackURL = callbackURL.toString().substr(0, 128)
       this.setState({
         dialogTitle: dialogTitle,
         paymentID: paymentID,
@@ -217,7 +217,6 @@ class CreateButtonPage extends Component {
 	
 	renderGeneratedCode = () => {
     var buttonCode = '<div\n  class="payButton"\n'
-    buttonCode += '  id="pay-' + Math.floor(Math.random() * 100000) + '"\n'
     buttonCode += '  merchantID="' + this.state.merchantID + '"\n'
     if (this.state.buttonText.toString() !== 'Donate') {
       buttonCode += '  buttonText="' + this.state.buttonText + '"\n'
@@ -235,6 +234,11 @@ class CreateButtonPage extends Component {
     if (this.state.paymentID !== 'donation') {
       buttonCode += '  paymentID="' + this.state.paymentID + '"\n'
     }
+    if (this.state.callbackURL !== 'None' &&
+        (this.state.callbackURL.toString().startsWith('https://') ||
+        this.state.callbackURL.toString().startsWith('http://'))) {
+      buttonCode += '  callbackURL="' + this.state.callbackURL + '"\n'
+    }
     buttonCode += '></div>'
 		return (
 		  <Paper className="paper">
@@ -247,9 +251,8 @@ class CreateButtonPage extends Component {
           {`<script src="https://gateway.cash/pay.js"></script>`}
         </pre>
         <p>
-          Add this code wherever you want to place a payment button (it
-      	  can be in multiple places on the same page as long as each button
-          has a unique ID):
+          Add this code wherever you want to place a payment button. You can
+          put as many buttons on the same page as you'd like:
         </p>
         <pre className="sourceCode">
       	  {buttonCode}

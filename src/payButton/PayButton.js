@@ -71,7 +71,7 @@ class PayButton extends Component {
     } else if (this.merchantID.toString().length !== 16) {
       console.error('Gateway: WARNING! Invalid Merchant ID given to a button!')
     }
-    // set default value for this.dialogTitle if not provided
+    // set default value for this.callbackURL if not provided
     this.callbackURL = this.props.callbackURL
     if (this.callbackURL === '' || 
         typeof this.callbackURL === 'undefined' ||
