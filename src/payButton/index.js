@@ -23,6 +23,7 @@ window.onload = function() {
   for(var i = 0; i < buttons.length; i++) {
     var buttonID = 'pay-' + Math.floor(Math.random() * 100000)
     buttons.item(i).id = buttonID
+    buttons.item(i).setAttribute('id', buttonID)
     var button = buttons.item(i)
     createButton(button, buttonID)
   }
