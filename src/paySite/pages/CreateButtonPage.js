@@ -333,11 +333,6 @@ class CreateButtonPage extends Component {
         <center>
         <PayButton
   				merchantID="ef0fcea08bfa9cb0"
-  				paymentID="donation-gateway.cash"
-  				currency="BCH"
-  				amount="0"
-  				buttonText="Make a Donation"
-  				dialogTitle="Make a Donation"
 				/>
 				</center>
 			</Paper>

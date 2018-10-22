@@ -8,9 +8,10 @@ function createButton (button) {
       buttonText={button.getAttribute('buttonText')}
       dialogTitle={button.getAttribute('dialogTitle')}
       amount={button.getAttribute('amount')}
-      displayCurrency={button.getAttribute('displayCurrency')}
+      currency={button.getAttribute('currency')}
       merchantID={button.getAttribute('merchantID')}
       paymentID={button.getAttribute('paymentID')}
+      callbackURL={button.getAttribute('callbackURL')}
     />,
     document.getElementById(button.getAttribute('id'))
   )
