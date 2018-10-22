@@ -119,7 +119,6 @@ class PayButton extends Component {
       			this.showError(response)
      			} else {
      				console.log('Gateway: Pay to adress', response)
-     				this.setState({address: response, dialogOpen: true})
      				this.QRCodeURL = 'https://chart.googleapis.com/'
      				this.QRCodeURL += 'chart?chs=300x300&cht=qr&chl='
             this.QRCodeURL += response + '?label=Payment'
@@ -128,6 +127,7 @@ class PayButton extends Component {
     	        this.QRCodeURL += '&amount=' + this.amount
     	        this.walletURL += '&amount=' + this.amount
             }
+            this.setState({address: response, dialogOpen: true})
       			// TODO change to rest.bitcoin.com
       		 	this.sock = io('wss://bitcoincash.blockexplorer.com')
       		 	this.sock.on('connect', () => {
