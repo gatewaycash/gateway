@@ -13,7 +13,7 @@ function createButton (button, id) {
       paymentID={button.getAttribute('paymentID')}
       callbackURL={button.getAttribute('callbackURL')}
     />,
-    button.getAttribute('id')
+    document.getElementById(id)
   )
 }
 
@@ -22,8 +22,8 @@ window.onload = function() {
   console.log('Gateway: Found', buttons.length, 'payment buttons(s) on this page')
   for(var i = 0; i < buttons.length; i++) {
     var buttonID = 'pay-' + Math.floor(Math.random() * 100000)
-    //buttons.item(i).id = buttonID
-    //buttons.item(i).setAttribute('id', buttonID)
+    buttons.item(i).id = buttonID
+    buttons.item(i).setAttribute('id', buttonID)
     var button = buttons.item(i)
     createButton(button, buttonID)
   }
