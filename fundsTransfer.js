@@ -43,9 +43,12 @@ var transferFunds = (payment) => {
       toAddress = bchaddr.toLegacyAddress(toAddress)
       console.log('Ientified merchant address as',toAddress)
       // get the private key
-      var sql = 'select paymentKey from payments where paymentAddress = ?'
+      var sql = 'select paymentKey, callbackURL, paymentID, paymentTXID from payments where paymentAddress = ?'
       conn.query(sql, [payment.address], (err, result) => {
         var paymentKey = result[0].paymentKey.toString()
+        var callbackURL = result[0].callbackURL.toString()
+        var paymentID = result[0].paymentID.toString()
+        var paymentTXID = result[0].paymentTXID.toString()
         console.log('got payment key, length ', paymentKey.length)
         // get all UTXOs for address
         var fromAddress = bchaddr.toLegacyAddress(payment.address)
@@ -103,6 +106,23 @@ var transferFunds = (payment) => {
             conn.query(sql, [totalTransferred, merchantID], (err, result) => {
               if (err) { throw err }
               console.log('ok')
+              if (callbackURL !== 'None') {
+                // build the callback string
+                var callbackString = 'paymentTXID=' + paymentTXID
+                callbackString += '&transferTXID=' + transferTXID
+                callbackString += '&amount=' + totalTransferred
+                callbackString += '&paymentID=' + + paymentID
+                callbackString += '&merchantID=' + merchantID
+                callbackString += '&paymentAddress=' + payment.address
+                console.log('callback string', callbackString)
+                // call the callback URL
+                request('POST', callbackURL, {
+                  headers: {
+                    'content-type': 'application/x-www-form-urlencoded'
+                  },
+                  body: callbackString
+                })
+              }
             })
           })
         })
@@ -136,5 +156,5 @@ conn.connect((err) => {
   console.log('connected to database')
   // run immediately
   searchDatabase()
-  setInterval(searchDatabase, 600000) // run every 10 minutes
+  setInterval(searchDatabase, 60000) // run every 1 minute
 })

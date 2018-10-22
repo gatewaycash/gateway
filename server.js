@@ -227,9 +227,23 @@ app.get('/api/pay', (req, res) => {
         if (paymentAddress.indexOf(':') === -1){
           paymentAddress = 'bitcoincash:' + paymentAddress
         }
+        var callbackURL = query.callbackURL
+        if (callbackURL) {
+          if(!callbackURL.toString().startsWith('http://') &&
+              !callbackURL.toString().startsWith('https://')) {
+            callbackURL = 'None'
+            // we must fail silently here without sending error if we are to
+            // continue processing the payment at all
+          } else if (callbackURL.toString().length > 128 ||
+              callbackURL.toString().length < 10) {
+            callbackURL = 'None'
+          }
+        } else {
+          callbackURL = 'None'
+        }
         // generate a payment and add it to database
-        var sql = 'insert into payments (paymentAddress, paymentKey, merchantID, paymentID) values (?, ?, ?, ?)'
-        conn.query(sql, [paymentAddress, paymentPrivateKey, query.merchantID, query.paymentID], (err, result) => {
+        var sql = 'insert into payments (paymentAddress, paymentKey, merchantID, paymentID, callbackURL) values (?, ?, ?, ?, ?)'
+        conn.query(sql, [paymentAddress, paymentPrivateKey, query.merchantID, query.paymentID, callbackURL], (err, result) => {
           if (err) { throw err }
           res.send(paymentAddress)
         })

@@ -28,7 +28,8 @@ paymentID varchar(32),
 merchantID varchar(16),
 paymentKey varchar(80),
 paymentTXID varchar(64),
-transferTXID varchar(64)
+transferTXID varchar(64),
+callbackURL varchar(128)
 );
 
 CREATE table pending (

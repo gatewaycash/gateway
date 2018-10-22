@@ -26,6 +26,7 @@ describe payments;
 | paymentKey     | varchar(80) | YES  |     | NULL              |                |
 | paymentTXID    | varchar(64) | YES  |     | NULL              |                |
 | transferTXID   | varchar(64) | YES  |     | NULL              |                |
+| callbackURL    | varchar(128)| NO   |     | None              |                |
 +----------------+-------------+------+-----+-------------------+----------------+
 
 describe pending;
