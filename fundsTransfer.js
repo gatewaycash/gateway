@@ -48,7 +48,6 @@ var transferFunds = (payment) => {
         var paymentKey = result[0].paymentKey.toString()
         var callbackURL = result[0].callbackURL.toString()
         var paymentID = result[0].paymentID.toString()
-        var paymentTXID = result[0].paymentTXID.toString()
         console.log('got payment key, length ', paymentKey.length)
         // get all UTXOs for address
         var fromAddress = bchaddr.toLegacyAddress(payment.address)
@@ -108,12 +107,12 @@ var transferFunds = (payment) => {
               console.log('ok')
               if (callbackURL !== 'None') {
                 // build the callback string
-                var callbackString = 'paymentTXID=' + paymentTXID
+                var callbackString = 'paymentTXID=' + payment.txid
                 callbackString += '&transferTXID=' + transferTXID
                 callbackString += '&amount=' + totalTransferred
                 callbackString += '&paymentID=' + + paymentID
                 callbackString += '&merchantID=' + merchantID
-                callbackString += '&paymentAddress=' + payment.address
+                callbackString += '&paymentAddress=' + fromAddress
                 console.log('callback string', callbackString)
                 // call the callback URL
                 request('POST', callbackURL, {
