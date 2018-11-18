@@ -80,21 +80,28 @@ app.post('/api/register', (req, res) => {
         var merchantID = sha256(req.session.address).substr(0, 16)
         var passwordSalt = sha256(require('crypto').randomBytes(32))
         var passwordHash = sha256(req.body.password + passwordSalt)
-        var sql = 'insert into users (payoutAddress, merchantID, password, salt) values (?, ?, ?, ?)'
-        conn.query(sql, [req.session.address, merchantID, passwordHash, passwordSalt], (err, result) => {
-          if (err) { throw err }
-          // registration complete, set up session and print OK message
-          req.session.merchantID = merchantID
-          req.session.username = ''
-          req.session.loggedIn = true
-          res.send('ok')
-        })
+        var sql = `insert into users
+        (payoutAddress, merchantID, password, salt)
+        values
+        (?, ?, ?, ?)`
+        conn.query(
+          sql,
+          [req.session.address, merchantID, passwordHash, passwordSalt],
+          (err, result) => {
+            if (err) { throw err }
+            // registration complete, set up session and print OK message
+            req.session.merchantID = merchantID
+            req.session.username = ''
+            req.session.loggedIn = true
+            res.send('ok')
+          }
+        )
       }
     })
   }
 })
 
-app.get('/api/login', (req, res) => {
+app.get('/api/identify', (req, res) => {
   // parse the provided data
   const query = url.parse(req.url, true).query
   if (query.type !== 'address' && query.type !== 'username') {
@@ -150,7 +157,7 @@ app.get('/api/login', (req, res) => {
   }
 })
 
-app.get('/api/password', (req, res) => {
+app.get('/api/login', (req, res) => {
   // parse the provided data
   const query = url.parse(req.url, true).query
   if (!req.session.address && !req.session.username) {
@@ -242,11 +249,21 @@ app.get('/api/pay', (req, res) => {
           callbackURL = 'None'
         }
         // generate a payment and add it to database
-        var sql = 'insert into payments (paymentAddress, paymentKey, merchantID, paymentID, callbackURL) values (?, ?, ?, ?, ?)'
-        conn.query(sql, [paymentAddress, paymentPrivateKey, query.merchantID, query.paymentID, callbackURL], (err, result) => {
-          if (err) { throw err }
-          res.send(paymentAddress)
-        })
+        var sql = `insert into payments
+        (paymentAddress, paymentKey, merchantID, paymentID, callbackURL)
+        values
+        (?, ?, ?, ?, ?)`
+        conn.query(
+          sql, 
+          [
+            paymentAddress, paymentPrivateKey, query.merchantID,
+            query.paymentID, callbackURL
+          ],
+          (err, result) => {
+            if (err) { throw err }
+            res.send(paymentAddress)
+          }
+        )
       }
     })
   }
@@ -272,7 +289,11 @@ app.get('/api/paymentsent', (req, res) => {
               res.send('TXID is already pending')
             } else {
               // verify txid does not already exist in payments table
-              var sql = 'select paymentTXID from payments where paymentTXID = ? or transferTXID = ?'
+              var sql = `select paymentTXID from payments
+              where
+              paymentTXID = ?
+              or
+              transferTXID = ?`
               conn.query(sql, [query.txid, query.txid], (err, result) => {
                 if (err) { throw err }
                 if (result.length !== 0) {
@@ -317,7 +338,10 @@ app.get('/api/getusername', (req, res) => {
   if (!req.session.loggedIn) {
     res.send('Please log in first')
   } else {
-    res.send(req.session.username)
+    var sql = 'select username from users where merchantID = ?'
+    conn.query(sql, [req.session.merchantID], (err, result) => {
+      res.send(result[0].username)
+    })
   }
 })
 
@@ -326,13 +350,25 @@ app.post('/api/setusername', (req, res) => {
   if (!req.session.loggedIn) {
     res.send('Please log in first')
   } else {
-    // verify no other username starts with this username and that this username does not start with any other username
-    /*var sql = 'update users set username = ? where payoutAddress = ?'
-    conn.query(sql, [query.username, req.session.address], (err, result) => {
-      if (err) { throw err }
-      res.send('ok')
-    })*/
-    res.send('not yet implemented')
+    var usernameCandidate = req.body.username.toString()
+    if (usernameCandidate.length < 5) {
+      res.send('Pick a longer username.')
+    } else if (usernameCandidate.indexOf(' ') !== -1){
+      res.send('Usernames cannot contain spaces')
+    } else {
+      conn.qpery(sql, [usernameCandidate], (err, result) => {
+        if (err) { throw err }
+        if (result.length !== 0) {
+          res.send('Username is already in use')
+        } else {
+          var sql = 'update users set username = ? where payoutAddress = ?'
+          conn.query(sql, [usernameCandidate, req.session.address], (err, result) => {
+            if (err) { throw err }
+            res.send('ok')
+          })
+        }
+      })
+    }
   }
 })
 
@@ -340,7 +376,14 @@ app.get('/api/getpayments', (req, res) => {
   if (!req.session.loggedIn) {
     res.send('Log in first')
   } else {
-    var sql = 'select paymentAddress, created, paymentID, paidAmount, paymentTXID, transferTXID from payments where merchantID = ? and transferTXID is not null order by created desc limit 100'
+    var sql = `select
+    paymentAddress, created, paymentID, paidAmount, paymentTXID, transferTXID
+    from payments where
+    merchantID = ?
+    and
+    transferTXID is not null
+    order by created desc
+    limit 100`
     conn.query(sql, [req.session.merchantID], (err, result) => {
       if (err) { throw err }
       var response = []

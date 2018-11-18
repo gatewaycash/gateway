@@ -2,36 +2,35 @@
 
 Simple Bitcoin Payments
 
-## A Note on This Repository
-
-Until further notice, the contents of this repository and codebase are private
-and proprietary. As a contributor, you are not permitted to grant access to
-others to view this repo, and you are not permitted to give your access to
-anybody else or share code.
-
-The reason for this is that Gateway is a new project, and we need to build a
-network effect. While the plan is to open-source eventually, we cannot have
-others copying our website when UX and frictionlessness is our primary means of
-attracting new merchants, customers and developers.
-
-If you know of someone who you think could help with the project, contact the
-maintainer <ty@tyweb.us> and we can go from there. Thank you for your
-understanding.
-
 ## Overview
 
-The project is a payment processor enabling merchants to easily accept Bitcoin
-Cash on their sites without hassle or technical debt.
+Gateway is a payment processor enabling merchants to easily accept 
+Bitcoin Cash on their sites without the need for hassle or technical 
+know-how. Check out
+the [Gateway Project Charter](https://docs.google.com/document/d/10zrHYauls7t5B5Uw1gN8yU1J3vceeIsJCRgqu0CDgyo/edit?usp=sharing)
+for a lot more info.
 
 ## Development
 
-A list of things that need doing is available on this Google Doc:
+Please refer to the Project Charter linked above for an up-to-date
+list of things that need work. Please review it before contributing.
 
-https://docs.google.com/document/d/10zrHYauls7t5B5Uw1gN8yU1J3vceeIsJCRgqu0CDgyo/edit?usp=sharing
+A more traditional and complete TODO.md should eventually also be 
+created.
 
-A more traditional and complete TODO.md is on my TODO list :)
+Please indicate your intent to work on something in the Charter
+prior to working on it so that we don't end up with wasted code and
+energy.
 
-Please go on the Google Doc and indicate your intent to work on something prior
-to working on it so that we don't end up with wasted code and energy.
+## Questions and Concerns
 
-Please let me know if you have ideas or questions.
+Feel free to end email to <ty@tyweb.us> with any ideas, questions or
+feedback.
+
+## License
+
+This project is licensed under the terms of the AGPL 3.0 license; it
+shall from this point forward eternally remain free and open-source
+software. Any derivatives of this code must be made public in
+accordance with AGPL 3.0. Please see
+[here](https://opensource.org/licenses/AGPL-3.0) for details.

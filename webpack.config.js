@@ -109,7 +109,7 @@ const config = {
   },
   plugins: [
     // disable CleanWebpackPlugin in cases of preformance issues
-    new CleanWebpackPlugin(['dist']),
+    new CleanWebpackPlugin(['public']),
     new HtmlWebpackPlugin({
       template: './src/paySite/index.html',
       filename: 'index.html',

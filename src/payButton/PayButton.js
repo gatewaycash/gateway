@@ -97,6 +97,24 @@ class PayButton extends Component {
         this.callbackURL = 'None'
       }
     }
+    // set default value for currency if not provided
+    this.currency = this.props.currency
+    if (this.currency === '' || 
+        typeof this.currency === 'undefined' ||
+        this.currency === null) {
+      this.currency = 'None'
+    } else {
+      // verify currency is 3 characters
+      if (this.callbackURL.toString().length > 3) {
+        console.error('Gateway: Currency too long!')
+        console.error('Gateway: Shortening currency to 3 characters')
+        this.currency = this.currency.toString().substr(0, 3)
+      }
+      // set currency to all caps
+      this.currency = this.currency.toUpperCase()
+      // check currency is supported
+      // ... array of curencies ... get value ... set multiplier ...
+    }
   }
   
   handleClick = () => {
