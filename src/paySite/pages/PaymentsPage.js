@@ -91,7 +91,7 @@ class PaymentsPage extends Component {
         <Paper className="paper">
         <h2>Payments</h2>
         <p>
-        	Below is a list of payments amde to your merchant account. They are
+        	Below is a list of payments made to your merchant account. They are
         	sorted by date, the most recent payments appearing at the top.
         </p>
         <div
