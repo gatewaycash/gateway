@@ -268,8 +268,8 @@ class PayButton extends Component {
                   marginTop:'-1.5em',
                 }}
               >
-                Send {this.amount == 0 ? 'some' : this.props.amount} Bitcoin
-                Cash (BCH) to this address to complete your payment
+                Send {this.amount == 0 ? 'some' : this.props.amount}
+                Bitcoin&nbsp;Cash (BCH) to this address to complete your payment
               </p>
               <img
                 src={this.QRCodeURL}
