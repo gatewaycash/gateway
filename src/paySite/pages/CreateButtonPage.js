@@ -253,7 +253,7 @@ class CreateButtonPage extends Component {
 	  		<h2>Generated Code</h2>
         <p>
           Add this line of HTML once on each page you want to accept
-          payments:
+          payments on:
         </p>
         <pre className="sourceCode">
           {`<script src="https://gateway.cash/pay.js"></script>`}
@@ -313,7 +313,7 @@ class CreateButtonPage extends Component {
       <Paper className="paper">
         <h2>A Note on How Payments Are Processed</h2>
         <p>
-         	The site generates an addrress for each payment and securely stores
+         	The site generates an address for each payment and securely stores
          	the key. The moment the customer pays, the Bitcoin Cash network
          	instantly validates the payment and within 3 seconds, the customer
          	is done and can move on with their day.
