@@ -40,7 +40,7 @@ class PayButton extends Component {
 
     this.buttonText = buttonText || 'Donate'
     this.dialogTitle = dialogTitle || 'Complete Your Payment'
-    this.amount = Number(amount) ? Math.abs(amount) : 0
+    this.amount =  Math.abs(Number(amount)) || 0
 
     this.currency = currency
       ? currency
