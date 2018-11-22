@@ -1,11 +1,9 @@
 import React, { Component } from 'react'
 
 import Button from '@material-ui/core/Button'
-import Dialog from '@material-ui/core/Dialog'
-import DialogContent from '@material-ui/core/DialogActions'
-import DialogContentText from '@material-ui/core/DialogContentText'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import Done from '@material-ui/icons/Done'
+import Dialog from '../Dialog'
+import PaymentComplete from '../Dialog/PaymentComplete'
+import PaymentProgress from '../Dialog/PaymentProgress'
 
 import io from 'socket.io-client'
 
@@ -40,7 +38,7 @@ class PayButton extends Component {
 
     this.buttonText = buttonText || 'Donate'
     this.dialogTitle = dialogTitle || 'Complete Your Payment'
-    this.amount =  Math.abs(Number(amount)) || 0
+    this.amount = Math.abs(Number(amount)) || 0
 
     this.currency = currency
       ? currency
@@ -170,91 +168,6 @@ class PayButton extends Component {
     xhr.send()
   }
 
-  renderDialog = () => {
-    return this.state.paymentComplete ? (
-      <Dialog
-        open={this.state.dialogOpen}
-        keepMounted
-        onClose={this.handleClose}
-      >
-        <DialogTitle>
-          <center>Thank You!</center>
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            <center>
-              <Done
-                style={{
-                  width: '10em',
-                  height: '10em',
-                }}
-              />
-              <p
-                style={{
-                  marginLeft: '1em',
-                  marginRight: '1em',
-                }}
-              >
-                Your payment has been received.
-              </p>
-            </center>
-          </DialogContentText>
-        </DialogContent>
-      </Dialog>
-    ) : (
-      <Dialog
-        open={this.state.dialogOpen}
-        keepMounted
-        onClose={this.handleClose}
-      >
-        <DialogTitle>
-          <center>{this.dialogTitle}</center>
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            <center>
-              <p
-                style={{
-                  marginLeft: '0.5em',
-                  marginRight: '0.5em',
-                  marginTop: '-1.5em',
-                }}
-              >
-                Send {this.amount == 0 ? 'some' : this.props.amount}
-                Bitcoin&nbsp;Cash (BCH) to this address to complete your payment
-              </p>
-              <img
-                src={this.QRCodeURL}
-                alt="Payment QR code"
-                style={{
-                  width: '15em',
-                  margin: 'auto',
-                  marginTop: '-1em',
-                  marginBottom: '-1.5em',
-                  align: 'center',
-                }}
-              />
-              <p
-                style={{
-                  width: '17em',
-                  fontFamily: 'monospace',
-                  fontSize: '0.8em',
-                  lineHeight: '100%',
-                  wordWrap: 'break-word',
-                }}
-              >
-                {this.state.address}
-              </p>
-              <Button variant="contained" color="primary" href={this.walletURL}>
-                OPEN WALLET
-              </Button>
-            </center>
-          </DialogContentText>
-        </DialogContent>
-      </Dialog>
-    )
-  }
-
   render() {
     this.updateData()
     return (
@@ -262,7 +175,23 @@ class PayButton extends Component {
         <Button onClick={this.handleClick} variant="contained" color="primary">
           {this.buttonText}
         </Button>
-        {this.renderDialog()}
+        <Dialog
+          open={this.state.dialogOpen}
+          keepMounted
+          onClose={this.handleClose}
+          title={this.state.paymentComplete ? 'Thank you!' : this.dialogTitle}
+        >
+          {this.state.paymentComplete ? (
+            <PaymentComplete />
+          ) : (
+            <PaymentProgress
+              amount={this.amount}
+              QRCodeURL={this.QRCodeURL}
+              address={this.state.address}
+              walletURL={this.walletURL}
+            />
+          )}
+        </Dialog>
       </div>
     )
   }
