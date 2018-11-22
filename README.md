@@ -4,10 +4,10 @@ Simple Bitcoin Payments
 
 ## Overview
 
-Gateway is a payment processor enabling merchants to easily accept 
-Bitcoin Cash on their sites without the need for hassle or technical 
+Gateway is a payment processor enabling merchants to easily accept
+Bitcoin Cash on their sites without the need for hassle or technical
 know-how. Check out
-the [Gateway Project Charter](https://docs.google.com/document/d/10zrHYauls7t5B5Uw1gN8yU1J3vceeIsJCRgqu0CDgyo/edit?usp=sharing)
+the [Gateway Project Charter](https://github.com/gatewaycash/gateway/blob/master/CHARTER.m)
 for a lot more info.
 
 ## Development
@@ -15,7 +15,7 @@ for a lot more info.
 Please refer to the Project Charter linked above for an up-to-date
 list of things that need work. Please review it before contributing.
 
-A more traditional and complete TODO.md should eventually also be 
+A more traditional and complete TODO.md should eventually also be
 created.
 
 Please indicate your intent to work on something in the Charter
