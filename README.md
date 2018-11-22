@@ -7,7 +7,7 @@ Simple Bitcoin Payments
 Gateway is a payment processor enabling merchants to easily accept
 Bitcoin Cash on their sites without the need for hassle or technical
 know-how. Check out
-the [Gateway Project Charter](https://github.com/gatewaycash/gateway/blob/master/CHARTER.m)
+the [Gateway Project Charter](CHARTER.md)
 for a lot more info.
 
 ## Development
