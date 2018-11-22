@@ -40,7 +40,7 @@ class PayButton extends Component {
 
     this.buttonText = buttonText || 'Donate'
     this.dialogTitle = dialogTitle || 'Complete Your Payment'
-    this.amount = amount ? Math.abs(amount) : 0
+    this.amount = Number(amount) ? Math.abs(amount) : 0
 
     this.currency = currency
       ? currency
@@ -62,10 +62,8 @@ class PayButton extends Component {
       this.callbackURL = callbackURL.slice(0, 128)
     }
 
-    if (
-      !this.callbackURL.startsWith('http://') ||
-      !this.callbackURL.startsWith('https://')
-    ) {
+    let validProtocols = ['http://', 'https://']
+    if (!validProtocols.some((x) => callbackURL.startsWith(x))) {
       console.error('Gateway: Invalid callbackURL passed to button!')
       this.callbackURL = 'None'
     }
