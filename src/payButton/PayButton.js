@@ -26,114 +26,48 @@ class PayButton extends Component {
   }
 
   updateData = () => {
-    // set default value for this.buttonText if not provided
-    this.buttonText = this.props.buttonText
-    if (
-      this.buttonText === '' ||
-      typeof this.buttonText === 'undefined' ||
-      this.buttonText === null
-    ) {
-      this.buttonText = 'Donate'
-    }
-    // set default value for this.dialogTitle if not provided
-    this.dialogTitle = this.props.dialogTitle
-    if (
-      this.dialogTitle === '' ||
-      typeof this.dialogTitle === 'undefined' ||
-      this.dialogTitle === null
-    ) {
-      this.dialogTitle = 'Complete Your Payment'
-    }
-    // set default value for this.amount if not provided
-    this.amount = this.props.amount
-    if (
-      this.amount === '' ||
-      typeof this.amount === 'undefined' ||
-      this.amount === null ||
-      isNaN(this.amount)
-    ) {
-      this.amount = 0
-    } else {
-      this.amount = Math.abs(this.amount)
-    }
-    // set default value for this.currency if not provided
-    this.currency = this.props.currency
-    if (
-      this.currency === '' ||
-      typeof this.currency === 'undefined' ||
-      this.currency === null
-    ) {
-      this.currency = 'BCH'
-    } else {
-      this.curency = this.currency
-        .toString()
-        .substr(0, 3)
-        .toUpperCase()
-    }
-    // set default value for this.paymentID if not provided
-    this.paymentID = this.props.paymentID
-    if (
-      this.paymentID === '' ||
-      typeof this.paymentID === 'undefined' ||
-      this.paymentID === null
-    ) {
-      this.paymentID = 'donation'
-    } else {
-      this.paymentID = this.paymentID.toString().substr(0, 32)
-    }
-    // Validate merchantID
-    this.merchantID = this.props.merchantID
-    if (
-      this.merchantID === '' ||
-      typeof this.merchantID === 'undefined' ||
-      this.merchantID === null
-    ) {
+    let {
+      buttonText,
+      dialogTitie,
+      amount,
+      currency,
+      paymentID,
+      merchantID,
+      callbackURL,
+    } = this.props
+
+    // Set default values for component
+
+    this.buttonText = buttonText || 'Donate'
+    this.dialogTitle = dialogTitle || 'Complete Your Payment'
+    this.amount = amount ? Math.abs(amount) : 0
+
+    this.currency = currency
+      ? currency
+          .toString()
+          .substr(0, 3)
+          .toUpperCase()
+      : 'BCH'
+
+    if (!merchantID || merchantID.toString().length !== 16) {
       this.merchantID = 'invalid'
       console.error('Gateway: WARNING! No Merchant ID was given to a button!')
-    } else if (this.merchantID.toString().length !== 16) {
-      console.error('Gateway: WARNING! Invalid Merchant ID given to a button!')
     }
-    // set default value for this.callbackURL if not provided
-    this.callbackURL = this.props.callbackURL
-    if (
-      this.callbackURL === '' ||
-      typeof this.callbackURL === 'undefined' ||
-      this.callbackURL === null
-    ) {
+
+    if (!callbackURL || typeof callbackURL !== 'string') {
       this.callbackURL = 'None'
-    } else {
-      if (this.callbackURL.toString().length > 128) {
-        console.error('Gateway: CallbackURL too long!')
-        console.error('Gateway: Shortening CallbackURL to 128 characters')
-        this.callbackURL = this.callbackURL.toString().substr(0, 128)
-      }
-      if (
-        !this.callbackURL.toString().startsWith('http://') ||
-        !this.callbackURL.toString().startsWith('https://')
-      ) {
-        console.error('Gateway: Invalid callbackURL passed to button!')
-        this.callbackURL = 'None'
-      }
+    } else if (callbackURL.length > 128) {
+      console.error('Gateway: CallbackURL too long!')
+      console.error('Gateway: Shortening CallbackURL to 128 characters')
+      this.callbackURL = callbackURL.slice(0, 128)
     }
-    // set default value for currency if not provided
-    this.currency = this.props.currency
+
     if (
-      this.currency === '' ||
-      typeof this.currency === 'undefined' ||
-      this.currency === null
+      !this.callbackURL.startsWith('http://') ||
+      !this.callbackURL.startsWith('https://')
     ) {
-      this.currency = 'None'
-    } else {
-      // verify currency is 3 characters
-      if (this.callbackURL.toString().length > 3) {
-        console.error('Gateway: Currency too long!')
-        console.error('Gateway: Shortening currency to 3 characters')
-        this.currency = this.currency.toString().substr(0, 3)
-      }
-      // set currency to all caps
-      this.currency = this.currency.toUpperCase()
-      // check currency is supported
-      // ... array of curencies ... get value ... set multiplier ...
+      console.error('Gateway: Invalid callbackURL passed to button!')
+      this.callbackURL = 'None'
     }
   }
 
