@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import Button from '@material-ui/core/Button'
+import { Link } from '@reach/router'
 
 class StartPage extends Component {
   constructor(props) {
@@ -16,10 +17,6 @@ class StartPage extends Component {
     xhr.send()
   }
 
-  handleClick = () => {
-    this.props.updateView('identify')
-  }
-
   render() {
     return (
       <div className="mainContent">
@@ -29,14 +26,11 @@ class StartPage extends Component {
           src="https://gateway.cash/images/favicon.svg"
         />
         <h1 className="mainHeading">Simple Bitcoin Payments</h1>
-        <Button
-          onClick={this.handleClick}
-          variant="contained"
-          color="primary"
-          size="large"
-        >
-          GET STARTED
-        </Button>
+        <Link to="/identification">
+          <Button variant="contained" color="primary" size="large">
+            GET STARTED
+          </Button>
+        </Link>
         <br />
         <br />
         <Button
