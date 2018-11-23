@@ -81,6 +81,3 @@ typings/
 
 # Do not include sessions
 sessions/
-
-# Do not include build artifacts
-public/

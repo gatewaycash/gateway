@@ -1,35 +1,32 @@
-import React, {Component} from 'react'
-
-// include pages for the site
-import StartPage from './pages/StartPage.js'
-import IdentificationPage from './pages/IdentificationPage.js'
-import RegisterPage from './pages/RegisterPage.js'
-import LoginPage from './pages/LoginPage.js'
-import ForgotPage from './pages/ForgotPage.js'
-import CreateButtonPage from './pages/CreateButtonPage.js'
-import PaymentsPage from './pages/PaymentsPage.js'
-import SettingsPage from './pages/SettingsPage.js'
+import React, { Component } from 'react'
+import StartPage from 'pages/StartPage'
+import IdentificationPage from 'pages/IdentificationPage'
+import RegisterPage from 'pages/RegisterPage'
+import LoginPage from 'pages/LoginPage'
+import ForgotPage from 'pages/ForgotPage'
+import CreateButtonPage from 'pages/CreateButtonPage'
+import PaymentsPage from 'pages/PaymentsPage'
+import SettingsPage from 'pages/SettingsPage'
 
 // include resource files in the build
-import paySound from './res/ding.mp3'
-import background from './res/background.svg'
-import Favicon from './res/favicon.svg'
+// import paySound from "./res/ding.mp3";
+// import background from "./res/background.svg";
+// import Favicon from "./res/favicon.svg";
 
 class Site extends Component {
-
-  constructor (props) {
-    super (props)
+  constructor(props) {
+    super(props)
     this.state = {
-      currentPage: 'start'
+      currentPage: 'start',
     }
     this.updateView = this.updateView.bind(this)
   }
 
-  updateView (page) {
-    this.setState({currentPage: page})
+  updateView(page) {
+    this.setState({ currentPage: page })
   }
 
-  render () {
+  render() {
     if (this.state.currentPage === 'start') {
       return <StartPage updateView={this.updateView} />
     } else if (this.state.currentPage === 'identify') {
@@ -55,7 +52,6 @@ class Site extends Component {
       )
     }
   }
-
 }
 
 export default Site

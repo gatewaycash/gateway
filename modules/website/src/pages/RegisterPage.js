@@ -1,15 +1,13 @@
-import React, {Component} from 'react'
-
+import React, { Component } from 'react'
 import TextField from '@material-ui/core/TextField'
 
-import './../MainContent.css'
-
 class RegisterPage extends Component {
-
   handleSubmit = (event) => {
     event.preventDefault()
     let value = document.getElementById('passwordValue').value
-    if (value.length < 12) { return }
+    if (value.length < 12) {
+      return
+    }
     var xhr = new XMLHttpRequest()
     xhr.open('POST', 'https://gateway.cash/api/register')
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
@@ -29,14 +27,14 @@ class RegisterPage extends Component {
     xhr.send(encodeURI('password=' + value))
   }
 
-  render () {
+  render() {
     return (
       <div className="mainContent">
         <h1 className="mainHeading">Create a password</h1>
-        <form onSubmit={this.handleSubmit} noValidate autoComplete="off" >
+        <form onSubmit={this.handleSubmit} noValidate autoComplete="off">
           <TextField
             style={{
-              width:'100%'
+              width: '100%',
             }}
             id="passwordValue"
             type="password"

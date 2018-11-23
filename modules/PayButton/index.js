@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import PayButton from './PayButton'
 
-function createButton (button, id) {
+function createButton(button, id) {
   ReactDOM.render(
     <PayButton
       buttonText={button.getAttribute('buttonText')}
@@ -13,14 +13,18 @@ function createButton (button, id) {
       paymentID={button.getAttribute('paymentID')}
       callbackURL={button.getAttribute('callbackURL')}
     />,
-    document.getElementById(id)
+    document.getElementById(id),
   )
 }
 
 window.onload = function() {
-  var buttons = document.getElementsByClassName("payButton")
-  console.log('Gateway: Found', buttons.length, 'payment buttons(s) on this page')
-  for(var i = 0; i < buttons.length; i++) {
+  var buttons = document.getElementsByClassName('payButton')
+  console.log(
+    'Gateway: Found',
+    buttons.length,
+    'payment buttons(s) on this page',
+  )
+  for (var i = 0; i < buttons.length; i++) {
     var buttonID = 'pay-' + Math.floor(Math.random() * 100000)
     buttons.item(i).id = buttonID
     buttons.item(i).setAttribute('id', buttonID)

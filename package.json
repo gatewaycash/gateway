@@ -2,66 +2,35 @@
   "name": "gateway.cash",
   "version": "1.0.0",
   "description": "Payment Processor for Bitcoin Cash",
-  "main": "server.js",
-  "scripts": {
-    "start": "pm2 start server.js",
-    "stop": "pm2 stop server.js",
-    "build": "webpack --mode production",
-    "dev": "webpack --mode development"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ty-everett/gateway.git"
+  },
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "modules/*"
+    ]
   },
   "keywords": [
     "bitcoin",
     "cash"
   ],
+  "scripts": {
+    "website": "yarn workspace website start"
+  },
   "author": "Ty Everett <ty@tyweb.us>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/ty-everett/gateway/issues"
   },
   "homepage": "https://github.com/ty-everett/gateway#readme",
-  "devDependencies": {
-    "@babel/core": "^7.1.2",
-    "@babel/plugin-proposal-class-properties": "^7.1.0",
-    "@babel/preset-env": "^7.1.0",
-    "@babel/preset-react": "^7.0.0",
-    "babel-loader": "^8.0.4",
-    "clean-webpack-plugin": "^0.1.19",
-    "css-loader": "^0.28.11",
-    "extract-text-webpack-plugin": "^4.0.0-beta.0",
-    "favicons-webpack-plugin": "0.0.9",
-    "file-loader": "^1.1.11",
-    "html-webpack-plugin": "^3.2.0",
-    "style-loader": "^0.21.0",
-    "webpack": "^4.8.3",
-    "webpack-cli": "^3.1.1",
-    "webpack-subresource-integrity": "^1.1.0-rc.4"
-  },
   "dependencies": {
-    "@material-ui/core": "^3.0.3",
-    "@material-ui/icons": "^3.0.1",
-    "babel-eslint": "^10.0.1",
-    "bchaddrjs": "^0.2.2",
-    "bitbox-cli": "^1.6.6",
-    "bitcoincashjs": "^0.1.10",
-    "eslint": "^5.9.0",
+    "babel-eslint": "9.0.0",
+    "eslint": "5.6.0",
     "eslint-config-prettier": "^3.3.0",
     "eslint-plugin-babel": "^5.3.0",
     "eslint-plugin-prettier": "^3.0.0",
-    "express": "^4.16.3",
-    "express-session": "^1.15.6",
-    "multiparty": "^4.2.1",
-    "mysql": "^2.16.0",
-    "prettier": "^1.15.2",
-    "react": "^16.5.0",
-    "react-dom": "^16.5.0",
-    "session-file-store": "^1.2.0",
-    "sha256": "^0.2.0",
-    "socket.io": "^2.1.1",
-    "sync-request": "^6.0.0",
-    "url": "^0.11.0"
+    "prettier": "^1.15.2"
   }
 }

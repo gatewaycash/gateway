@@ -37,9 +37,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// serve the public directory's static resources
-app.use(express.static('public'))
-
 // listen on port 8080
 app.listen(8080, () => {
   console.log('Gateway listening on port 8080')
@@ -254,7 +251,7 @@ app.get('/api/pay', (req, res) => {
         values
         (?, ?, ?, ?, ?)`
         conn.query(
-          sql, 
+          sql,
           [
             paymentAddress, paymentPrivateKey, query.merchantID,
             query.paymentID, callbackURL
@@ -418,4 +415,3 @@ app.get('/api/loggedin', (req, res) => {
 		res.send('false')
 	}
 })
-
