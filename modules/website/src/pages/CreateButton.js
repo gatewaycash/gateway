@@ -7,7 +7,7 @@ import Paper from '@material-ui/core/Paper'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Switch from '@material-ui/core/Switch'
 import NavigationMenu from 'NavigationMenu'
-import PayButton from 'PayButton/PayButton'
+import PayButton from '@gateway/PayButton'
 
 class CreateButtonPage extends Component {
   state = {

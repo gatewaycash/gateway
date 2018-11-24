@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { navigate } from '@reach/router'
 import TextField from '@material-ui/core/TextField'
 
 class RegisterPage extends Component {
@@ -16,7 +17,7 @@ class RegisterPage extends Component {
         let response = xhr.responseText.trim()
         console.log('Register response:', response)
         if (response === 'ok') {
-          this.props.updateView('createbutton')
+          navigate('createbutton')
         } else {
           alert('Error while signing up: ' + response + '\nTry again later.')
         }

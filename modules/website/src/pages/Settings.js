@@ -32,7 +32,7 @@ class SettingsPage extends Component {
   render() {
     return (
       <div className="container">
-        <NavigationMenu page="Settings" updateView={this.props.updateView} />
+        <NavigationMenu page="Settings" />
         <div className="leftPanel">
           <Paper className="paper">
             <h2>Display Currency</h2>

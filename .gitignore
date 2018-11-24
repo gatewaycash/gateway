@@ -81,3 +81,6 @@ typings/
 
 # Do not include sessions
 sessions/
+
+# PayButton build files
+dist

@@ -10,11 +10,10 @@ const FileStore = require('session-file-store')(session)
 const bodyParser = require('body-parser')
 const mysql = require('mysql')
 
-const registerEndpoint = require('register.js')
+const registerEndpoint = require('./register.js')
 
 // define a class to export
 class webServerBackend {
-
   constructor() {
     // define the app
     const app = express()
@@ -24,20 +23,22 @@ class webServerBackend {
     app.use(bodyParser.urlencoded({ extended: true }))
 
     // set up persistant session
-    app.use(session({
-      name: 'gateway-session',
-      secret: 'sajdfpaioewypjmpasodjw,adfjwoiejfo',
-      saveUninitialized: true,
-      resave: true,
-      store: new FileStore()
-    }))
+    app.use(
+      session({
+        name: 'gateway-session',
+        secret: 'sajdfpaioewypjmpasodjw,adfjwoiejfo',
+        saveUninitialized: true,
+        resave: true,
+        store: new FileStore(),
+      }),
+    )
 
     // enable CORS to allow for API calls from other sites
     app.use((req, res, next) => {
-      res.header("Access-Control-Allow-Origin", "*")
+      res.header('Access-Control-Allow-Origin', '*')
       res.header(
-        "Access-Control-Allow-Headers",
-        "Origin, X-Requested-With, Content-Type, Accept"
+        'Access-Control-Allow-Headers',
+        'Origin, X-Requested-With, Content-Type, Accept',
       )
       next()
     })
@@ -55,17 +56,17 @@ class webServerBackend {
       host: 'localhost',
       user: 'gateway',
       password: 'gateway123',
-      database: 'gateway'
+      database: 'gateway',
     })
     conn.connect((err) => {
-      if (err) { throw err }
+      if (err) {
+        throw err
+      }
     })
 
     // include the other API endpoints
-    app.post('/api/register', registerEndpoint);
-    
+    app.post('/api/register', registerEndpoint)
   }
-  
 }
 
-export default webServerBackend;
+export default webServerBackend

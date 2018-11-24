@@ -52,6 +52,8 @@ class PaymentsPage extends Component {
       try {
         payments = JSON.parse(payments)
         var html = ''
+
+        // TODO: this is very not good. change to jsx
         for (var i = 0; i < payments.length; i++) {
           html += `<div class="payment">`
           html += '<b>Created:</b> ' + payments[i].created + '<br/>'
@@ -79,21 +81,18 @@ class PaymentsPage extends Component {
   render() {
     return (
       <div className="container">
-        <NavigationMenu
-          page="View Payments"
-          updateView={this.props.updateView}
-        />
+        <NavigationMenu page="View Payments" />
         <Paper className="paper">
           <h2>Payments</h2>
           <p>
             Below is a list of payments made to your merchant account. They are
             sorted by date, the most recent payments appearing at the top.
           </p>
-          <div
+          {/* TODO: use jsx <div
             dangerouslySetInnerHTML={{
               __html: this.parsePayments(this.state.payments),
             }}
-          />
+          /> */}
           <center>
             <Button color="primary" onClick={this.toggleView}>
               {this.state.showUnpaid

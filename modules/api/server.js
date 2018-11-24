@@ -22,20 +22,26 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 // set up persistant session
-app.use(session({
-  name: 'gateway-session',
-  secret: 'sajdfpaioewypjmpasodjw,adfjwoiejfo',
-  saveUninitialized: true,
-  resave: true,
-  store: new FileStore()
-}))
+app.use(
+  session({
+    name: 'gateway-session',
+    // TODO: use environment variable
+    secret: 'sajdfpaioewypjmpasodjw,adfjwoiejfo',
+    saveUninitialized: true,
+    resave: true,
+    store: new FileStore(),
+  }),
+)
 
 // enable CORS to allow for API calls from other sites
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept',
+  )
+  next()
+})
 
 // listen on port 8080
 app.listen(8080, () => {
@@ -46,18 +52,20 @@ app.listen(8080, () => {
 var conn = mysql.createConnection({
   host: 'localhost',
   user: 'gateway',
+  // TODO: use environment variales
   password: 'gateway123',
-  database: 'gateway'
+  database: 'gateway',
 })
 conn.connect((err) => {
-  if (err) { throw err }
+  if (err) {
+    throw err
+  }
 })
-
 
 app.post('/api/register', (req, res) => {
   if (!req.session.address || req.session.address.length < 20) {
     res.send('Make sure to give an address before trying to register')
-  }else if (!bch.Address.isCashAddress(req.session.address)) {
+  } else if (!bch.Address.isCashAddress(req.session.address)) {
     res.send('Make sure the provided addres is a valid CashAddress!')
   } else if (!req.body.password) {
     res.send('Please provide a password')
@@ -69,7 +77,9 @@ app.post('/api/register', (req, res) => {
     // initial checks passed, make sure address is not in the database already
     var sql = 'select payoutAddress from users where payoutAddress = ?'
     conn.query(sql, [req.session.address], (err, result) => {
-      if (err) { throw err }
+      if (err) {
+        throw err
+      }
       if (result.length !== 0) {
         res.send('This address has already been registered')
       } else {
@@ -85,13 +95,15 @@ app.post('/api/register', (req, res) => {
           sql,
           [req.session.address, merchantID, passwordHash, passwordSalt],
           (err, result) => {
-            if (err) { throw err }
+            if (err) {
+              throw err
+            }
             // registration complete, set up session and print OK message
             req.session.merchantID = merchantID
             req.session.username = ''
             req.session.loggedIn = true
             res.send('ok')
-          }
+          },
         )
       }
     })
@@ -103,21 +115,27 @@ app.get('/api/identify', (req, res) => {
   const query = url.parse(req.url, true).query
   if (query.type !== 'address' && query.type !== 'username') {
     res.send('Error: invalid type (must be address or username)')
-  } else if (query.type === 'address') { // log in by addresss
+  } else if (query.type === 'address') {
+    // log in by addresss
     // a variable to hold the converted and valid addresss
     var address = false
     // make sure provided address is valid
     try {
-      if (!bch.Address.isCashAddress(query.value) &&
-          !bch.Address.isLegacyAddress(query.value)) { // invalid address
+      if (
+        !bch.Address.isCashAddress(query.value) &&
+        !bch.Address.isLegacyAddress(query.value)
+      ) {
+        // invalid address
         res.send('Error: Invalid address (please use CashAddr or Legacy)')
-      } else if (bch.Address.isCashAddress(query.value)) { // cash address
+      } else if (bch.Address.isCashAddress(query.value)) {
+        // cash address
         address = query.value
         // check if prefix was given
         if (!address.startsWith('bitcoincash:')) {
-          address = 'bitcoincash:'+address
+          address = 'bitcoincash:' + address
         }
-      } else { // legacy address
+      } else {
+        // legacy address
         address = bch.Address.toCashAddress(query.value, true)
       }
     } catch (e) {
@@ -127,7 +145,9 @@ app.get('/api/identify', (req, res) => {
       // search the database for the given address
       var sql = 'select payoutAddress from users where payoutAddress = ?'
       conn.query(sql, [address], (err, result) => {
-        if (err) { throw err }
+        if (err) {
+          throw err
+        }
         // save the address to persistant session
         req.session.address = address
         if (result.length !== 1) {
@@ -137,7 +157,8 @@ app.get('/api/identify', (req, res) => {
         }
       })
     }
-  } else { // log in by username
+  } else {
+    // log in by username
     if (query.value.length < 10) {
       res.send('No match')
     } else {
@@ -146,7 +167,7 @@ app.get('/api/identify', (req, res) => {
         if (result.length !== 1) {
           res.send('No match')
         } else {
-        	req.session.username = query.value
+          req.session.username = query.value
           res.send('login')
         }
       })
@@ -161,10 +182,13 @@ app.get('/api/login', (req, res) => {
     res.send('Provide an address or username first')
   } else if (query.password.length < 12) {
     res.send('Incorrect password')
-  } else if (req.session.address) { // prefer logging in by address
+  } else if (req.session.address) {
+    // prefer logging in by address
     var sql = 'select * from users where payoutAddress = ?'
     conn.query(sql, [req.session.address], (err, result) => {
-      if (err) { throw err }
+      if (err) {
+        throw err
+      }
       if (result.length !== 1) {
         res.send('Incorrect address')
       } else {
@@ -182,11 +206,14 @@ app.get('/api/login', (req, res) => {
         }
       }
     })
-  } else { // search by username
-  	console.log(req.session)
+  } else {
+    // search by username
+    console.log(req.session)
     var sql = 'select * from users where username = ?'
     conn.query(sql, [req.session.username], (err, result) => {
-      if (err) { throw err }
+      if (err) {
+        throw err
+      }
       if (result.length !== 1) {
         res.send('Incorrect username')
       } else {
@@ -211,11 +238,11 @@ app.get('/api/pay', (req, res) => {
   const query = url.parse(req.url, true).query
   if (!query.merchantID || !query.paymentID) {
     res.send('MerchantID and PaymentID not provided!')
-  } else if (query.merchantID.length !== 16){
+  } else if (query.merchantID.length !== 16) {
     res.send('Invalid MerchantID')
   } else if (query.paymentID.length > 32) {
     res.send('PaymentID cannot be longer than 32 characters')
-  }else{
+  } else {
     // initial checks pased, verify merchantID exists
     var sql = 'select merchantID from users where merchantID = ?'
     conn.query(sql, [query.merchantID], (err, result) => {
@@ -228,18 +255,22 @@ app.get('/api/pay', (req, res) => {
         var hdNode = bch.HDNode.fromSeed(seedBuffer)
         var paymentPrivateKey = bch.HDNode.toWIF(hdNode).toString()
         var paymentAddress = bch.HDNode.toCashAddress(hdNode).toString()
-        if (paymentAddress.indexOf(':') === -1){
+        if (paymentAddress.indexOf(':') === -1) {
           paymentAddress = 'bitcoincash:' + paymentAddress
         }
         var callbackURL = query.callbackURL
         if (callbackURL) {
-          if(!callbackURL.toString().startsWith('http://') &&
-              !callbackURL.toString().startsWith('https://')) {
+          if (
+            !callbackURL.toString().startsWith('http://') &&
+            !callbackURL.toString().startsWith('https://')
+          ) {
             callbackURL = 'None'
             // we must fail silently here without sending error if we are to
             // continue processing the payment at all
-          } else if (callbackURL.toString().length > 128 ||
-              callbackURL.toString().length < 10) {
+          } else if (
+            callbackURL.toString().length > 128 ||
+            callbackURL.toString().length < 10
+          ) {
             callbackURL = 'None'
           }
         } else {
@@ -253,13 +284,18 @@ app.get('/api/pay', (req, res) => {
         conn.query(
           sql,
           [
-            paymentAddress, paymentPrivateKey, query.merchantID,
-            query.paymentID, callbackURL
+            paymentAddress,
+            paymentPrivateKey,
+            query.merchantID,
+            query.paymentID,
+            callbackURL,
           ],
           (err, result) => {
-            if (err) { throw err }
+            if (err) {
+              throw err
+            }
             res.send(paymentAddress)
-          }
+          },
         )
       }
     })
@@ -281,7 +317,9 @@ app.get('/api/paymentsent', (req, res) => {
           // verify txid does not already exist in pending table
           var sql = 'select txid from pending where txid = ?'
           conn.query(sql, [query.txid], (err, result) => {
-            if (err) { throw err }
+            if (err) {
+              throw err
+            }
             if (result.length !== 0) {
               res.send('TXID is already pending')
             } else {
@@ -292,23 +330,35 @@ app.get('/api/paymentsent', (req, res) => {
               or
               transferTXID = ?`
               conn.query(sql, [query.txid, query.txid], (err, result) => {
-                if (err) { throw err }
+                if (err) {
+                  throw err
+                }
                 if (result.length !== 0) {
                   res.send('TXID already paid')
                 } else {
                   // verify the address is in the database
-                  var sql = 'select paymentAddress from payments where paymentAddress = ?'
+                  var sql =
+                    'select paymentAddress from payments where paymentAddress = ?'
                   conn.query(sql, [query.address], (err, result) => {
-                    if (err) { throw err }
+                    if (err) {
+                      throw err
+                    }
                     if (result.length !== 1) {
                       res.send('Address not found')
                     } else {
                       // insert into pending
-                      var sql = 'insert into pending (address, txid) values (?, ?)'
-                      conn.query(sql, [query.address, query.txid], (err, result) => {
-                        if (err) { throw err }
-                        res.send('ok')
-                      })
+                      var sql =
+                        'insert into pending (address, txid) values (?, ?)'
+                      conn.query(
+                        sql,
+                        [query.address, query.txid],
+                        (err, result) => {
+                          if (err) {
+                            throw err
+                          }
+                          res.send('ok')
+                        },
+                      )
                     }
                   })
                 }
@@ -350,19 +400,27 @@ app.post('/api/setusername', (req, res) => {
     var usernameCandidate = req.body.username.toString()
     if (usernameCandidate.length < 5) {
       res.send('Pick a longer username.')
-    } else if (usernameCandidate.indexOf(' ') !== -1){
+    } else if (usernameCandidate.indexOf(' ') !== -1) {
       res.send('Usernames cannot contain spaces')
     } else {
       conn.qpery(sql, [usernameCandidate], (err, result) => {
-        if (err) { throw err }
+        if (err) {
+          throw err
+        }
         if (result.length !== 0) {
           res.send('Username is already in use')
         } else {
           var sql = 'update users set username = ? where payoutAddress = ?'
-          conn.query(sql, [usernameCandidate, req.session.address], (err, result) => {
-            if (err) { throw err }
-            res.send('ok')
-          })
+          conn.query(
+            sql,
+            [usernameCandidate, req.session.address],
+            (err, result) => {
+              if (err) {
+                throw err
+              }
+              res.send('ok')
+            },
+          )
         }
       })
     }
@@ -382,9 +440,11 @@ app.get('/api/getpayments', (req, res) => {
     order by created desc
     limit 100`
     conn.query(sql, [req.session.merchantID], (err, result) => {
-      if (err) { throw err }
+      if (err) {
+        throw err
+      }
       var response = []
-      for(var i = 0; i < result.length; i++) {
+      for (var i = 0; i < result.length; i++) {
         response.push(result[i])
       }
       res.send(response)
@@ -393,14 +453,17 @@ app.get('/api/getpayments', (req, res) => {
 })
 
 app.get('/api/getunpaidpayments', (req, res) => {
-  if(!req.session.loggedIn) {
+  if (!req.session.loggedIn) {
     res.send('log in first')
   } else {
-    var sql = 'select paymentAddress, created, paymentID, paidAmount, paymentTXID, transferTXID from payments where merchantID = ? order by created desc limit 100'
+    var sql =
+      'select paymentAddress, created, paymentID, paidAmount, paymentTXID, transferTXID from payments where merchantID = ? order by created desc limit 100'
     conn.query(sql, [req.session.merchantID], (err, result) => {
-      if (err) { throw err }
+      if (err) {
+        throw err
+      }
       var response = []
-      for(var i = 0; i < result.length; i++) {
+      for (var i = 0; i < result.length; i++) {
         response.push(result[i])
       }
       res.send(response)
@@ -409,9 +472,9 @@ app.get('/api/getunpaidpayments', (req, res) => {
 })
 
 app.get('/api/loggedin', (req, res) => {
-	if (req.session.loggedIn) {
-		res.send('true')
-	} else {
-		res.send('false')
-	}
+  if (req.session.loggedIn) {
+    res.send('true')
+  } else {
+    res.send('false')
+  }
 })

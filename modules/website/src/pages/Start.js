@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import Button from '@material-ui/core/Button'
-import { Link } from '@reach/router'
+import { Link, navigate } from '@reach/router'
 
 class StartPage extends Component {
   constructor(props) {
@@ -10,7 +10,7 @@ class StartPage extends Component {
     xhr.onload = () => {
       if (xhr.readyState === 4) {
         if (xhr.responseText.toString().trim() === 'true') {
-          this.props.updateView('createbutton')
+          navigate('createbutton')
         }
       }
     }
