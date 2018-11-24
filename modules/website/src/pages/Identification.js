@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { navigate } from '@reach/router'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import bchaddr from 'bchaddrjs'
@@ -14,10 +15,10 @@ class IdentificationPage extends Component {
     let value = document.getElementById('loginValue').value
     if (this.state.username === false) {
       // check for a valid Bitcoin Cash address and convert if needed
-      var valid = false
+      let valid = false
       try {
-        var isCash = bchaddr.isCashAddress(value.trim())
-        var isLegacy = bchaddr.isLegacyAddress(value.trim())
+        let isCash = bchaddr.isCashAddress(value.trim())
+        let isLegacy = bchaddr.isLegacyAddress(value.trim())
         if (isLegacy) {
           value = bchaddr.toCashAddress(value)
           isCash = true
@@ -47,7 +48,7 @@ class IdentificationPage extends Component {
   }
 
   submitData(type, value) {
-    var xhr = new XMLHttpRequest()
+    let xhr = new XMLHttpRequest()
     xhr.open(
       'GET',
       'https://gateway.cash/api/login?type=' +
@@ -61,9 +62,9 @@ class IdentificationPage extends Component {
         let response = xhr.responseText.trim()
         console.log('Username check response:', response)
         if (response === 'login') {
-          this.props.updateView('login')
+          navigate('/login')
         } else if (response === 'register') {
-          this.props.updateView('register')
+          navigate('/register')
         } else {
           setTimeout(() => {
             this.setState({ loginError: true })

@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { navigate } from '@reach/router'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 
@@ -23,7 +24,7 @@ class LoginPage extends Component {
         let response = xhr.responseText.trim()
         console.log('Login response:', response)
         if (response === 'ok') {
-          this.props.updateView('createbutton')
+          navigate('/createbutton')
         } else {
           setTimeout(() => {
             this.setState({ loginError: true })
@@ -42,7 +43,7 @@ class LoginPage extends Component {
   }
 
   handleClick = () => {
-    this.props.updateView('forgot')
+    navigate('/forgot')
   }
 
   render() {

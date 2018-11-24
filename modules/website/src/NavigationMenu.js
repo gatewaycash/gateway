@@ -1,49 +1,32 @@
 import React, { Component } from 'react'
+import { Link } from '@reach/router'
 import Button from '@material-ui/core/Button'
 
-class NavigationMenu extends Component {
-  handleCreateButton = () => {
-    this.props.updateView('createbutton')
-  }
-
-  handleViewPayments = () => {
-    this.props.updateView('payments')
-  }
-
-  handleSettings = () => {
-    this.props.updateView('settings')
-  }
-
-  render() {
-    return (
-      <div>
-        <center>
-          <h1>{this.props.page}</h1>
-          <Button
-            variant={this.props.page === 'Create a Button' && 'contained'}
-            color="primary"
-            onClick={this.handleCreateButton}
-          >
-            Create Button
-          </Button>
-          <Button
-            variant={this.props.page === 'View Payments' && 'contained'}
-            color="primary"
-            onClick={this.handleViewPayments}
-          >
-            View Payments
-          </Button>
-          <Button
-            variant={this.props.page === 'Settings' && 'contained'}
-            color="primary"
-            onClick={this.handleSettings}
-          >
-            Settings
-          </Button>
-        </center>
-      </div>
-    )
-  }
-}
-
-export default NavigationMenu
+export default ({ page }) => (
+  <div>
+    <center>
+      <h1>{page}</h1>
+      <Link to="/createbutton">
+        <Button
+          variant={page === 'Create a Button' && 'contained'}
+          color="primary"
+        >
+          Create Button
+        </Button>
+      </Link>
+      <Link to="/payments">
+        <Button
+          variant={page === 'View Payments' && 'contained'}
+          color="primary"
+        >
+          View Payments
+        </Button>
+      </Link>
+      <Link to="/settings">
+        <Button variant={page === 'Settings' && 'contained'} color="primary">
+          Settings
+        </Button>
+      </Link>
+    </center>
+  </div>
+)
