@@ -93,7 +93,7 @@ class SettingsPage extends Component {
           <Paper className="paper">
             <h2>Supporting the Project</h2>
             <p>
-              If you'd like tu support the project and help fund my college
+              If you'd like to support the project and help fund my college
               education, you can choose to donate a portion of each payment made
               to your merchant account. This will always be off by default, but
               any support you're able to provide is much appreciated.

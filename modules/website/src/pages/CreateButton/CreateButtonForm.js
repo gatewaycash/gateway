@@ -5,7 +5,18 @@ import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import Switch from '@material-ui/core/Switch'
 
-export default () => (
+export default ({
+  handleChange,
+  buttonText,
+  anyAmount,
+  currency,
+  advanced,
+  amount,
+  dialogTitle,
+  callbackURL,
+  toggleAdvanced,
+  paymentID,
+}) => (
   <Paper className="paper">
     <h2>Customize Your Button</h2>
     <p>
@@ -17,12 +28,12 @@ export default () => (
       style={{
         width: '100%',
       }}
-      onChange={this.handleChange}
+      onChange={handleChange}
       id="buttonTextField"
       label="Button Text"
       helperText="Give your payment button a label"
       maxLength={25}
-      value={this.state.buttonText}
+      value={buttonText}
     />
     <br />
     <br />
@@ -30,38 +41,38 @@ export default () => (
       control={
         <Switch
           id="allowanyfield"
-          checked={this.state.anyAmount}
-          onChange={this.handleChange}
+          checked={anyAmount}
+          onChange={handleChange}
           color="primary"
         />
       }
       label="Allow any amount"
     />
-    {!this.state.anyAmount && (
+    {!anyAmount && (
       <div>
         <TextField
           style={{
             width: '70%',
             float: 'left',
           }}
-          onChange={this.handleChange}
+          onChange={handleChange}
           id="amountField"
           label="Amount"
           helperText="Amount in units of display currency"
           type="number"
-          value={this.state.amount}
+          value={amount}
         />
         <TextField
           style={{
             width: '30%',
             float: 'right',
           }}
-          onChange={this.handleChange}
+          onChange={handleChange}
           id="currencyField"
           label="Currency"
           helperText="BCH, USD, EUR..."
           maxLength={3}
-          value={this.state.currency}
+          value={currency}
         />
         <br />
         <br />
@@ -69,19 +80,19 @@ export default () => (
         <br />
       </div>
     )}
-    {this.state.advanced ? (
+    {advanced ? (
       <div>
         <br />
         <TextField
           style={{
             width: '100%',
           }}
-          onChange={this.handleChange}
+          onChange={handleChange}
           id="dialogTitleField"
           label="Dialog Title"
           helperText="Title for payment dialog box"
           maxLength={25}
-          value={this.state.dialogTitle}
+          value={dialogTitle}
         />
         <br />
         <br />
@@ -89,12 +100,12 @@ export default () => (
           style={{
             width: '100%',
           }}
-          onChange={this.handleChange}
+          onChange={handleChange}
           id="paymentIDField"
           label="Payment ID"
           helperText="Unique ID for payments sent to this button (see below)"
           maxLength={32}
-          value={this.state.paymentID}
+          value={paymentID}
         />
         <br />
         <br />
@@ -102,12 +113,12 @@ export default () => (
           style={{
             width: '100%',
           }}
-          onChange={this.handleChange}
+          onChange={handleChange}
           id="callbackURLField"
           label="Callback URL"
           helperText="We'll notify this URL when a payment is made (see below)"
           maxLength={64}
-          value={this.state.callbackURL}
+          value={callbackURL}
         />
         <br />
         <br />
@@ -119,7 +130,7 @@ export default () => (
           customize your button with some additional tweaks.
         </p>
         <center>
-          <Button color="primary" onClick={this.toggleAdvanced}>
+          <Button color="primary" onClick={toggleAdvanced}>
             Advanced Options
           </Button>
         </center>

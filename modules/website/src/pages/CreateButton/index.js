@@ -4,6 +4,7 @@ import PreviewButton from './PreviewButton'
 import CreateButtonForm from './CreateButtonForm'
 import PaymentIDInfo from './PaymentIDInfo'
 import ClientCodeExample from './ClientCodeExample'
+import SupportProject from './SupportProject'
 
 class CreateButtonPage extends Component {
   state = {
@@ -100,7 +101,7 @@ class CreateButtonPage extends Component {
           </div>
         </div>
         <div className="rightPanel">
-
+          <SupportProject />
         </div>
       </div>
     )

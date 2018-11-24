@@ -1,7 +1,7 @@
 import React from 'react'
 import Paper from '@material-ui/core/Paper'
 
-export default () => (
+export default ({ merchantID, buttonText, dialogTitle, paymentID }) => (
   <Paper className="paper">
     <h2>Generated Code</h2>
     <p>
@@ -17,11 +17,11 @@ export default () => (
     <pre className="sourceCode">
       {`
 <div
-class="payButton"
-merchantID="${this.state.merchantID}"
-buttonText="${this.state.buttonText}"
-dialogTitle="${this.state.dialogTitie}"
-paymentID="${this.state.paymentID}"
+  class="payButton"
+  merchantID="${merchantID}"
+  buttonText="${buttonText}"
+  dialogTitle="${dialogTitle}"
+  paymentID="${paymentID}"
 ></div>
 `}
     </pre>

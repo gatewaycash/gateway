@@ -2,7 +2,15 @@ import React from 'react'
 import Paper from '@material-ui/core/Paper'
 import PayButton from '@gateway/PayButton'
 
-export default ({ merchantID, buttonText }) => (
+export default ({
+  merchantID,
+  buttonText,
+  anyAmount,
+  amount,
+  currency,
+  dialogTitle,
+  paymentID,
+}) => (
   <Paper className="paper">
     <h2>Button Preview</h2>
     <p>
@@ -11,11 +19,11 @@ export default ({ merchantID, buttonText }) => (
     </p>
     <center>
       <PayButton
-        merchantID={this.state.merchantID}
-        amount={this.state.anyAmount ? '0' : this.state.amount}
-        currency={this.state.currency}
-        dialogTitle={this.state.dialogTitle}
-        paymentID={this.state.paymentID}
+        merchantID={merchantID}
+        amount={anyAmount ? '0' : amount}
+        currency={currency}
+        dialogTitle={dialogTitle}
+        paymentID={paymentID}
       >
         {buttonText}
       </PayButton>
