@@ -47,7 +47,7 @@ let transformData = (d) => {
           .toUpperCase()
       : 'BCH',
     merchantID,
-    CallbackURL,
+    callbackURL,
   }
 }
 
@@ -170,7 +170,7 @@ export default (props) => {
   return (
     <div style={{ display: 'inline-block', padding: '0.25em' }}>
       <Button onClick={handleClick} variant="contained" color="primary">
-        {this.buttonText}
+        {props.children}
       </Button>
       <Dialog
         open={this.state.dialogOpen}

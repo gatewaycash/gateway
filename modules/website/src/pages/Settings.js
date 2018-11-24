@@ -1,11 +1,7 @@
 import React, { Component } from 'react'
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
-import MenuItem from '@material-ui/core/MenuItem'
-import menu from '@material-ui/core/Menu'
 import Paper from '@material-ui/core/Paper'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import Switch from '@material-ui/core/Switch'
 import NavigationMenu from 'NavigationMenu'
 
 class SettingsPage extends Component {

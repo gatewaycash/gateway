@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 import Button from '@material-ui/core/Button'
 import Paper from '@material-ui/core/Paper'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import Switch from '@material-ui/core/Switch'
 import NavigationMenu from 'NavigationMenu'
 
 class PaymentsPage extends Component {

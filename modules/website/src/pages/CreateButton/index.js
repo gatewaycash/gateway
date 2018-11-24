@@ -1,13 +1,9 @@
 import React, { Component } from 'react'
-import TextField from '@material-ui/core/TextField'
-import Button from '@material-ui/core/Button'
-import MenuItem from '@material-ui/core/MenuItem'
-import menu from '@material-ui/core/Menu'
 import Paper from '@material-ui/core/Paper'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import Switch from '@material-ui/core/Switch'
 import NavigationMenu from 'NavigationMenu'
 import PayButton from '@gateway/PayButton'
+import PreviewButton from './PreviewButton'
+import CreateButtonForm from './CreateButtonForm'
 
 class CreateButtonPage extends Component {
   state = {
@@ -87,137 +83,6 @@ class CreateButtonPage extends Component {
     }
   }
 
-  renderCreationForm = () => {
-    var amountAndCurrency = this.state.anyAmount ? null : (
-      <div>
-        <TextField
-          style={{
-            width: '70%',
-            float: 'left',
-          }}
-          onChange={this.handleChange}
-          id="amountField"
-          label="Amount"
-          helperText="Amount in units of display currency"
-          type="number"
-          value={this.state.amount}
-        />
-        <TextField
-          style={{
-            width: '30%',
-            float: 'right',
-          }}
-          onChange={this.handleChange}
-          id="currencyField"
-          label="Currency"
-          helperText="BCH, USD, EUR..."
-          maxLength={3}
-          value={this.state.currency}
-        />
-        <br />
-        <br />
-        <br />
-        <br />
-      </div>
-    )
-    return (
-      <Paper className="paper">
-        <h2>Customize Your Button</h2>
-        <p>
-          Use the settings below to change various aspects of your payment
-          button. Once you're satisfied with the result, scroll down and copy
-          the generated code onto any website where you'd like to accept
-          payments.
-        </p>
-        <TextField
-          style={{
-            width: '100%',
-          }}
-          onChange={this.handleChange}
-          id="buttonTextField"
-          label="Button Text"
-          helperText="Give your payment button a label"
-          maxLength={25}
-          value={this.state.buttonText}
-        />
-        <br />
-        <br />
-        <FormControlLabel
-          control={
-            <Switch
-              id="allowanyfield"
-              checked={this.state.anyAmount}
-              onChange={this.handleChange}
-              color="primary"
-            />
-          }
-          label="Allow any amount"
-        />
-        {amountAndCurrency}
-        {this.renderAdvancedOptions()}
-      </Paper>
-    )
-  }
-
-  renderAdvancedOptions = () => {
-    return this.state.advanced ? (
-      <div>
-        <br />
-        <TextField
-          style={{
-            width: '100%',
-          }}
-          onChange={this.handleChange}
-          id="dialogTitleField"
-          label="Dialog Title"
-          helperText="Title for payment dialog box"
-          maxLength={25}
-          value={this.state.dialogTitle}
-        />
-        <br />
-        <br />
-        <TextField
-          style={{
-            width: '100%',
-          }}
-          onChange={this.handleChange}
-          id="paymentIDField"
-          label="Payment ID"
-          helperText="Unique ID for payments sent to this button (see below)"
-          maxLength={32}
-          value={this.state.paymentID}
-        />
-        <br />
-        <br />
-        <TextField
-          style={{
-            width: '100%',
-          }}
-          onChange={this.handleChange}
-          id="callbackURLField"
-          label="Callback URL"
-          helperText="We'll notify this URL when a payment is made (see below)"
-          maxLength={64}
-          value={this.state.callbackURL}
-        />
-        <br />
-        <br />
-      </div>
-    ) : (
-      <div>
-        <p>
-          If you're looking for more advanced functionality, you can further
-          customize your button with some additional tweaks.
-        </p>
-        <center>
-          <Button color="primary" onClick={this.toggleAdvanced}>
-            Advanced Options
-          </Button>
-        </center>
-      </div>
-    )
-  }
-
   renderGeneratedCode = () => {
     var buttonCode = '<div\n  class="payButton"\n'
     buttonCode += '  merchantID="' + this.state.merchantID + '"\n'
@@ -270,37 +135,16 @@ class CreateButtonPage extends Component {
     )
   }
 
-  renderPreviewButton = () => {
-    return (
-      <Paper className="paper">
-        <h2>Button Preview</h2>
-        <p>
-          This is what your finished button will look like and how it will
-          behave. Payments made to the button on this page will be sent to your
-          address.
-        </p>
-        <center>
-          <PayButton
-            merchantID={this.state.merchantID}
-            buttonText={this.state.buttonText}
-            amount={this.state.anyAmount ? '0' : this.state.amount}
-            currency={this.state.currency}
-            dialogTitle={this.state.dialogTitle}
-            paymentID={this.state.paymentID}
-          />
-        </center>
-      </Paper>
-    )
-  }
-
   render() {
     return (
       <div className="container">
         <NavigationMenu page="Create a Button" />
-        <div className="leftPanel">{this.renderCreationForm()}</div>
+        <div className="leftPanel">
+          <CreateButtonForm />
+        </div>
         <div className="rightPanel">
           {this.renderGeneratedCode()}
-          {this.renderPreviewButton()}
+          <PreviewButton />
         </div>
         <div className="leftPanel">
           <div>
