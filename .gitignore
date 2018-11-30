@@ -35,6 +35,8 @@ bower_components
 
 # Compiled binary addons (https://nodejs.org/api/addons.html)
 build/Release
+dist
+public
 
 # Dependency directories
 node_modules/
@@ -82,5 +84,7 @@ typings/
 # Do not include sessions
 sessions/
 
-# PayButton build files
-dist
+# node_modules and compiled code for submodules
+modules/website/node_modules
+modules/PayButton/node_modules
+modules/PayButton/dist
