@@ -8,9 +8,7 @@
   },
   "private": true,
   "workspaces": [
-    "modules/api",
-    "modules/website",
-    "modules/PayButton"
+    "modules/*"
   ],
   "keywords": [
     "bitcoin",
@@ -18,7 +16,8 @@
   ],
   "scripts": {
     "website": "yarn workspace @gateway/website start",
-    "api": "yarn workspace @gateway/api dev"
+    "api": "yarn workspace @gateway/api dev",
+    "build": "concurrently \"yarn workspace @gateway/website build\" \"yarn workspace @gateway/PayButton build\""
   },
   "author": "The Gateway Project Developers <hello@gateway.cash>",
   "license": "AGPL-3.0",
@@ -28,6 +27,7 @@
   "homepage": "https://github.com/gatewaycash/gateway#readme",
   "dependencies": {
     "babel-eslint": "9.0.0",
+    "concurrently": "^4.1.0",
     "eslint": "5.6.0",
     "eslint-config-prettier": "^3.3.0",
     "eslint-config-react-app": "^3.0.5",

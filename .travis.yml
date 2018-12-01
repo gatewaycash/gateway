@@ -4,3 +4,5 @@ before_install:
   - export PATH="$HOME/.yarn/bin:$PATH"
 node_js:
   - "8"
+script:
+  - yarn run build
