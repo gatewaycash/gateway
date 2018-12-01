@@ -1,8 +1,0 @@
-export { default as CreateButton } from './CreateButton'
-export { default as Forgot } from './Forgot'
-export { default as Identification } from './Identification'
-export { default as Login } from './Login'
-export { default as Payments } from './Payments'
-export { default as Register } from './Register'
-export { default as Settings } from './Settings'
-export { default as Start } from './Start'
