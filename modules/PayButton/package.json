@@ -2,7 +2,7 @@
   "name": "@gateway/PayButton",
   "version": "0.1.0",
   "main": "dist/PayButton.js",
-  "license": "MIT",
+  "license": "AGPL-3.0",
   "devDependencies": {
     "@babel/core": "^7.1.6",
     "@babel/preset-env": "^7.1.6",

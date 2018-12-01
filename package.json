@@ -7,17 +7,18 @@
     "url": "git+https://github.com/gatewaycash/gateway.git"
   },
   "private": true,
-  "workspaces": {
-    "packages": [
-      "modules/*"
-    ]
-  },
+  "workspaces": [
+    "modules/api",
+    "modules/website",
+    "modules/PayButton"
+  ],
   "keywords": [
     "bitcoin",
     "cash"
   ],
   "scripts": {
-    "website": "yarn workspace website start"
+    "website": "yarn workspace @gateway/website start",
+    "api": "yarn workspace @gateway/api dev"
   },
   "author": "The Gateway Project Developers <hello@gateway.cash>",
   "license": "AGPL-3.0",

@@ -4,6 +4,24 @@
  * @file Defines the entry point for the Gateway web server
  */
 
+/*
+
+ABOUT THIS FILE
+
+This file is in the process of being deprecated and modularized.
+For those working on this process, please use register.js as a guide
+for how to take one of these sections and modularize it into it's own
+file. This will make things more easy to manage long-term.
+
+Please refrain from deleting or changing server.js until the process
+is complete. webSericesBackend.js should be the new entry point for
+the server (as opposed to this file) once this is done.
+
+Also, FundsTransfer.js and FixBrokenPayments.js are to be initialized
+and managed as part of the server.
+
+*/
+
 const express = require('express')
 const session = require('express-session')
 const FileStore = require('session-file-store')(session)
