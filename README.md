@@ -7,21 +7,31 @@ Simple Bitcoin Payments
 Gateway is a payment processor enabling merchants to easily accept
 Bitcoin Cash on their sites without the need for hassle or technical
 know-how. Check out the [Gateway Project Charter](CHARTER.md)
-for a lot more info.
+for our roadmap, use-cases and a lot more info.
 
 ## Development
 
-All current development tasks that need work have been assigned open
-issues on this repository. If you'd like to help out, please feel
-free to assign yourself to one of these issues. Pull requests are
-welcome to this repository provided there has been a discussion
-about the nature of the cnanges.
+The project is being hosted across multiple repositories.
+Depending on how you'd like to contribute, you may be interested
+in one of the following:
 
-If there is a feature or issue you would like resolved, please open
-an issue for it so that it gets worked on.
+- [Gateway Payment Button](https://github.com/gatewaycash/website)
+- [Backend Server API](https://github.com/gatewaycash/api)
+- [The Gateway.cash Website](https://github.com/gatewaycash/website)
+- This repository contains graphics, project resources, roadmaps and
+investor materials
 
-If you would like to work on something, please assign the issue to
-yourself beforehand.
+If there is a feature or issue you'd like resolved, please open
+an issue for it so that it gets worked on. You may open the issue
+here, or you may send it to the repo where you think it is most
+relevant. Either way, we'll categorize it and get it worked on as 
+soon as we can.
+
+If you'd like to work on something, please assign the appropriate
+issue to yourself beforehand.
+
+Note that we may move new issues to a more appropriate repo during
+the classification process.
 
 ## Questions and Concerns
 
@@ -29,6 +39,8 @@ Feel free to send email to <hello@gateway.cash> with any ideas,
 questions or feedback. If you'd like to become a contributor, join 
 the [ambassador.cash Discord server](http://ambassador.cash) and talk
 to us in the #gatewaycash channel.
+
+## Weekly Community & Development Meetings
 
 There are also weekly community meetings to discuss development, 
 ideas and tech every Saturday at 9AM PST (17:00 UTC) in the voice 
