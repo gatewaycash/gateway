@@ -31,5 +31,11 @@ We see Gateway as a fundamental building block for a large number of other profi
 ## Use Cases
 
 Once this technology gets built, secure Bitcoin Payment buttons have many applications across the web:
-Micropayments on social networking websites can be used to incentivize good content and build better online communities and platforms.
-A simple, unified and standard way to pay for goods and services across shopping sites and apps will reduce friction and make purchases easy.
+
+- Micropayments: There are many websites, apps and entire industries that could benefit from integration with a micropayment service provider. In these cases, Gateway aims not only to solve the problems these services face, but also to bring the countless other benefits of a standard, universal and frictionless platform. Because Gateway is built on top of Bitcoin Cash, these services also gain the benefits of immutability and censorship resistance.
+
+- Decentralized content syndication platforms: passing time has only served to confirm warnings voiced and concerns raised by prominent software developers and early internet pioneers; centralized content distribution systems and networks like Facebook have inherent weaknesses which present severe dangers to society. The development of decentralized solutions driven by free markets rather than central planners will solve these problems. These systems are required to incorporate payment technologies to manage content, fund creators and curate content. Gateway aims to serve as an open protocol on top of which these new networks can operate in a secure, transparent, decentralized, standard and cross-compatible manner.
+
+- Online retail: large and centralized marketplaces who treat merchants unfairly and charge exorbitant fees have come to dominate the digital retail industry. Gateway serves as an essential building block for new, market-driven networks that level the playing field for small online sellers. As new, open and standard inventory management solutions are developed, Gateway can automate the payment process, streamlining merchant workflow and lowering fees.
+
+- Trustless payment-channel-based content streaming solutions: a rising content creator demand exists for platforms that compensate them fairly. While this also falls under the category of content syndication, sites leveraging video streaming and payment channels will disrupt a different--though related--industry.
