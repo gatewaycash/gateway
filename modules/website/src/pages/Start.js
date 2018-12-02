@@ -26,7 +26,7 @@ class StartPage extends Component {
           alt="Gateway Logo"
           src={faviconImage}
         />
-        <h1 className="mainHeading">Simple Bitcoin Payments</h1>
+        <h1 className="mainHeading">Service Temporarily Unavailable (under construction)</h1>
         <Link to="/identification">
           <Button variant="contained" color="primary" size="large">
             GET STARTED
