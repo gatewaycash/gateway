@@ -1,6 +1,6 @@
 import React from 'react'
 import Paper from '@material-ui/core/Paper'
-import PayButton from '@gatewaycash/paybutton'
+import PayButton from 'gatewaycash-paybutton'
 
 export default ({
   merchantID,

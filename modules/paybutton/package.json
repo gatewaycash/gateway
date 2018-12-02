@@ -1,5 +1,5 @@
 {
-  "name": "@gatewaycash/paybutton",
+  "name": "gatewaycash-paybutton",
   "version": "0.1.0",
   "main": "dist/PayButton.js",
   "license": "AGPL-3.0",
