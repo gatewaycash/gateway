@@ -5,7 +5,7 @@ import babel from 'rollup-plugin-babel'
 export default {
   input: 'src/PayButton.js',
   output: {
-    file: 'dist/PayButton.js',
+    file: 'build/PayButton.js',
     format: 'cjs',
   },
   plugins: [
