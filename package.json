@@ -4,7 +4,7 @@
   "description": "Payment Processor for Bitcoin Cash",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ty-everett/gateway.git"
+    "url": "git+https://github.com/gatewaycash/gateway.git"
   },
   "private": true,
   "workspaces": {
@@ -17,14 +17,18 @@
     "cash"
   ],
   "scripts": {
-    "website": "yarn workspace @gatewaycash/website start"
+    "start-development-website": "yarn workspace @gatewaycash/website start",
+    "build-production-website": "yarn workspace @gatewaycash/website build",
+    "start-development-api-server": "yarn workspace @gatewaycash/api dev",
+    "start-production-api-server": "yarn workspace @gatewaycash/api production",
+    "build-paybutton": "yarn workspace @gatewaycash/paybutton build"
   },
   "author": "The Gateway Project Developers <hello@gateway.cash>",
-  "license": "ISC",
+  "license": "AGPL-3.0",
   "bugs": {
-    "url": "https://github.com/ty-everett/gateway/issues"
+    "url": "https://github.com/gatewaycash/gateway/issues"
   },
-  "homepage": "https://github.com/ty-everett/gateway#readme",
+  "homepage": "https://github.com/gatewaycash/gateway#readme",
   "dependencies": {
     "babel-eslint": "9.0.0",
     "eslint": "5.6.0",

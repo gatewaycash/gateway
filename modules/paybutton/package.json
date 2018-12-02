@@ -1,12 +1,9 @@
 {
-  "name": "gatewaycash-paybutton",
+  "name": "@gatewaycash/paybutton",
   "version": "0.1.0",
   "main": "dist/PayButton.js",
   "license": "AGPL-3.0",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/gatewaycash/paybutton.git"
-  },
+  "repository": "git+https://github.com/gatewaycash/gateway.git",
   "author": "The Gateway Project Developers <hello@gateway.cash>",
   "bugs": {
     "url": "https://github.com/gatewaycash/paybutton/issues"
@@ -26,5 +23,6 @@
   },
   "scripts": {
     "build": "rollup -c --environment INCLUDE_DEPS,BUILD:production"
-  }
+  },
+  "description": "Gateway.cash Payment Button"
 }
