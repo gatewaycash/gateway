@@ -21,7 +21,8 @@
     "build-production-website": "yarn workspace @gatewaycash/website build",
     "start-development-api-server": "yarn workspace @gatewaycash/api dev",
     "start-production-api-server": "yarn workspace @gatewaycash/api production",
-    "build-paybutton": "yarn workspace @gatewaycash/paybutton build"
+    "build-paybutton": "yarn workspace @gatewaycash/paybutton build",
+    "build": "yarn build-paybutton && yarn build-production-website"
   },
   "author": "The Gateway Project Developers <hello@gateway.cash>",
   "license": "AGPL-3.0",
