@@ -1,0 +1,30 @@
+{
+  "name": "@gatewaycash/paybutton",
+  "version": "0.1.0",
+  "main": "dist/PayButton.js",
+  "license": "AGPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gatewaycash/paybutton.git"
+  },
+  "author": "The Gateway Project Developers <hello@gateway.cash>",
+  "bugs": {
+    "url": "https://github.com/gatewaycash/paybutton/issues"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.1.6",
+    "@babel/preset-env": "^7.1.6",
+    "@babel/preset-react": "^7.0.0",
+    "@material-ui/core": "^3.5.1",
+    "@material-ui/icons": "^3.0.1",
+    "react": "^16.7.0-alpha.2",
+    "react-dom": "^16.7.0-alpha.2",
+    "rollup": "^0.67.3",
+    "rollup-plugin-babel": "^4.0.3",
+    "rollup-plugin-commonjs": "^9.2.0",
+    "rollup-plugin-node-resolve": "^3.4.0"
+  },
+  "scripts": {
+    "build": "rollup -c --environment INCLUDE_DEPS,BUILD:production"
+  }
+}
