@@ -24,7 +24,7 @@ class CreateButtonPage extends Component {
 
     // get the merchant ID
     let xhr = new XMLHttpRequest()
-    xhr.open('GET', 'https://gateway.cash/api/getmerchantid')
+    xhr.open('GET', process.env.REACT_APP_GATEWAY_BACKEND + '/getmerchantid')
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
     xhr.onload = () => {
       if (xhr.readyState === 4) {

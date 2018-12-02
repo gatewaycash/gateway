@@ -10,7 +10,7 @@ class RegisterPage extends Component {
       return
     }
     var xhr = new XMLHttpRequest()
-    xhr.open('POST', 'https://gateway.cash/api/register')
+    xhr.open('POST', process.env.REACT_APP_GATEWAY_BACKEND + '/register')
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
     xhr.onload = () => {
       if (xhr.status === 200) {

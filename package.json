@@ -17,9 +17,9 @@
     "cash"
   ],
   "scripts": {
-    "website": "yarn workspace website start"
+    "website": "yarn workspace @gatewaycash/website start"
   },
-  "author": "Ty Everett <ty@tyweb.us>",
+  "author": "The Gateway Project Developers <hello@gateway.cash>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/ty-everett/gateway/issues"

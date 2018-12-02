@@ -12,7 +12,7 @@ class PaymentsPage extends Component {
   constructor(props) {
     super(props)
     var xhr = new XMLHttpRequest()
-    xhr.open('GET', 'https://gateway.cash/api/getpayments')
+    xhr.open('GET', process.env.REACT_APP_GATEWAY_BACKEND + '/getpayments')
     xhr.onload = () => {
       if (xhr.readyState === 4) {
         var response = xhr.responseText.toString().trim()
@@ -24,7 +24,7 @@ class PaymentsPage extends Component {
 
   toggleView = () => {
     var xhr = new XMLHttpRequest()
-    var requestURL = 'https://gateway.cash/api/get'
+    var requestURL = process.env.REACT_APP_GATEWAY_BACKEND + '/get'
     // the boolean is inverted because our goal is to change the state later.
     if (!this.state.showUnpaid) {
       requestURL += 'unpaid'

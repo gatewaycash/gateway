@@ -12,7 +12,7 @@ class SettingsPage extends Component {
   constructor(props) {
     super(props)
     var xhr = new XMLHttpRequest()
-    xhr.open('GET', 'https://gateway.cash/api/getusername')
+    xhr.open('GET', process.env.REACT_APP_GATEWAY_BACKEND + '/getusername')
     xhr.onload = () => {
       if (xhr.readyState === 4) {
         var name = xhr.responseText.toString().trim()
