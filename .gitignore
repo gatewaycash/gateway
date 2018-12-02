@@ -89,6 +89,4 @@ modules/api/node_modules
 modules/paybutton/node_modules
 
 # submodule dist & binary files
-modules/paybutton/dist
 modules/website/build
-
