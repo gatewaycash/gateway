@@ -31,7 +31,7 @@
   "devDependencies": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gatewaycash/website.git"
+    "url": "git+https://github.com/gatewaycash/gateway.git"
   },
   "keywords": [
     "bitcoin",
@@ -44,6 +44,6 @@
   "author": "The Gateway.cash Project Developers <hello@gateway.cash>",
   "license": "AGPL-3.0",
   "bugs": {
-    "url": "https://github.com/gatewaycash/website/issues"
+    "url": "https://github.com/gatewaycash/gateway/issues"
   }
 }
