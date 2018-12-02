@@ -11,27 +11,14 @@ for our roadmap, use-cases and a lot more info.
 
 ## Development
 
-The project is being hosted across multiple repositories.
-Depending on how you'd like to contribute, you may be interested
-in one of the following:
-
-- [Gateway Payment Button](https://github.com/gatewaycash/website)
-- [Backend Server API](https://github.com/gatewaycash/api)
-- [The Gateway.cash Website](https://github.com/gatewaycash/website)
-- This repository contains graphics, project resources, roadmaps and
-investor materials
-
 If there is a feature or issue you'd like resolved, please open
-an issue for it so that it gets worked on. You may open the issue
-here, or you may send it to the repo where you think it is most
-relevant. Either way, we'll categorize it and get it worked on as 
-soon as we can.
+an issue for it so that it gets worked on. We'll categorize it and 
+get it worked on as soon as we can. If you'd like to work on 
+something, please assign the appropriate issue to yourself 
+beforehand.
 
-If you'd like to work on something, please assign the appropriate
-issue to yourself beforehand.
-
-Note that we may move new issues to a more appropriate repo during
-the classification process.
+Please feel free to submit pull requests after an issue has been 
+opened and a discussion has occurred.
 
 ## Questions and Concerns
 
