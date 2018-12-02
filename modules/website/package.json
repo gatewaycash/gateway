@@ -1,0 +1,49 @@
+{
+  "name": "@gatewaycash/website",
+  "version": "0.1.0",
+  "homepage": "https://gateway.cash/",
+  "dependencies": {
+    "@gatewaycash/paybutton": "^0.1.0",
+    "@material-ui/core": "^3.5.1",
+    "@reach/router": "^1.2.1",
+    "bchaddrjs": "^0.2.2",
+    "react": "^16.7.0-alpha.2",
+    "react-dom": "^16.7.0-alpha.2",
+    "react-scripts": "2.1.1"
+  },
+  "scripts": {
+    "start": "NODE_PATH=src react-scripts start",
+    "build": "NODE_PATH=src react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
+  "description": "The homepage of Gateway.cash, the payment processor for the internet",
+  "main": "index.js",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gatewaycash/website.git"
+  },
+  "keywords": [
+    "bitcoin",
+    "gateway",
+    "cash",
+    "p2p",
+    "payment",
+    "processing"
+  ],
+  "author": "The Gateway.cash Project Developers <hello@gateway.cash>",
+  "license": "AGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/gatewaycash/website/issues"
+  }
+}
