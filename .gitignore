@@ -1,8 +1,5 @@
-
-# Created by https://www.gitignore.io/api/node
-# Edit at https://www.gitignore.io/?templates=node
-
 ### Node ###
+
 # Logs
 logs
 *.log
@@ -24,6 +21,7 @@ pids
 
 # build artifacts
 build
+dist
 
 # Dependency directories
 node_modules
