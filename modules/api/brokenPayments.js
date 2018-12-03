@@ -16,19 +16,21 @@ class brokenPaymentsDaemon {
 
   constructor () {
     // connect to the database
-    var conn = mysql.createConnection({
+    // TODO connect to database during each search instead of holding conn open
+    console.log('Starting broken payments daemon...')
+    this.conn = mysql.createConnection({
       host: process.env.SQL_DATABASE_HOST,
       user: process.env.SQL_DATABASE_USER,
       password: process.env.SQL_DATABASE_PASSWORD,
       database: process.env.SQL_DATABASE_DB_NAME
     })
 
-    conn.connect((err) => {
+    this.conn.connect((err) => {
       if (err) {
         throw err
       }
-      searchDatabase() // run now
-      setInterval(searchDatabase, 86400000) // run once a day
+      this.searchDatabase() // run now
+      setInterval(this.searchDatabase, 86400000) // run once a day
     })
   }
   
@@ -52,7 +54,7 @@ class brokenPaymentsDaemon {
       var balance = parseInt(unconfirmedBalance) + parseInt(confirmedBalance)
       if (balance > 0) {
         console.log('non-zero balance for',legacy,balance)
-        addPending(payment)
+        this.addPending(payment)
       }
     }
   }
@@ -60,7 +62,7 @@ class brokenPaymentsDaemon {
   addPending (payment) {
     var txid = 'broken-transaction-txid-unknown-' + sha256(require('crypto').randomBytes(32)).toString().substr(0, 32)
     var sql = 'insert into pending (txid, address) values (?, ?)'
-    conn.query(sql, [txid, payment.paymentAddress], (err, result) => {
+    this.conn.query(sql, [txid, payment.paymentAddress], (err, result) => {
       if (err) {
         throw err
       }
@@ -70,12 +72,12 @@ class brokenPaymentsDaemon {
 
   searchDatabase () {
     var query = 'select * from payments where transferTXID is null order by created desc'
-    conn.query(query, (err, res) => {
+    this.conn.query(query, (err, res) => {
       if (err) {
         throw err
       }
       for(var i = 0; i < res.length; i++) {
-        checkFunds(res[i])
+        this.checkFunds(res[i])
       }
     })
   }

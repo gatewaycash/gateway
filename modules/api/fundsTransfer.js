@@ -17,22 +17,25 @@ every 60 seconds.
 class fundsTransferDaemon {
 
   constructor () {
+    console.log('Starting funds transfer daemon...')
     // connect to the database
-    var conn = mysql.createConnection({
+    // TODO connect to the database during each search instead of
+    // holding the connection open constantly
+    this.conn = mysql.createConnection({
       host: process.env.SQL_DATABASE_HOST,
       user: process.env.SQL_DATABASE_USER,
       password: process.env.SQL_DATABASE_PASSWORD,
       database: process.env.SQL_DATABASE_DB_NAME
     })
 
-    conn.connect((err) => {
+    this.conn.connect((err) => {
       if (err) {
         throw err
       }
       // run immediately
-      searchDatabase()
+      this.searchDatabase()
       // run every 1 minute
-      setInterval(searchDatabase, 60000)
+      setInterval(this.searchDatabase, 60000)
     })
   }
   
@@ -53,7 +56,7 @@ class fundsTransferDaemon {
       var balance = parseInt(unconfirmedBalance) + parseInt(confirmedBalance)
       if (balance > 0) {
         console.log('non-zero balance for',legacy,balance)
-        transferFunds(payment)
+        this.transferFunds(payment)
       }
     } else {
       // something from the request was incorrect
@@ -79,7 +82,7 @@ class fundsTransferDaemon {
         
         // get the private key
         var sql = 'select paymentKey, callbackURL, paymentID, paymentTXID from payments where paymentAddress = ?'
-        conn.query(sql, [payment.address], (err, result) => {
+        this.conn.query(sql, [payment.address], (err, result) => {
           var paymentKey = result[0].paymentKey.toString()
           var callbackURL = result[0].callbackURL.toString()
           var paymentID = result[0].paymentID.toString()
@@ -132,21 +135,21 @@ class fundsTransferDaemon {
           
           // delete transaction from pending
           var sql = 'delete from pending where txid = ?'
-          conn.query(sql, [payment.txid], (err, result) => {
+          this.conn.query(sql, [payment.txid], (err, result) => {
             if (err) {
               throw err
             }
             
             // update payments with new data
             var sql = 'update payments set paymentTXID = ?, paidAmount = ?, transferTXID = ? where paymentAddress = ?'
-            conn.query(sql, [payment.txid, totalTransferred, transferTXID, payment.address], (err, result) => {
+            this.conn.query(sql, [payment.txid, totalTransferred, transferTXID, payment.address], (err, result) => {
               if (err) {
                 throw err
               }
             
               // increment the total sales of the merchant
               var sql = 'update users set totalSales = totalSales + ? where merchantID = ?'
-              conn.query(sql, [totalTransferred, merchantID], (err, result) => {
+              this.conn.query(sql, [totalTransferred, merchantID], (err, result) => {
                 if (err) {
                   throw err
                 }
@@ -179,13 +182,13 @@ class fundsTransferDaemon {
   
   searchDatabase () {
     var query = 'select * from pending order by created desc'
-    conn.query(query, (err, res) => {
+    this.conn.query(query, (err, res) => {
       if (err)  {
         throw err
       }
       for(var i = 0; i < res.length; i++) {
         console.log('Checking payment with txid', res[i].txid)
-        checkFunds(res[i])
+        this.checkFunds(res[i])
       }
     })
   }

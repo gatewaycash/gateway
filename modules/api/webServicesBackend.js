@@ -26,6 +26,9 @@ const registerEndpoint = require('./register.js')
 const fundsTransferDaemon = require('./fundsTransfer.js')
 const brokenPaymentsDaemon = require('./brokenPayments.js')
 
+// print startup message
+console.log('Starting Web Services Backend...')
+
 // create the express instance
 const app = express()
 
@@ -58,7 +61,9 @@ app.use((req, res, next) => {
 app.use(express.static('public'))
 
 // listen for connections
-app.listen(process.env.WEB_PORT)
+app.listen(process.env.WEB_PORT, () => {
+  console.log('Web services API listening on port', process.env.WEB_PORT)
+})
 
 // log into the database
 // TODO: do this inside of the request handler for each module that
@@ -66,7 +71,7 @@ app.listen(process.env.WEB_PORT)
 // regulations in the future.
 var conn = mysql.createConnection({
   host: process.env.SQL_DATABASE_HOST,
-  user: process.env.SQl_DATABASE_USER,
+  user: process.env.SQL_DATABASE_USER,
   password: process.env.SQL_DATABASE_PASSWORD,
   database: process.env.SQL_DATABASE_DB_NAME,
 })
@@ -76,6 +81,7 @@ conn.connect((err) => {
   if (err) {
     throw err
   }
+  console.log('Database connection established')
 })
 
 // start the payment processing daemons
