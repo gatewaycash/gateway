@@ -1,4 +1,4 @@
-const bch = require('bitcoincashjs')
+const bch = require('bitcore-lib-cash')
 const bchaddr = require('bchaddrjs')
 const mysql = require('mysql')
 const request = require('sync-request')
