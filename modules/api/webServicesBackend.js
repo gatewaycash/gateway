@@ -21,6 +21,8 @@ const mysql = require('mysql')
 
 // include all endpoint modules
 const registerEndpoint = require('./register.js')
+const identifyEndpoint = require('./identify.js')
+const loginEndpoint = require('./login.js')
 
 // include all service daemons
 const fundsTransferDaemon = require('./fundsTransfer.js')
@@ -89,4 +91,6 @@ new fundsTransferDaemon()
 new brokenPaymentsDaemon()
 
 // finally, utilize all of the API endpoints for appropriate requests
-app.post('/api/register', registerEndpoint)
+app.post('/register', registerEndpoint)
+app.get('/identify', identifyEndpoint)
+app.get('/login', loginEndpoint)
