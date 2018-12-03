@@ -23,6 +23,14 @@ const mysql = require('mysql')
 const registerEndpoint = require('./register.js')
 const identifyEndpoint = require('./identify.js')
 const loginEndpoint = require('./login.js')
+const loggedInEndpoint = require('./loggedin.js')
+const getPaymentsEndpoint = require('./getpayments.js')
+const getUnpaidPaymentsEndpoint = require('./getunpaidpayments.js')
+const setUsernameEndpoint = require('./setusername.js')
+const getUsernameEndpoint = require('./getusername.js')
+const getMerchantIDEndpoint = require('./getmerchantid.js')
+const paymentSentEndpoint = require('./paymentsent.js')
+const payEndpoint = require('./pay.js')
 
 // include all service daemons
 const fundsTransferDaemon = require('./fundsTransfer.js')
@@ -90,7 +98,15 @@ conn.connect((err) => {
 new fundsTransferDaemon()
 new brokenPaymentsDaemon()
 
-// finally, utilize all of the API endpoints for appropriate requests
+// finally, utilize API endpoints for appropriate requests
 app.post('/register', registerEndpoint)
 app.get('/identify', identifyEndpoint)
 app.get('/login', loginEndpoint)
+app.get('/loggedin', loggedInEndpoint)
+app.get('/getpayments', getPaymentsEndpoint)
+app.get('/getunpaidpayments', getUnpaidPaymentsEndpoint)
+app.post('/setusername', setUsernameEndpoint)
+app.get('/getusername', getUsernameEndpoint)
+app.get('/getmerchantid', getMerchantIDEndpoint)
+app.get('/paymentsent', paymentSentEndpoint)
+app.get('/pay', payEndpoint)
