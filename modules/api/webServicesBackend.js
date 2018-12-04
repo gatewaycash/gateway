@@ -68,6 +68,7 @@ app.use((req, res, next) => {
 })
 
 // serve the public directory's static resources
+// (API docs landing page)
 app.use(express.static('public'))
 
 // listen for connections
@@ -95,8 +96,9 @@ conn.connect((err) => {
 })
 
 // start the payment processing daemons
-new fundsTransferDaemon()
-new brokenPaymentsDaemon()
+// assign to variables to prevent garbage collection
+var ftd = new fundsTransferDaemon()
+var bpd = new brokenPaymentsDaemon()
 
 // finally, utilize API endpoints for appropriate requests
 app.post('/register', registerEndpoint)

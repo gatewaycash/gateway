@@ -1,5 +1,6 @@
 module.exports = function(options) {
   return (req, res) => {
+    console.log('/register requested')
     if (!req.session.address || req.session.address.length < 20) {
       res.send('Make sure to give an address before trying to register')
     } else if (!bch.Address.isCashAddress(req.session.address)) {

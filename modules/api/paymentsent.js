@@ -1,4 +1,4 @@
-module.exports = function (options) => {
+module.exports = function (options) {
   return (req, res) => {
     const query = url.parse(req.url, true).query
     // validate the address
