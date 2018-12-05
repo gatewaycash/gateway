@@ -24,6 +24,9 @@
     "build-paybutton": "yarn workspace @gatewaycash/paybutton build",
     "build-inject": "yarn workspace @gatewaycash/inject build",
     "build": "yarn build-paybutton && yarn build-inject && yarn build-production-website"
+    "setup-api": "yarn workspace @gateway/api setup",
+    "setup": "yarn setup-api",
+    "dev": "concurrently --kill-others \"yarn start-development-website\" \"yarn start-development-api-server\""
   },
   "author": "The Gateway Project Developers <hello@gateway.cash>",
   "license": "AGPL-3.0",
@@ -33,6 +36,7 @@
   "homepage": "https://github.com/gatewaycash/gateway#readme",
   "dependencies": {
     "babel-eslint": "9.0.0",
+    "concurrently": "^4.1.0",
     "eslint": "5.6.0",
     "eslint-config-prettier": "^3.3.0",
     "eslint-config-react-app": "^3.0.5",

@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "nodemon webServicesBackend.js",
-    "production": "pm2 start webServicesBackend.js"
+    "production": "pm2 start webServicesBackend.js",
+    "setup": "node setupEnvironment.js"
   },
   "dependencies": {
     "bitcore-lib-cash": "^0.19.0",
