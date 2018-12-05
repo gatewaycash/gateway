@@ -22,7 +22,8 @@
     "rollup-plugin-node-resolve": "^3.4.0"
   },
   "scripts": {
-    "build": "rollup -c --environment INCLUDE_DEPS,BUILD:production"
+    "build": "rollup -c --environment INCLUDE_DEPS,BUILD:production",
+    "dev": "rollup -c --watch --environment INCLUDE_DEPS,BUILD:production"
   },
   "description": "Gateway.cash Payment Button"
 }

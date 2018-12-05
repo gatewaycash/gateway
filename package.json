@@ -23,10 +23,12 @@
     "start-production-api-server": "yarn workspace @gatewaycash/api production",
     "build-paybutton": "yarn workspace @gatewaycash/paybutton build",
     "build-inject": "yarn workspace @gatewaycash/inject build",
-    "build": "yarn build-paybutton && yarn build-inject && yarn build-production-website"
+    "build": "yarn build-paybutton && yarn build-inject && yarn build-production-website",
     "setup-api": "yarn workspace @gateway/api setup",
     "setup": "yarn setup-api",
-    "dev": "concurrently --kill-others \"yarn start-development-website\" \"yarn start-development-api-server\""
+    "dev-paybutton": "yarn workspace @gatewaycash/paybutton dev",
+    "dev-inject": "yarn workspace @gatewaycash/inject dev",
+    "dev": "concurrently --kill-others \"yarn start-development-website\" \"yarn start-development-api-server\" \"yarn dev-paybutton\" \"yarn dev-inject\""
   },
   "author": "The Gateway Project Developers <hello@gateway.cash>",
   "license": "AGPL-3.0",
