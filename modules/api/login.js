@@ -1,5 +1,5 @@
-module.exports = function (options) {
-  return (req, res) => {
+const url = require('url')
+module.exports = function (req, res) {
     console.log('/login requested')
     // parse the provided data
     const query = url.parse(req.url, true).query
@@ -57,5 +57,4 @@ module.exports = function (options) {
         }
       })
     }
-  }
 }
