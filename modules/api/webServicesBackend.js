@@ -76,6 +76,7 @@ app.listen(process.env.WEB_PORT, () => {
   console.log('Web services API listening on port', process.env.WEB_PORT)
 })
 
+
 // log into the database
 // TODO: do this inside of the request handler for each module that
 // requires it. This will allow better database access permission
@@ -97,8 +98,10 @@ conn.connect((err) => {
 
 // start the payment processing daemons
 // assign to variables to prevent garbage collection
-var ftd = new fundsTransferDaemon()
-var bpd = new brokenPaymentsDaemon()
+// TODO make this work
+//var ftd = new fundsTransferDaemon()
+//var bpd = new brokenPaymentsDaemon()
+
 
 // finally, utilize API endpoints for appropriate requests
 app.post('/register', registerEndpoint)

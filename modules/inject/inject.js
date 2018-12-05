@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import PayButton from './PayButton'
+import PayButton from '@gatewaycash/paybutton'
 
 function createButton(button, id) {
   ReactDOM.render(
