@@ -6,7 +6,7 @@ export default {
   input: 'inject.js',
   output: {
     file: './../website/public/pay.js',
-    format: 'cjs',
+    format: 'iife',
   },
   plugins: [
     resolve(),

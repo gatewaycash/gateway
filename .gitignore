@@ -37,3 +37,6 @@ node_modules
 
 # ignore backend sessions (and Jeff Sessions?)
 sessions
+
+# ignore compiled inject code
+pay.js
