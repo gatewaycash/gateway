@@ -25,5 +25,8 @@
     "build": "rollup -c --environment INCLUDE_DEPS,BUILD:production",
     "dev": "rollup -c --watch --environment INCLUDE_DEPS,BUILD:production"
   },
-  "description": "Gateway.cash Payment Button"
+  "description": "Gateway.cash Payment Button",
+  "dependencies": {
+    "dotenv": "^6.2.0"
+  }
 }

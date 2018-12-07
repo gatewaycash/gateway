@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { navigate } from '@reach/router'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
+require('dotenv').config()
 
 class LoginPage extends Component {
   state = {

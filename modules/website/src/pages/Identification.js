@@ -3,6 +3,7 @@ import { navigate } from '@reach/router'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import bchaddr from 'bchaddrjs'
+require('dotenv').config()
 
 class IdentificationPage extends Component {
   state = {
