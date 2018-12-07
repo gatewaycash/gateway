@@ -22,7 +22,7 @@ window.onload = function() {
   console.log(
     'Gateway: Found',
     buttons.length,
-    'payment buttons(s) on this page',
+    'payment button' + buttons.length == 1 ? '' : 's' + ' on this page',
   )
   for (var i = 0; i < buttons.length; i++) {
     var buttonID = 'pay-' + Math.floor(Math.random() * 100000)
