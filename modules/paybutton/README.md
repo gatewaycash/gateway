@@ -27,7 +27,7 @@ To add buttons to the page, simply use a div with class="PayButton", as follows:
 
 ```HTML
 <div
-  class="PayButton"
+  class="payButton"
   merchantID+"f00ba41111"
   amount="2.99"
   currency="BCH"

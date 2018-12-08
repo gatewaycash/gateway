@@ -39,4 +39,4 @@ node_modules
 sessions
 
 # ignore compiled inject code
-pay.js
+modules/website/public/pay.js

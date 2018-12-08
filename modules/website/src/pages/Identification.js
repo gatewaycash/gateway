@@ -48,7 +48,7 @@ class IdentificationPage extends Component {
     let xhr = new XMLHttpRequest()
     xhr.open(
       'GET',
-      process.env.REACT_APP_GATEWAY_BACKEND + '/login?type=' +
+      process.env.REACT_APP_GATEWAY_BACKEND + '/identify?type=' +
         type +
         '&value=' +
         encodeURIComponent(value),

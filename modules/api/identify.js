@@ -88,7 +88,7 @@ module.exports = function (req, res) {
         }
         var sql = 'select username from users where username = ?'
         conn.query(sql, [query.value], (err, result) => {
-          if (result.length !== 1) {
+          if (result && result.length !== 1) {
             res.send('No match')
           } else {
             req.session.username = query.value
