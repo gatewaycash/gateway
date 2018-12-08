@@ -1,9 +1,14 @@
-module.exports = function (req, res) {
-  const url = require('url')
-  const mysql = require('mysql')
-  require('dotenv').config()
-  const bch = require('bitcore-lib-cash')
+/**
+ * /dentify GET endpoint
+ * @author The Gateway Project Developers <hello@gateway.cash>
+ * @file Provides an endpoint for /identify
+ */
+const url = require('url')
+const mysql = require('mysql')
+const bch = require('bitcore-lib-cash')
+require('dotenv').config()
 
+module.exports = function (req, res) {
   console.log('/identify requested')
 
   // parse the request URL
@@ -39,8 +44,8 @@ module.exports = function (req, res) {
       res.send('Invalid address (use CashAddr or Legacy)')
     }
     if (address !== false) {
-      // connect to database
-      var conn = mysql.createConnection({
+      // connect to the database
+      const conn = mysql.createConnection({
         host: process.env.SQL_DATABASE_HOST,
         user: process.env.SQL_DATABASE_USER,
         password: process.env.SQL_DATABASE_PASSWORD,
@@ -88,6 +93,9 @@ module.exports = function (req, res) {
         }
         var sql = 'select username from users where username = ?'
         conn.query(sql, [query.value], (err, result) => {
+          if (err) {
+            throw err
+          }
           if (result && result.length !== 1) {
             res.send('No match')
           } else {

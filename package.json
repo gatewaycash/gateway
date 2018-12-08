@@ -19,7 +19,7 @@
   "scripts": {
     "api-dev": "yarn workspace @gatewaycash/api dev",
     "api-prod": "yarn workspace @gatewaycash/api production",
-    "api-setup": "yarn workspace @gateway/api setup",
+    "api-setup": "yarn workspace @gatewaycash/api setup",
     "inject-build": "yarn workspace @gatewaycash/inject build",
     "inject-dev": "yarn workspace @gatewaycash/inject dev",
     "paybutton-build": "yarn workspace @gatewaycash/paybutton build",

@@ -1,3 +1,7 @@
+/**
+ * API Environment Setup Script
+ * @author The Gateway Project Developers <hello@gateway.cash>
+ */
 const readline = require('readline')
 const fs = require('fs')
 const mysql = require('mysql')
@@ -14,27 +18,27 @@ const collectInformation = () => {
     output: process.stdout
   })
 
-rl.question('\nSQL database hostname (ENTER for 127.0.0.1): ', (hostname) => {
-  hostname = hostname === '' ? '127.0.0.1' : hostname
-  rl.question('SQL database user name (ENTER for gateway): ', (user) => {
-    user = user === '' ? 'gateway' : user
-    rl.question('SQL database user password (ENTER for gateway123): ', (pass) => {
-      pass = pass === '' ? 'gateway123' : pass
-      rl.question('SQL database name (ENTER for gateway): ', (db) => {
-        db = db === '' ? 'gateway' : db
-        rl.question('On which port should the API server listen? (ENTER for 8080): ', (listen) => {
-          listen = listen === '' ? '8080' : listen
-          console.log('Please take this opportunity to mash your keyboard (no spaces).')
-          rl.question('Server session secret: ', (secret) => {
-            secret = secret === '' ? 'sdfoasjdpfajdfpajdfasd' : secret
-            rl.close()
-            testDatabaseConnection(hostname, user, pass, db, listen, secret)
+  rl.question('\nSQL database hostname (ENTER for 127.0.0.1): ', (hostname) => {
+    hostname = hostname === '' ? '127.0.0.1' : hostname
+    rl.question('SQL user name (ENTER for gateway): ', (user) => {
+      user = user === '' ? 'gateway' : user
+      rl.question('SQL user password (ENTER for gateway123): ', (pass) => {
+        pass = pass === '' ? 'gateway123' : pass
+        rl.question('SQL database name (ENTER for gateway): ', (db) => {
+          db = db === '' ? 'gateway' : db
+          rl.question('On which port should the API server listen? (ENTER for 8080): ', (listen) => {
+            listen = listen === '' ? '8080' : listen
+            console.log('Please take this opportunity to mash your keyboard (no spaces).')
+            rl.question('Server session secret: ', (secret) => {
+              secret = secret === '' ? 'sdfoasjdpfajdfpajdfasd' : secret
+              rl.close()
+              testDatabaseConnection(hostname, user, pass, db, listen, secret)
+            })
           })
         })
       })
     })
   })
-})
 }
 
 const testDatabaseConnection = (host, user, pass, db, listen, secret) => {
@@ -43,7 +47,8 @@ const testDatabaseConnection = (host, user, pass, db, listen, secret) => {
     host: host,
     user: user,
     password: pass,
-    database: db
+    database: db,
+    multipleStatements: true
   })
   conn.connect((err) => {
     if (err) {
@@ -69,10 +74,61 @@ const testDatabaseConnection = (host, user, pass, db, listen, secret) => {
             throw err
           } else {
             console.log('New API configuration saved in modules/api/.env')
-            console.log('Thank you for helping build Gateway!')
+            setupDatabase(conn)
           }
         }
       )
+    }
+  })
+}
+
+const setupDatabase = (conn) => {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  })
+  console.log('\nSetting up a new database will OVERWRITE any existing data')
+  console.log('stored in the current database. THIS ACTION CANNOT BE UNDONE.')
+  console.log('If you have just created the database and are setting it up for')
+  console.log('development for the first time, you need to set it up before')
+  console.log('starting development.\n')
+  rl.question('Set up a new test database? [Y/N]: ', (setup) => {
+    rl.close()
+    if (
+      setup === 'N' ||
+      setup === 'n' ||
+      setup === 'no' ||
+      setup === 'NO'
+    ) {
+      console.log('Thank you for helping build Gateway.')
+    } else if (
+      setup === 'Y' ||
+      setup === 'y' ||
+      setup === 'yes' ||
+      setup === 'YES'
+    ) {
+      console.log('Setting up a new test database...')
+      fs.readFile('SQLSetup.sql', 'utf8', (err, data) => {
+        if (err) {
+          console.log('Could not open the SQLSetup.sql file!')
+          conn.close()
+          throw err
+        } else {
+          conn.query(data, (err, result) => {
+            if (err) {
+              console.log('Error executing the code from SQLSetup.sql!')
+              throw err
+            } else {
+              console.log('Your test database has been successfully created!')
+              console.log('Thank you for helping build Gateway.')
+              conn.close()
+            }
+          })
+        }
+      })
+    } else {
+      console.log('Please answer with either "Y" or "N".')
+      setupDatabase(conn)
     }
   })
 }
