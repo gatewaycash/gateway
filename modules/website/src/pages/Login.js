@@ -18,7 +18,7 @@ class LoginPage extends Component {
     xhr.open(
       'GET',
       process.env.REACT_APP_GATEWAY_BACKEND +
-      '/password?password=' + encodeURIComponent(value),
+      '/login?password=' + encodeURIComponent(value),
     )
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
     xhr.onload = () => {
