@@ -10,9 +10,10 @@ create table if not exists users (
   totalSales int(15),
   created timestamp default current_timestamp,
   merchantID varchar(16),
-  password varchar(256),
-  salt varchar(256),
-  username varchar(24)
+  password varchar(32),
+  salt varchar(32),
+  username varchar(24),
+  APIKey varchar(32)
 );
 
 -- create new payments table

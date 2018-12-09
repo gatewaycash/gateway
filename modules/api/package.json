@@ -16,6 +16,7 @@
     "pm2": "^3.2.2",
     "session-file-store": "^1.2.0",
     "sha256": "^0.2.0",
+    "sqlite3": "^4.0.4",
     "sync-request": "^6.0.0"
   }
 }
