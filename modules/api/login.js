@@ -33,7 +33,6 @@ module.exports = function (req, res) {
       })
     } else {
       // search by username
-      console.log(req.session)
       var sql = 'select * from users where username = ?'
       conn.query(sql, [req.session.username], (err, result) => {
         if (err) {

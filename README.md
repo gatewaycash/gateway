@@ -22,6 +22,9 @@ beforehand.
 Please feel free to submit pull requests after an issue has been
 opened and a discussion has occurred.
 
+More information specific to each module can be found in the README.md for
+that module.
+
 ## Questions and Concerns
 
 Feel free to send email to <hello@gateway.cash> with any ideas,

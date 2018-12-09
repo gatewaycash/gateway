@@ -43,8 +43,8 @@ app.use(
     secret: process.env.WEB_SESSION_SECRET,
     saveUninitialized: true,
     resave: true,
-    store: new FileStore(),
-  }),
+    store: new FileStore()
+  })
 )
 
 // enable CORS to allow for API calls from other sites

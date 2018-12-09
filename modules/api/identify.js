@@ -10,7 +10,6 @@ require('dotenv').config()
 
 module.exports = function (req, res) {
   console.log('/identify requested')
-
   // parse the request URL
   const query = url.parse(req.url, true).query
 
@@ -100,6 +99,7 @@ module.exports = function (req, res) {
             res.send('No match')
           } else {
             req.session.username = query.value
+            req.session.save()
             res.send('login')
           }
         })
