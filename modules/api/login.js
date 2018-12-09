@@ -1,12 +1,19 @@
+/**
+ * GET /login API endpoint
+ * @author The Gateway Project Developers <hello@gateway.cash>
+ * @file Defines the /login API endpoint
+ */
 const url = require('url')
 module.exports = function (req, res) {
     console.log('/login requested')
     // parse the provided data
     const query = url.parse(req.url, true).query
-    if (!req.session.address && !req.session.username) {
-      res.send('Provide an address or username first')
-    } else if (query.password.length < 12) {
-      res.send('Incorrect password')
+    console.log(query)
+    // define a response object
+    const response = {}
+    if (!query.password) {
+      
+    }
     } else if (req.session.address) {
       // prefer logging in by address
       var sql = 'select * from users where payoutAddress = ?'

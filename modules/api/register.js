@@ -4,6 +4,7 @@
  * @file Defines a POST endpoint for /register
  */
 const mysql = require('mysql')
+const bch = require('bitcore-lib-cash')
 
 module.exports = function (req, res) {
   console.log('/register requested')
