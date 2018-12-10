@@ -4,7 +4,9 @@
  * @file Defines the /login API endpoint
  */
 const url = require('url')
-const bch = require('bitcore-lib-cash')
+const bchaddr = require('bchaddrjs')
+const mysql = require('mysql')
+require('dotenv').config()
 
 module.exports = function (req, res) {
   console.log('/login requested')
@@ -35,6 +37,14 @@ module.exports = function (req, res) {
     username were provided), we check for an address first.
   */
   } else if (query.address) {
+
+    // connect to the database
+    const conn = mysql.createConnection({
+      host: process.env.SQL_DATABASE_HOST,
+      user: process.env.SQL_DATABASE_USER,
+      password: process.env.SQL_DATABASE_PASSWORD,
+      database: process.env.SQL_DATABASE_DB_NAME,
+    })
 
     // search the database for records
     var sql = `select password, salt, APIKey
@@ -80,6 +90,15 @@ module.exports = function (req, res) {
     provided.
    */
   } else {
+
+    // connect to the database
+    const conn = mysql.createConnection({
+      host: process.env.SQL_DATABASE_HOST,
+      user: process.env.SQL_DATABASE_USER,
+      password: process.env.SQL_DATABASE_PASSWORD,
+      database: process.env.SQL_DATABASE_DB_NAME,
+    })
+
     // search for records
     var sql = `select password, salt, APIKey
       from users
