@@ -51,7 +51,7 @@ module.exports = function (req, res) {
       res.end(JSON.stringify(response))
 
     // ensure the password is sufficiently long
-    } else if (req.body.password.toSring().length < 12) {
+    } else if (req.body.password.toString().length < 12) {
       response.status = 'error'
       response.error = 'Password Too Short'
       response.description = `The security of your account is important. For
@@ -62,14 +62,14 @@ module.exports = function (req, res) {
     // ensure the password does not contain odd characters
     } else if (
       req.body.password.toString().indexOf(' ') !== -1 ||
-      res.body.password.toString().indexOf('\n') !== -1 ||
-      res.body.password.toString().indexOf('\t') !== -1
+      req.body.password.toString().indexOf('\n') !== -1 ||
+      req.body.password.toString().indexOf('\t') !== -1
     ) {
       response.status = 'error'
       response.error = 'Password Cannot Contain Odd Characters'
-      response.description = `The security of your account is important. For this
-      reason, your password may not contain spaces, tabs, return characters or
-      other non-standard characters.`
+      response.description = `The security of your account is important. For
+      this reason, your password may not contain spaces, tabs, return
+      characters or other non-standard characters.`
       res.end(JSON.stringify(response))
 
     // TODO other requirements for password
@@ -82,7 +82,7 @@ module.exports = function (req, res) {
         password: process.env.SQL_DATABASE_PASSWORD,
         database: process.env.SQL_DATABASE_DB_NAME,
       })
-      conn.connect((err, res) => {
+      conn.connect((err) => {
         if (err) {
           throw err
         }
@@ -111,7 +111,7 @@ module.exports = function (req, res) {
             if (!req.body.username) {
 
               // create the new user account
-              const merchantID = sha256(req.session.address).substr(0, 16)
+              const merchantID = sha256(req.body.address).substr(0, 16)
               const passwordSalt = sha256(require('crypto').randomBytes(32))
               const APIKey = sha256(require('crypto').randomBytes(32))
               const passwordHash = sha256(req.body.password + passwordSalt)
@@ -141,7 +141,7 @@ module.exports = function (req, res) {
               )
 
             // make sure the username isn't too short
-            } else if (req.body.username.toString().length < 5) {
+          } else if (req.body.username.toString().length < 5) {
               response.status = 'error'
               response.error = 'Username Too Short'
               response.description = `Please make sure your username is longer
@@ -149,7 +149,7 @@ module.exports = function (req, res) {
               res.end(JSON.stringify(response))
 
             // ensure username is not too long
-            } else if (req.body.username.toString().length > 5) {
+            } else if (req.body.username.toString().length > 24) {
               response.status = 'error'
               response.error = 'Username Too Long'
               response.description = `Please make sure your username is shorter
@@ -192,7 +192,7 @@ module.exports = function (req, res) {
                 } else {
 
                   // create the new user account
-                  const merchantID = sha256(req.session.address).substr(0, 16)
+                  const merchantID = sha256(req.body.address).substr(0, 16)
                   const passwordSalt = sha256(require('crypto').randomBytes(32))
                   const APIKey = sha256(require('crypto').randomBytes(32))
                   const passwordHash = sha256(req.body.password + passwordSalt)

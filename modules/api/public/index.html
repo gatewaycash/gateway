@@ -16,23 +16,44 @@
 </head>
 <body>
   <center>
-    <h1>Gateway - API landing page</h1>
+    <h1>Gateway.cash API Docs</h1>
   </center>
   <p>
-    You've reached the backend server API landing page. This server can be used
-    to interface with the <a href="https://gateway.cash"
+    You've reached the backend server API documentation landing page. This
+    server may be used to interface with the <a href="https://gateway.cash"
     target="_blank">gateway.cash</a> payment processor.
   </p>
-  <h2>Documentation</h2>
+  <h2>Overview</h2>
   <p>
-    The API is served over HTTPS at api.gateway.cash. It can be used to access
-    invoices, manage orders and generate new payments. Your merchant API key
-    is required in order to access your invoices and account information. No
-    API keys are required when making or confirming a payment.
+    The API is served over HTTP or HTTPS with your current URL as a basepoint.
+    If you are running a local instance of the server at http://127.0.0.1:8080/
+    then your requests will start with that URL.
   </p>
   <p>
-    Calling the API will result in a JSON object string being returned. The
-    "status" field of the object will either be "success" or "error".
+    For example, the endpoint for /login would be http://127.0.0.1:8080/login
+    on your local instance. The examples in this documentation assume you are
+    using a basepoint URL of https://api.gateway.cash/ which is the production
+    server Gateway uses across all of our services.
+  </p>
+  <p>
+    You are free to use our API server as you wish. If we receive excessive
+    spam we may choose to block your access. Like all open-source projects, you
+    are also free to run your own server on the internet if you wish.
+  </p>
+  <h2>The Gateway API</h2>
+  <p>
+    The Gateway API can be used by merchants and customers to access invoices,
+    manage orders and make payments. Merchant API keys are required in order to
+    access invoices and account information.
+  </p>
+  <p>
+    No API keys are required when making or confirming a payment.
+  </p>
+  <h2>API Requests</h2>
+  <p>
+    Making a request to the API will result in a JSON object string being
+    returned. The "status" property of the object will either be "success" or
+    "error" for all requests.
   </p>
   <p>
     In the case of an error, the "error" property will contain a brief error
@@ -41,8 +62,9 @@
   </p>
   <p>
     In the case of a "success" status field, the object will contain the
-    relevant information, described below for each endpoint:
+    relevant information as described below for each endpoint:
   </p>
+  <h2>API Endpoints</h2>
   <h3>GET /login</h3>
   <p>
     Validates a given session, returning the API key. The aPI key is required to
@@ -77,7 +99,28 @@ GET https://api.gateway.cash/login?username=JohnGalt12&password=IHeartDagney
   <h3>POST /register</h3>
   <p>
     Creates a new merchant account and generates an API key, merchant ID and
-    other account information for the user.
+    other account information for the user. Once registration is complete,
+    the newly-generated API key is returned to the user.
+  </p>
+  <p>
+    The address must be a valid Bitcoin Cash address. If not given in
+    CashAddress format, it will be translated.
+  </p>
+  <p>
+    The username must be between 5 and 24 characters, must be unique, most not
+    contain spaces or other odd characters, and is an optional parameter at
+    registration time. Usernames can always be set later with the /setusername
+    endpoint.
+  </p>
+  <p>
+    The password must be secure, unique and must not contain odd characters such
+    as returns, tabs or spaces.
+  </p>
+  <p>
+    <b>BE AWARE:</b> The API does not validate that passwords are secure or have
+    entropy. It is the responsibility of the user and/or the front-end
+    software provider to ensure that  a secure password is provided. Passwords
+    are always salted and hashed prior to storing in a database.
   </p>
   <h4>Parameters</h4>
   <ul>
