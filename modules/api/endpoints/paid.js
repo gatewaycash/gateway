@@ -80,10 +80,10 @@ module.exports = function (req, res) {
 
         // verify the TXID is not already pending
         } else {
-          var sql = `select paymentTXID
+          var sql = `select txid
             from pending
             where
-            paymentTXID = ?`
+            txid = ?`
           conn.query(sql, [req.body.paymentTXID], (err, result) => {
             if (err) {
               throw err
