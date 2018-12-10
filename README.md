@@ -1,5 +1,7 @@
 # Gateway
 
+[![Build Status](https://travis-ci.org/gatewaycash/gateway.png?branch=master)](https://travis-ci.org/gatewaycash/gateway)
+
 Simple Bitcoin Payments
 
 ## Overview
@@ -12,25 +14,28 @@ for our roadmap, use-cases and a lot more info.
 ## Development
 
 If there is a feature or issue you'd like resolved, please open
-an issue for it so that it gets worked on. We'll categorize it and 
-get it worked on as soon as we can. If you'd like to work on 
-something, please assign the appropriate issue to yourself 
+an issue for it so that it gets worked on. We'll categorize it and
+get it worked on as soon as we can. If you'd like to work on
+something, please assign the appropriate issue to yourself
 beforehand.
 
-Please feel free to submit pull requests after an issue has been 
+Please feel free to submit pull requests after an issue has been
 opened and a discussion has occurred.
+
+More information specific to each module can be found in the README.md for
+that module.
 
 ## Questions and Concerns
 
-Feel free to send email to <hello@gateway.cash> with any ideas, 
-questions or feedback. If you'd like to become a contributor, join 
+Feel free to send email to <hello@gateway.cash> with any ideas,
+questions or feedback. If you'd like to become a contributor, join
 the [ambassador.cash Discord server](http://ambassador.cash) and talk
 to us in the #gatewaycash channel.
 
 ## Weekly Community & Development Meetings
 
-There are also weekly community meetings to discuss development, 
-ideas and tech every Saturday at 9AM PST (17:00 UTC) in the voice 
+There are also weekly community meetings to discuss development,
+ideas and tech every Saturday at 9AM PST (17:00 UTC) in the voice
 channel. All parties are welcome.
 
 ## Donations

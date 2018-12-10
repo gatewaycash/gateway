@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Button from '@material-ui/core/Button'
 import { Link, navigate } from '@reach/router'
 import faviconImage from './../res/favicon.svg'
+require('dotenv').config()
 
 class StartPage extends Component {
   constructor(props) {

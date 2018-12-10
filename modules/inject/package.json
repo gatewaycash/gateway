@@ -1,7 +1,7 @@
 {
-  "name": "@gatewaycash/paybutton",
-  "version": "0.1.1",
-  "main": "build/PayButton.js",
+  "name": "@gatewaycash/inject",
+  "version": "0.1.0",
+  "main": "inject.js",
   "license": "AGPL-3.0",
   "repository": "git+https://github.com/gatewaycash/gateway.git",
   "author": "The Gateway Project Developers <hello@gateway.cash>",
@@ -12,8 +12,6 @@
     "@babel/core": "^7.1.6",
     "@babel/preset-env": "^7.1.6",
     "@babel/preset-react": "^7.0.0",
-    "@material-ui/core": "^3.5.1",
-    "@material-ui/icons": "^3.0.1",
     "react": "^16.7.0-alpha.2",
     "react-dom": "^16.7.0-alpha.2",
     "rollup": "^0.67.3",
@@ -25,8 +23,10 @@
     "build": "rollup -c --environment INCLUDE_DEPS,BUILD:production",
     "dev": "rollup -c --watch --environment INCLUDE_DEPS,BUILD:production"
   },
-  "description": "Gateway.cash Payment Button",
+  "description": "Gateway.cash Payment Button injector",
   "dependencies": {
+    "@gatewaycash/paybutton": "^0.1.0",
     "dotenv": "^6.2.0"
-  }
+  },
+  "browserslist": "> 0.25%, not dead"
 }

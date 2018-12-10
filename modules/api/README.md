@@ -1,23 +1,19 @@
-# Gateway API Back-end
+# Gateway API Backend
 
-Provides endpoints for managing users and transactions
+A server for managing merchants and payments
 
-## Overview
+## Initial Setup
 
-API that runs on api.gateway.cash server
-
-## dev (auto-updates when chaned)
+To set up the API for the first time:
 
 ```
-npm run dev
+yarn api-setup
 ```
 
-## production (pm2..what we use)
+You will need a local MySQL server for development. Create a new database and a
+user with read/write privileges for the database. Enter the information when
+prompted.
 
-```
-npm run production
-```
-
-## License
-
-Like everything relating to Gateway the license is GNU AGPL-3.0.
+Test tables will be created in the database for users, payments and pending
+payments. A test user will be created, with a username of "gwtestuser1" and a
+password of "Gateway1111".

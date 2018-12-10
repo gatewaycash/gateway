@@ -1,66 +1,72 @@
-const bch = require('bitcoincashjs')
+/**
+ * Funds transfer daemon
+ * @author The Gateway Project Developers <hello@gateway.cash>
+ * @file Provides a daemon for transfering funds
+ */
+const bch = require('bitcore-lib-cash')
 const bchaddr = require('bchaddrjs')
 const mysql = require('mysql')
 const request = require('sync-request')
 
-/*
-
-This file checks the database for new Gateway transactions,
-moving them to the merchants and logging them in the database
-every 60 seconds.
-
-*/
-
-// TODO try to get rid of the callback hell from this file
-// and generally clean it up
-
+/**
+ * This file checks the database for new Gateway transactions,
+ * moving them to the merchants and logging them in the database
+ * every 60 seconds.
+ */
 class fundsTransferDaemon {
 
+  /**
+   * @constructor
+   * Starts the funds transfer daemon
+   */
   constructor () {
-    // connect to the database
-    var conn = mysql.createConnection({
-      host: process.env.SQL_DATABASE_HOST,
-      user: process.env.SQL_DATABASE_USER,
-      password: process.env.SQL_DATABASE_PASSWORD,
-      database: process.env.SQL_DATABASE_DB_NAME
-    })
-
-    conn.connect((err) => {
-      if (err) {
-        throw err
-      }
-      // run immediately
-      searchDatabase()
-      // run every 1 minute
-      setInterval(searchDatabase, 60000)
-    })
+    // print startup message
+    console.log('Starting funds transfer daemon...')
+    // scan database immediately
+    this.searchDatabase()
+    // scan database every 60 seconds
+    setInterval(this.searchDatabase, 60000)
   }
-  
-  // checks the balance of an address
+
+  /**
+   * Checks if an address has a balance
+   * @param  {object} payment SQL record of the payment
+   */
   checkFunds (payment) {
-    // create a variable for legacy version of paymentAddress
-    var legacy = bchaddr.toLegacyAddress(payment.address)
-    // get the balance of the paymentAddress
+    /** a variable for legacy version of paymentAddress */
+    const legacy = bchaddr.toLegacyAddress(payment.address)
+    // get balance of payment address
     // request both confirmed and unconfirmed balanes
-    var requestURL = 'https://bitcoincash.blockexplorer.com/api/addr/'+legacy+'/balance'
+    var requestURL = 'https://bitcoincash.blockexplorer.com/api/addr/'
+      + legacy
+      + '/balance'
     var result = request('GET', requestURL)
-    var confirmedBalance = result.getBody().toString()
-    requestURL = 'https://bitcoincash.blockexplorer.com/api/addr/'+legacy+'/unconfirmedbalance'
+    const confirmedBalance = result.getBody().toString()
+    requestURL = 'https://bitcoincash.blockexplorer.com/api/addr/'
+      + legacy
+      + '/unconfirmedbalance'
     result = request('GET', requestURL)
-    var unconfirmedBalance = result.getBody().toString()
-    // validate both balances are whole integers (satoshi)
+    const unconfirmedBalance = result.getBody().toString()
+    // balances are in denominations of satoshi
+    // validate both balances are whole integers
     if (!isNaN(confirmedBalance) && !isNaN(unconfirmedBalance)) {
-      var balance = parseInt(unconfirmedBalance) + parseInt(confirmedBalance)
+      const balance = parseInt(unconfirmedBalance) + parseInt(confirmedBalance)
+      // if the address has a balance, send funds to the merchant
       if (balance > 0) {
-        console.log('non-zero balance for',legacy,balance)
-        transferFunds(payment)
+        console.log(
+          'non-zero balance for',
+          payment.address,
+          ( balance / 100000000 ),
+          'BCH'
+        )
+        this.transferFunds(payment)
       }
     } else {
       // something from the request was incorrect
       console.log('Balance was not a number for address:',legacy)
     }
   }
-  
+
   // transfers funds to the merchant's address
   transferFunds (payment) {
     // get merchantID of merchant
@@ -76,20 +82,20 @@ class fundsTransferDaemon {
         }
         var toAddress = result[0].payoutAddress
         toAddress = bchaddr.toLegacyAddress(toAddress)
-        
+
         // get the private key
         var sql = 'select paymentKey, callbackURL, paymentID, paymentTXID from payments where paymentAddress = ?'
-        conn.query(sql, [payment.address], (err, result) => {
+        this.conn.query(sql, [payment.address], (err, result) => {
           var paymentKey = result[0].paymentKey.toString()
           var callbackURL = result[0].callbackURL.toString()
           var paymentID = result[0].paymentID.toString()
-          
+
           // get all UTXOs for address
           var fromAddress = bchaddr.toLegacyAddress(payment.address)
           var requestURL = 'https://bitcoincash.blockexplorer.com/api/addr/'+fromAddress+'/utxo'
           var utxo = request('GET', requestURL).getBody().toString()
           utxo = JSON.parse(utxo)
-          
+
           // create BCH transaction
           var tx = new bch.Transaction()
           var totalTransferred = 0
@@ -107,7 +113,7 @@ class fundsTransferDaemon {
           tx.fee(200)
           tx.sign(bch.PrivateKey.fromWIF(paymentKey))
           console.log('raw transaction', tx.toString())
-          
+
           // broadcast transaction to multiple places
           var transferTXID = request('POST', 'https://bitcoincash.blockexplorer.com/api/tx/send', {
             headers: {
@@ -121,7 +127,7 @@ class fundsTransferDaemon {
             },
             body: 'rawtx=' + tx.toString()
           })
-          
+
           // find the transfer TXID
           transferTXID = JSON.parse(transferTXID).txid
           totalTransferred = totalTransferred * 100000000
@@ -129,29 +135,29 @@ class fundsTransferDaemon {
           console.log('paymentAddress', fromAddress)
           console.log('paymentTXID', payment.txid)
           console.log('amountPaid', totalTransferred)
-          
+
           // delete transaction from pending
           var sql = 'delete from pending where txid = ?'
-          conn.query(sql, [payment.txid], (err, result) => {
+          this.conn.query(sql, [payment.txid], (err, result) => {
             if (err) {
               throw err
             }
-            
+
             // update payments with new data
             var sql = 'update payments set paymentTXID = ?, paidAmount = ?, transferTXID = ? where paymentAddress = ?'
-            conn.query(sql, [payment.txid, totalTransferred, transferTXID, payment.address], (err, result) => {
+            this.conn.query(sql, [payment.txid, totalTransferred, transferTXID, payment.address], (err, result) => {
               if (err) {
                 throw err
               }
-            
+
               // increment the total sales of the merchant
               var sql = 'update users set totalSales = totalSales + ? where merchantID = ?'
-              conn.query(sql, [totalTransferred, merchantID], (err, result) => {
+              this.conn.query(sql, [totalTransferred, merchantID], (err, result) => {
                 if (err) {
                   throw err
                 }
                 if (callbackURL !== 'None') {
-                
+
                   // build the callback string
                   var callbackString = 'paymentTXID=' + payment.txid
                   callbackString += '&transferTXID=' + transferTXID
@@ -160,7 +166,7 @@ class fundsTransferDaemon {
                   callbackString += '&merchantID=' + merchantID
                   callbackString += '&paymentAddress=' + fromAddress
                   console.log('callback string', callbackString)
-                  
+
                   // call the callback URL
                   request('POST', callbackURL, {
                     headers: {
@@ -176,20 +182,42 @@ class fundsTransferDaemon {
       })
     })
   }
-  
+
+  /**
+   * Searches database for unprocessed payments
+   */
   searchDatabase () {
-    var query = 'select * from pending order by created desc'
-    conn.query(query, (err, res) => {
-      if (err)  {
+    const conn = mysql.createConnection({
+      host:     process.env.SQL_DATABASE_HOST,
+      user:     process.env.SQL_DATABASE_USER,
+      password: process.env.SQL_DATABASE_PASSWORD,
+      database: process.env.SQL_DATABASE_DB_NAME
+    })
+    conn.connect((err) => {
+      if (err) {
         throw err
       }
-      for(var i = 0; i < res.length; i++) {
-        console.log('Checking payment with txid', res[i].txid)
-        checkFunds(res[i])
-      }
+      var sql = `select *
+        from pending
+        order by created
+        desc`
+      conn.query(sql, (err, res) => {
+        if (err)  {
+          throw err
+        }
+        for(var i = 0; i < res.length; i++) {
+          console.log(
+            'Processing payment',
+            '\nTXID:',
+            res[i].txid
+          )
+          this.checkFunds(res[i])
+        }
+        conn.close()
+      })
     })
   }
-  
+
 }
 
 module.exports = fundsTransferDaemon

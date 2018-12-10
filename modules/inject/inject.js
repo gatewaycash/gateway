@@ -1,6 +1,7 @@
+require('dotenv').config()
 import React from 'react'
 import ReactDOM from 'react-dom'
-import PayButton from './PayButton'
+import PayButton from '@gatewaycash/paybutton'
 
 function createButton(button, id) {
   ReactDOM.render(
@@ -12,6 +13,7 @@ function createButton(button, id) {
       merchantID={button.getAttribute('merchantID')}
       paymentID={button.getAttribute('paymentID')}
       callbackURL={button.getAttribute('callbackURL')}
+      address={button.getAttribute('address')}
     />,
     document.getElementById(id),
   )
@@ -22,7 +24,7 @@ window.onload = function() {
   console.log(
     'Gateway: Found',
     buttons.length,
-    'payment buttons(s) on this page',
+    'payment button' + buttons.length == 1 ? '' : 's' + ' on this page',
   )
   for (var i = 0; i < buttons.length; i++) {
     var buttonID = 'pay-' + Math.floor(Math.random() * 100000)

@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { navigate } from '@reach/router'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
+require('dotenv').config()
 
 class LoginPage extends Component {
   state = {
@@ -17,7 +18,7 @@ class LoginPage extends Component {
     xhr.open(
       'GET',
       process.env.REACT_APP_GATEWAY_BACKEND +
-      '/password?password=' + encodeURIComponent(value),
+      '/login?password=' + encodeURIComponent(value),
     )
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
     xhr.onload = () => {

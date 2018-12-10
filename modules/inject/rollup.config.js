@@ -3,10 +3,10 @@ import commonjs from 'rollup-plugin-commonjs'
 import babel from 'rollup-plugin-babel'
 
 export default {
-  input: 'src/PayButton.js',
+  input: 'inject.js',
   output: {
-    file: 'build/PayButton.js',
-    format: 'esm',
+    file: './../website/public/pay.js',
+    format: 'iife',
   },
   plugins: [
     resolve(),

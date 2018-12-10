@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gateway - API landing page</title>
+  <style>
+    body {
+      font-family: helvetica;
+    }
+    .code {
+      font-family: monospace;
+      background-color: #ccc;
+      padding: 0.5em;
+      margin: 0.5em;
+    }
+  </style>
+</head>
+<body>
+  <center>
+    <h1>Gateway - API landing page</h1>
+  </center>
+  <p>
+    You've reached the backend server API landing page. This server can be used
+    to interface with the <a href="https://gateway.cash"
+    target="_blank">gateway.cash</a> payment processor.
+  </p>
+  <h2>Documentation</h2>
+  <p>
+    The API is served over HTTPS at api.gateway.cash. It can be used to access
+    invoices, manage orders and generate new payments. Your merchant API key
+    is required in order to access your invoices and account information. No
+    API keys are required when making or confirming a payment.
+  </p>
+  <p>
+    Calling the API will result in a JSON object string being returned. The
+    "status" field of the object will either be "success" or "error".
+  </p>
+  <p>
+    In the case of an error, the "error" property will contain a brief error
+    message and "description" will contain a more in-depth description of the
+    problem, suitable for showing to your users.
+  </p>
+  <p>
+    In the case of a "success" status field, the object will contain the
+    relevant information, described below for each endpoint:
+  </p>
+  <h3>GET /login</h3>
+  <p>
+    Validates a given session, returning the API key. The aPI key is required to
+    access merchant- and account-related endpoints.
+  </p>
+  <h4>Parameters</h4>
+  <ul>
+    <li>"username" or "address" is required</li>
+    <li>"password" is required</li>
+  </ul>
+  <h4>Examples</h4>
+  <pre class="code">
+GET https://api.gateway.cash/login?address=bitcoincash:qblahblahblah&password=supersecret
+  </pre>
+  <pre class="code">
+GET https://api.gateway.cash/login?username=JohnGalt12&password=IHeartDagney
+  </pre>
+  <h4>Return Value</h4>
+  <pre class="code">
+{
+  "status": "success",
+  "APIKey": "API_KEY_GOES_HERE"
+}
+  </pre>
+  <pre class="code">
+{
+  "status": "error",
+  "error": "Invalid Login",
+  "description": "An incorrect address, username or password was provided."
+}
+  </pre>
+  <h3>POST /register</h3>
+  <p>
+    Creates a new merchant account and generates an API key, merchant ID and
+    other account information for the user.
+  </p>
+  <h4>Parameters</h4>
+  <ul>
+    <li>"address" is required</li>
+    <li>"password" is required</li>
+    <li>"username" is optional</li>
+  </ul>
+  <h4>Example</h4>
+  <pre class="code">
+POST https://api.gateway.cash/register
+{
+  "address": "bitcoincash:qblablablablablablabla",
+  "username": "FidelCastr0",
+  "password": "PowerPowerNomNomN0m"
+}
+  </pre>
+  <h4>Return Value</h4>
+  <pre class="code">
+{
+  "status": "success",
+  "APIKey": "NEWLY_GENERATED_API_KEY"
+}
+  </pre>
+  <pre class="code">
+{
+  "status": "error",
+  "error": "Address in use",
+  "description": "It looks like that address is already being used by
+  another user! If this is your address, send an email to
+  support@gateway.cash and we'll help you get access to this merchant
+  account."
+}
+  </pre>
+  <h3>POST /pay</h3>
+  <p>
+    Generates an invoice, returning the payment address to the user when the
+    user gives the merchant ID. No API key is required for this API call.
+  </p>
+  <p>
+    Payment IDs can also be sent which will be given to the merchant in order
+    that they can track their orders.
+  </p>
+  <p>
+    Callback URLs can be sent which will be invoked by the server when the
+    payment is received. Callbacks are sent as POST requests and will always
+    contain a "secret" value which is the SHA256 hash of the merchant's API key.
+  </p>
+  <p>
+    <b>BE AWARE:</b> Merchants who leverage callback URLs MUST ALWAYS VERIFY
+    that the request is authentic by making sure the "secret" provided is the
+    SHA256 hash of the merchant's API key. API keys can be viewed and changed in
+    the Settings screen.
+  </p>
+  <h4>Parameters</h4>
+  <ul>
+    <li>"merchantID" is required</li>
+    <li>"paymentID" is optional</li>
+    <li>"callbackURL" is optional</li>
+  </ul>
+  <h4>Examples</h4>
+  <pre class="code">
+POST https://api.gateway.cash//pay
+{
+  "merchantID": "deadbeef20181234"
+}
+  </pre>
+  <pre class="code">
+POST https://api.gateway.cash//pay
+{
+  "merchantID": "deadbeef20181234",
+  "paymentID": "123001456789789789-1223",
+  "callbackURL": "https://my.super.store/something.php"
+}
+  </pre>
+  <h4>Return Value</h4>
+  <pre class="code">
+{
+  "status", "success",
+  "paymentAddress": "bitcoincash:qblablablablablablabla"
+}
+  </pre>
+  <pre class="code">
+{
+  "status": "error",
+  "error": "Invalid Merchant ID",
+  "description": "The merchant ID you provided wasn't found in the database.
+  Make sure you're sending the correct Merchant ID."
+}
+  </pre>
+  <h3>POST /paid</h3>
+  <p>
+    Called by the user once they have made their payment. If the user doesn't
+    make an API call to this endpoint, the payment will still eventually get
+    picked up by the broken payments service within 24 hours.
+  </p>
+  <h4>Parameters</h4>
+  <ul>
+    <li>"paymentAddress" is required</li>
+    <li>"paymentTXID" is required</li>
+  </ul>
+  <h4>Example</h4>
+  <pre class="code">
+{
+  "paymentAddress": "bitcoincash:qblablablablablablabla",
+  "paymentTXID": "abcdefabcdef01234567890123456789ababababacadeaf"
+}
+  </pre>
+  <h4>Return Value</h4>
+  <pre class="code">
+{
+  "status": "success"
+}
+  </pre>
+  <pre class="code">
+{
+  "status": "error",
+  "error": "Payment Already Pending",
+  "description": "A payment with that payment address and payment TXID has
+  already been added to the pending payments queue."
+}
+  </pre>
+</body>
+</html>

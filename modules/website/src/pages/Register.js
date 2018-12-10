@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { navigate } from '@reach/router'
 import TextField from '@material-ui/core/TextField'
+require('dotenv').config()
 
 class RegisterPage extends Component {
   handleSubmit = (event) => {
