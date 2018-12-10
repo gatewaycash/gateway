@@ -158,8 +158,8 @@ module.exports = function (req, res) {
 
             // make sure username does not contain odd characters
             } else if (
-              req.body.username.toString().indexOf(' ') !== -1
-              req.body.username.toString().indexOf('\n') !== -1
+              req.body.username.toString().indexOf(' ') !== -1 ||
+              req.body.username.toString().indexOf('\n') !== -1 ||
               req.body.username.toString().indexOf('\t') !== -1
             ) {
               response.status = 'error'
