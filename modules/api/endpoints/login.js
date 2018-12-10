@@ -1,7 +1,7 @@
 /**
  * GET /login API endpoint
  * @author The Gateway Project Developers <hello@gateway.cash>
- * @file Defines the /login API endpoint
+ * @file Defines a GET endpoint for /login
  */
 const url = require('url')
 const bchaddr = require('bchaddrjs')

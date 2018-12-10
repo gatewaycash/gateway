@@ -1,5 +1,5 @@
 /**
- * /register POST endpoint
+ * POST /register API endpoint
  * @author The Gateway Project Developers <hello@gateway.cash>
  * @file Defines a POST endpoint for /register
  */
