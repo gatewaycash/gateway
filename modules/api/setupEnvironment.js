@@ -26,14 +26,10 @@ const collectInformation = () => {
         pass = pass === '' ? 'gateway123' : pass
         rl.question('SQL database name (ENTER for gateway): ', (db) => {
           db = db === '' ? 'gateway' : db
-          rl.question('On which port should the API server listen? (ENTER for 8080): ', (listen) => {
+          rl.question('Web server port (ENTER for 8080): ', (listen) => {
             listen = listen === '' ? '8080' : listen
-            console.log('Please take this opportunity to mash your keyboard (no spaces).')
-            rl.question('Server session secret: ', (secret) => {
-              secret = secret === '' ? 'sdfoasjdpfajdfpajdfasd' : secret
-              rl.close()
-              testDatabaseConnection(hostname, user, pass, db, listen, secret)
-            })
+            rl.close()
+            testDatabaseConnection(hostname, user, pass, db, listen)
           })
         })
       })
@@ -41,7 +37,7 @@ const collectInformation = () => {
   })
 }
 
-const testDatabaseConnection = (host, user, pass, db, listen, secret) => {
+const testDatabaseConnection = (host, user, pass, db, listen) => {
   console.log('Testing MySQL credentials...')
   const conn = mysql.createConnection({
     host: host,
@@ -63,17 +59,16 @@ const testDatabaseConnection = (host, user, pass, db, listen, secret) => {
       fs.writeFile(
         '.env',
         'WEB_PORT=' + listen + '\n' +
-        'WEB_SESSION_SECRET=' + secret + '\n\n' +
         'SQL_DATABASE_HOST=' + host + '\n' +
         'SQL_DATABASE_USER=' + user + '\n' +
         'SQL_DATABASE_PASSWORD=' + pass + '\n' +
         'SQL_DATABASE_DB_NAME=' + db + '\n',
         (err) => {
           if (err) {
-            console.log('Could not save configuration')
+            console.log('Could not save configuration to modules/api/.env!')
             throw err
           } else {
-            console.log('New API configuration saved in modules/api/.env')
+            console.log('New API configuration saved in modules/api/.env!')
             setupDatabase(conn)
           }
         }
@@ -93,13 +88,14 @@ const setupDatabase = (conn) => {
   console.log('development for the first time, you need to set it up before')
   console.log('starting development.\n')
   rl.question('Set up a new test database? [Y/N]: ', (setup) => {
-    rl.close()
     if (
       setup === 'N' ||
       setup === 'n' ||
       setup === 'no' ||
       setup === 'NO'
     ) {
+      rl.close()
+      conn.end()
       console.log('Thank you for helping build Gateway.')
     } else if (
       setup === 'Y' ||
@@ -111,7 +107,6 @@ const setupDatabase = (conn) => {
       fs.readFile('SQLSetup.sql', 'utf8', (err, data) => {
         if (err) {
           console.log('Could not open the SQLSetup.sql file!')
-          conn.close()
           throw err
         } else {
           conn.query(data, (err, result) => {
@@ -119,15 +114,17 @@ const setupDatabase = (conn) => {
               console.log('Error executing the code from SQLSetup.sql!')
               throw err
             } else {
+              rl.close()
+              conn.end()
               console.log('Your test database has been successfully created!')
               console.log('Thank you for helping build Gateway.')
-              conn.close()
             }
           })
         }
       })
     } else {
       console.log('Please answer with either "Y" or "N".')
+      rl.close()
       setupDatabase(conn)
     }
   })

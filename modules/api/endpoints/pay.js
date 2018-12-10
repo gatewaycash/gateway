@@ -5,6 +5,7 @@
  */
 const mysql = require('mysql')
 const bch = require('bitcore-lib-cash')
+const bchaddr = require('bchaddrjs')
 module.exports = function (req, res) {
   console.log('/pay requested')
   console.log(req.body)
@@ -50,95 +51,88 @@ module.exports = function (req, res) {
           the database. Make sure you're sending the correct merchant ID.`
         res.end(JSON.stringify(response))
 
-      /*
-        There are four possible outcomes here:
-        - merchantID only
-        - merchantID and paymentID
-        - merchantID and callbackURL
-        - merchantID, paymentID and callbackURL
-
-        We need to find out out if we need to do four
-        separate queries or not.
-       */
-
+      // define variables for callback URL and payment ID
       } else {
+        const callbackURL = req.body.callbackURL ? req.body.callbackURL : false
+        const paymentID = req.body.paymentID ? req.body.paymentID : false
 
+        // make sure callback URL is not too long
+        if (callbackURL && callbackURL.length > 250) {
+          response.status = 'error'
+          response.error = 'Callback URL too long'
+          response.description = `The maximum length of a callback URL is 250
+            characters. Please find a way to shorten your callback URL, or
+            consider using a URL shortening service.`
+          res.end(JSON.stringify(response))
 
+        // check some basic aspects of the callback URL for validity.
+        } else if (
+          callbackURL &&
+          (
+            (
+              callbackURL.indexOf('http://') !== 0 &&
+              callbackURL.indexOf('https://') !== 0
+            ) ||
+            callbackURL.indexOf('.') === -1 ||
+            callbackURL.length < 10
+          )
+        ) {
+          response.status = 'error'
+          response.error = 'Callback URL is not valid'
+          response.description = `Please check the callback URL you provided
+            and make sure it is valid. Ensure it starts with http:// or https://
+            and that it resolves to a reachable server.`
+          res.end(JSON.stringify(response))
 
-      }
-    })
-  }
+        // verify the payment ID is not too long
+        } else if (paymentID && paymentID.length > 64) {
+          response.status = 'error'
+          response.error = 'Payment ID is too long'
+          response.description = `Payment IDs are used for distinguishing one
+            payment from another. The maximum length of a payment ID is 64
+            characters. Please shorten your payment ID.`
+          res.end(JSON.stringify(response))
 
-
-  if (!query.merchantID || !query.paymentID) {
-    res.send('MerchantID and PaymentID not provided!')
-  } else if (query.merchantID.length !== 16) {
-    res.send('Invalid MerchantID')
-  } else if (query.paymentID.length > 32) {
-    res.send('PaymentID cannot be longer than 32 characters')
-  } else {
-    // initial checks pased, verify merchantID exists
-    var sql = 'select merchantID from users where merchantID = ?'
-    conn.query(sql, [query.merchantID], (err, result) => {
-      if (result.length !== 1) {
-        res.send('Invalid MerchantID')
-      } else {
-        // generate a new address and private key
-        var mnemonic = bch.Mnemonic.generate(128)
-        var seedBuffer = bch.Mnemonic.toSeed(mnemonic)
-        var hdNode = bch.HDNode.fromSeed(seedBuffer)
-        var paymentPrivateKey = bch.HDNode.toWIF(hdNode).toString()
-        var paymentAddress = bch.HDNode.toCashAddress(
-          hdNode
-        ).toString()
-        if (paymentAddress.indexOf(':') === -1) {
-          paymentAddress = 'bitcoincash:' + paymentAddress
-        }
-        var callbackURL = query.callbackURL
-        if (callbackURL) {
-          if (
-            !callbackURL.toString().startsWith('http://') &&
-            !callbackURL.toString().startsWith('https://')
-          ) {
-            callbackURL = 'None'
-            // must fail silently here if we are to
-            // continue processing the payment at all
-          } else if (
-            callbackURL.toString().length > 128 ||
-            callbackURL.toString().length < 10
-          ) {
-            callbackURL = 'None'
-          }
+        // generate the new address
         } else {
-          callbackURL = 'None'
-        }
-        // generate a payment and add it to database
-        var sql = `insert into payments
-        (
-          paymentAddress,
-          paymentKey,
-          merchantID,
-          paymentID,
-          callbackURL
-        )
-        values
-        (?, ?, ?, ?, ?)`
-        conn.query(
-          sql,
-          [
-            paymentAddress,
-            paymentPrivateKey,
-            query.merchantID,
-            query.paymentID,
-            callbackURL,
-          ],
-          (err, result) => {
-            if (err) {
-              throw err
+          const privateKey = new bch.PrivateKey()
+          const paymentKey = privateKey.toWIF()
+          const paymentAddress = bchaddr.toCashAddress(
+            privateKey.toAddress().toString()
+          )
+
+          // insert the record into the database
+          var sql = `insert into payments
+            (
+              merchantID,
+              paymentID,
+              paymentAddress,
+              paymentKey,
+              callbackURL
+            )
+            values
+            (?, ?, ?, ?, ?)`
+          conn.query(
+            sql,
+            [
+              req.body.merchantID,
+              paymentID,
+              paymentAddress,
+              paymentKey,
+              callbackURL
+            ],
+            (err, result) => {
+              if (err) {
+                throw err
+              }
+
+              // send the payment address to the user
+              response.status = 'success'
+              response.paymentAddress = paymentAddress
+              res.end(JSON.stringify(response))
             }
-            res.send(paymentAddress)
-          },
-        )
+          )
+        }
       }
     })
   }

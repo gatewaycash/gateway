@@ -7,7 +7,7 @@ drop table if exists pending;
 create table if not exists users (
   userID int auto_increment primary key,
   payoutAddress varchar(60),
-  totalSales int(15),
+  totalSales int(15) default 0,
   created timestamp default current_timestamp,
   merchantID varchar(16),
   password varchar(64),
@@ -20,14 +20,14 @@ create table if not exists users (
 create table if not exists payments (
   paymentIndex int auto_increment primary key,
   paymentAddress varchar(60),
-  paidAmount varchar(15),
+  paidAmount int(15),
   created timestamp default current_timestamp,
-  paymentID varchar(32),
+  paymentID varchar(64),
   merchantID varchar(16),
   paymentKey varchar(80),
   paymentTXID varchar(64),
   transferTXID varchar(64),
-  callbackURL varchar(128)
+  callbackURL varchar(250)
 );
 
 -- create new pending table
@@ -39,7 +39,6 @@ CREATE table if not exists pending (
 
 -- create a test user
 insert into users (
-  userID,
   merchantID,
   password,
   salt,
@@ -47,7 +46,6 @@ insert into users (
   APIKey,
   payoutAddress
 ) values (
-  1,
   "deadbeef20181111",
   "1e79982e5189b4acb72018535d1b02dc75e554212dc06e411490ba1e56ee24c3",
   "d8245dbc8c67cf0f849e9b5c73122bed3f84207852091f70f4fa2a12923a5700",
