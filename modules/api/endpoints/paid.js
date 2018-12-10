@@ -5,6 +5,7 @@
  */
 const mysql = require('mysql')
 const bchaddr = require('bchaddrjs')
+
 module.exports = function (req, res) {
   console.log('/paid requested')
   console.log(req.body)

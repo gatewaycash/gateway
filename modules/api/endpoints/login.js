@@ -7,7 +7,6 @@ const url = require('url')
 const bchaddr = require('bchaddrjs')
 const mysql = require('mysql')
 const sha256 = require('sha256')
-require('dotenv').config()
 
 module.exports = function (req, res) {
   console.log('/login requested')

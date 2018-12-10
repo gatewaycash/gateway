@@ -6,6 +6,7 @@
 const mysql = require('mysql')
 const bch = require('bitcore-lib-cash')
 const bchaddr = require('bchaddrjs')
+
 module.exports = function (req, res) {
   console.log('/pay requested')
   console.log(req.body)

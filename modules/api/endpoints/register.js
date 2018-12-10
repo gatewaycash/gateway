@@ -6,7 +6,6 @@
 const mysql = require('mysql')
 const bchaddr = require('bchaddrjs')
 const sha256 = require('sha256')
-require('dotenv').config()
 
 module.exports = function (req, res) {
   console.log('/register requested')
