@@ -62,13 +62,17 @@
   </p>
   <p>
     In the case of a "success" status field, the object will contain the
-    relevant information as described below for each endpoint:
+    relevant information as described below for each endpoint.
   </p>
   <h2>API Endpoints</h2>
   <h3>GET /login</h3>
   <p>
-    Validates a given session, returning the API key. The aPI key is required to
+    Validates a given session, returning the API key. The API key is required to
     access merchant- and account-related endpoints.
+  </p>
+  <p>
+    The address must be a Bitcoin Cash address. If it is not in the CashAddress
+    format it will be translated.
   </p>
   <h4>Parameters</h4>
   <ul>
@@ -77,16 +81,20 @@
   </ul>
   <h4>Examples</h4>
   <pre class="code">
-GET https://api.gateway.cash/login?address=bitcoincash:qblahblahblah&password=supersecret
+GET https://api.gateway.cash/login
+?address=bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng
+&password=Super$ecret1
   </pre>
   <pre class="code">
-GET https://api.gateway.cash/login?username=JohnGalt12&password=IHeartDagney
+GET https://api.gateway.cash/login
+?username=JohnGalt12
+&password=IHeartDagney
   </pre>
   <h4>Return Value</h4>
   <pre class="code">
 {
   "status": "success",
-  "APIKey": "API_KEY_GOES_HERE"
+  "APIKey": "aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea"
 }
   </pre>
   <pre class="code">
@@ -128,12 +136,19 @@ GET https://api.gateway.cash/login?username=JohnGalt12&password=IHeartDagney
     <li>"password" is required</li>
     <li>"username" is optional</li>
   </ul>
-  <h4>Example</h4>
+  <h4>Examples</h4>
   <pre class="code">
 POST https://api.gateway.cash/register
 {
-  "address": "bitcoincash:qblablablablablablabla",
+  "address": "bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng",
   "username": "FidelCastr0",
+  "password": "PowerPowerNomNomN0m"
+}
+  </pre>
+  <pre class="code">
+POST https://api.gateway.cash/register
+{
+  "address": "bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng",
   "password": "PowerPowerNomNomN0m"
 }
   </pre>
@@ -141,7 +156,7 @@ POST https://api.gateway.cash/register
   <pre class="code">
 {
   "status": "success",
-  "APIKey": "NEWLY_GENERATED_API_KEY"
+  "APIKey": "aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea"
 }
   </pre>
   <pre class="code">
@@ -182,13 +197,13 @@ POST https://api.gateway.cash/register
   </ul>
   <h4>Examples</h4>
   <pre class="code">
-POST https://api.gateway.cash//pay
+POST https://api.gateway.cash/pay
 {
   "merchantID": "deadbeef20181234"
 }
   </pre>
   <pre class="code">
-POST https://api.gateway.cash//pay
+POST https://api.gateway.cash/pay
 {
   "merchantID": "deadbeef20181234",
   "paymentID": "123001456789789789-1223",
@@ -199,7 +214,7 @@ POST https://api.gateway.cash//pay
   <pre class="code">
 {
   "status", "success",
-  "paymentAddress": "bitcoincash:qblablablablablablabla"
+  "paymentAddress": "bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng"
 }
   </pre>
   <pre class="code">
@@ -224,7 +239,7 @@ POST https://api.gateway.cash//pay
   <h4>Example</h4>
   <pre class="code">
 {
-  "paymentAddress": "bitcoincash:qblablablablablablabla",
+  "paymentAddress": "bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng",
   "paymentTXID": "abcdefabcdef01234567890123456789ababababacadeaf"
 }
   </pre>
