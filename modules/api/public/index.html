@@ -258,5 +258,36 @@ POST https://api.gateway.cash/pay
   already been added to the pending payments queue."
 }
   </pre>
+  <h3>GET /getmerchantid</h3>
+  <p>Returns the merchant ID of a user given their API key.</p>
+  <h4>Parameters</h4>
+  <ul>
+    <li>"APIKey" is required</li>
+  </ul>
+  <h4>Examples</h4>
+  <pre class="code">
+GET https://api.gateway.cash/getmerchantid
+?APIKey=aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea
+  </pre>
+  <pre class="code">
+GET https://api.gateway.cash/getmerchantid
+?APIKey=aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73ffffffffffffffffff
+  </pre>
+  <h4>Return Value</h4>
+  <pre class="code">
+{
+  "status": "success",
+  "merchantID": "deadbeef20181111"
+}
+  </pre>
+  <pre class="code">
+{
+  "status": "error",
+  "eror": "Invalid API Key",
+  "description": "No user currently has that API key.
+  You might have changed your API key in your account settings, or the API key
+  might be invalid."
+}
+  </pre>
 </body>
 </html>
