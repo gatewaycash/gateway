@@ -365,5 +365,63 @@ POST https://api.gateway.cash/setusername
   "description": "Someone already has that username. Try another?"
 }
   </pre>
+  <h3>GET /getpayments</h3>
+  <p>
+    Returns an array of all payments made to a merchant account, given their API
+    key as a parameter.
+  </p>
+  <p>
+    <b>BE AWARE:</b> Private keys are never included by default. You may always
+    request that private keys for payment addresses be included by using the
+    "includeKeys" parameter and giving a value of uppercase "YES". This may be
+    useful if you'd like to process your own payments or for debugging.
+  </p>
+  <h4>Parameters</h4>
+  <ul>
+    <li>"APIKey" is required</li>
+    <li>"includeKeys" is optional</li>
+  </ul>
+  <h4>Examples</h4>
+  <pre class="code">
+GET https://api.gateway.cash/getpayments
+?APIKey=aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea
+  </pre>
+  <pre class="code">
+GET https://api.gateway.cash/getpayments
+?APIKey=aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea
+&includeKeys=YES
+  </pre>
+  <h4>Return Values</h4>
+  <pre class="code">
+{
+  "status": "success",
+  "numberOfPayments": 4,
+  "payments": [
+    {
+
+    },
+  ]
+}
+  </pre>
+  <pre class="code">
+{
+  "status": "error",
+  "error": "No Results",
+  "description": "No payments have been completed to this merchant yet. Make a
+  test payment with /pay and see what happens!"
+}
+  </pre>
+  <h4>GET /getunpaid</h4>
+  <p>
+    This is the same as /getpayments, except that it will include unpaid invoices, incomplete payments, unprocessed payments and other broken and/or
+    half-completed transactions. This endpoint might prove useful if you're
+    processing payments yourself.
+  </p>
+  <p>
+    <b>BE AWARE:</b> Private keys are never included by default. You may always
+    request that private keys for payment addresses be included by using the
+    "includeKeys" parameter and giving a value of uppercase "YES". This may be
+    useful if you'd like to process your own payments or for debugging.
+  </p>
 </body>
 </html>
