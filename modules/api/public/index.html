@@ -16,23 +16,44 @@
 </head>
 <body>
   <center>
-    <h1>Gateway - API landing page</h1>
+    <h1>Gateway.cash API Docs</h1>
   </center>
   <p>
-    You've reached the backend server API landing page. This server can be used
-    to interface with the <a href="https://gateway.cash"
+    You've reached the backend server API documentation landing page. This
+    server may be used to interface with the <a href="https://gateway.cash"
     target="_blank">gateway.cash</a> payment processor.
   </p>
-  <h2>Documentation</h2>
+  <h2>Overview</h2>
   <p>
-    The API is served over HTTPS at api.gateway.cash. It can be used to access
-    invoices, manage orders and generate new payments. Your merchant API key
-    is required in order to access your invoices and account information. No
-    API keys are required when making or confirming a payment.
+    The API is served over HTTP or HTTPS with your current URL as a basepoint.
+    If you are running a local instance of the server at http://127.0.0.1:8080/
+    then your requests will start with that URL.
   </p>
   <p>
-    Calling the API will result in a JSON object string being returned. The
-    "status" field of the object will either be "success" or "error".
+    For example, the endpoint for /login would be http://127.0.0.1:8080/login
+    on your local instance. The examples in this documentation assume you are
+    using a basepoint URL of https://api.gateway.cash/ which is the production
+    server Gateway uses across all of our services.
+  </p>
+  <p>
+    You are free to use our API server as you wish. If we receive excessive
+    spam we may choose to block your access. Like all open-source projects, you
+    are also free to run your own server on the internet if you wish.
+  </p>
+  <h2>The Gateway API</h2>
+  <p>
+    The Gateway API can be used by merchants and customers to access invoices,
+    manage orders and make payments. Merchant API keys are required in order to
+    access invoices and account information.
+  </p>
+  <p>
+    No API keys are required when making or confirming a payment.
+  </p>
+  <h2>API Requests</h2>
+  <p>
+    Making a request to the API will result in a JSON object string being
+    returned. The "status" property of the object will either be "success" or
+    "error" for all requests.
   </p>
   <p>
     In the case of an error, the "error" property will contain a brief error
@@ -41,12 +62,17 @@
   </p>
   <p>
     In the case of a "success" status field, the object will contain the
-    relevant information, described below for each endpoint:
+    relevant information as described below for each endpoint.
   </p>
+  <h2>API Endpoints</h2>
   <h3>GET /login</h3>
   <p>
-    Validates a given session, returning the API key. The aPI key is required to
+    Validates a given session, returning the API key. The API key is required to
     access merchant- and account-related endpoints.
+  </p>
+  <p>
+    The address must be a Bitcoin Cash address. If it is not in the CashAddress
+    format it will be translated.
   </p>
   <h4>Parameters</h4>
   <ul>
@@ -55,16 +81,20 @@
   </ul>
   <h4>Examples</h4>
   <pre class="code">
-GET https://api.gateway.cash/login?address=bitcoincash:qblahblahblah&password=supersecret
+GET https://api.gateway.cash/login
+?address=bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng
+&password=Super$ecret1
   </pre>
   <pre class="code">
-GET https://api.gateway.cash/login?username=JohnGalt12&password=IHeartDagney
+GET https://api.gateway.cash/login
+?username=JohnGalt12
+&password=IHeartDagney
   </pre>
   <h4>Return Value</h4>
   <pre class="code">
 {
   "status": "success",
-  "APIKey": "API_KEY_GOES_HERE"
+  "APIKey": "aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea"
 }
   </pre>
   <pre class="code">
@@ -77,7 +107,28 @@ GET https://api.gateway.cash/login?username=JohnGalt12&password=IHeartDagney
   <h3>POST /register</h3>
   <p>
     Creates a new merchant account and generates an API key, merchant ID and
-    other account information for the user.
+    other account information for the user. Once registration is complete,
+    the newly-generated API key is returned to the user.
+  </p>
+  <p>
+    The address must be a valid Bitcoin Cash address. If not given in
+    CashAddress format, it will be translated.
+  </p>
+  <p>
+    The username must be between 5 and 24 characters, must be unique, most not
+    contain spaces or other odd characters, and is an optional parameter at
+    registration time. Usernames can always be set later with the /setusername
+    endpoint.
+  </p>
+  <p>
+    The password must be secure, unique and must not contain odd characters such
+    as returns, tabs or spaces.
+  </p>
+  <p>
+    <b>BE AWARE:</b> The API does not validate that passwords are secure or have
+    entropy. It is the responsibility of the user and/or the front-end
+    software provider to ensure that  a secure password is provided. Passwords
+    are always salted and hashed prior to storing in a database.
   </p>
   <h4>Parameters</h4>
   <ul>
@@ -85,12 +136,19 @@ GET https://api.gateway.cash/login?username=JohnGalt12&password=IHeartDagney
     <li>"password" is required</li>
     <li>"username" is optional</li>
   </ul>
-  <h4>Example</h4>
+  <h4>Examples</h4>
   <pre class="code">
 POST https://api.gateway.cash/register
 {
-  "address": "bitcoincash:qblablablablablablabla",
+  "address": "bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng",
   "username": "FidelCastr0",
+  "password": "PowerPowerNomNomN0m"
+}
+  </pre>
+  <pre class="code">
+POST https://api.gateway.cash/register
+{
+  "address": "bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng",
   "password": "PowerPowerNomNomN0m"
 }
   </pre>
@@ -98,7 +156,7 @@ POST https://api.gateway.cash/register
   <pre class="code">
 {
   "status": "success",
-  "APIKey": "NEWLY_GENERATED_API_KEY"
+  "APIKey": "aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea"
 }
   </pre>
   <pre class="code">
@@ -139,13 +197,13 @@ POST https://api.gateway.cash/register
   </ul>
   <h4>Examples</h4>
   <pre class="code">
-POST https://api.gateway.cash//pay
+POST https://api.gateway.cash/pay
 {
   "merchantID": "deadbeef20181234"
 }
   </pre>
   <pre class="code">
-POST https://api.gateway.cash//pay
+POST https://api.gateway.cash/pay
 {
   "merchantID": "deadbeef20181234",
   "paymentID": "123001456789789789-1223",
@@ -156,7 +214,7 @@ POST https://api.gateway.cash//pay
   <pre class="code">
 {
   "status", "success",
-  "paymentAddress": "bitcoincash:qblablablablablablabla"
+  "paymentAddress": "bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng"
 }
   </pre>
   <pre class="code">
@@ -171,7 +229,8 @@ POST https://api.gateway.cash//pay
   <p>
     Called by the user once they have made their payment. If the user doesn't
     make an API call to this endpoint, the payment will still eventually get
-    picked up by the broken payments service within 24 hours.
+    picked up by the broken payments service within 24 hours. No API key is
+    required to use this endpoint.
   </p>
   <h4>Parameters</h4>
   <ul>
@@ -181,7 +240,7 @@ POST https://api.gateway.cash//pay
   <h4>Example</h4>
   <pre class="code">
 {
-  "paymentAddress": "bitcoincash:qblablablablablablabla",
+  "paymentAddress": "bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng",
   "paymentTXID": "abcdefabcdef01234567890123456789ababababacadeaf"
 }
   </pre>
@@ -197,6 +256,113 @@ POST https://api.gateway.cash//pay
   "error": "Payment Already Pending",
   "description": "A payment with that payment address and payment TXID has
   already been added to the pending payments queue."
+}
+  </pre>
+  <h3>GET /getmerchantid</h3>
+  <p>Returns the merchant ID of a user given their API key.</p>
+  <h4>Parameters</h4>
+  <ul>
+    <li>"APIKey" is required</li>
+  </ul>
+  <h4>Examples</h4>
+  <pre class="code">
+GET https://api.gateway.cash/getmerchantid
+?APIKey=aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea
+  </pre>
+  <pre class="code">
+GET https://api.gateway.cash/getmerchantid
+?APIKey=aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73ffffffffffffffffff
+  </pre>
+  <h4>Return Value</h4>
+  <pre class="code">
+{
+  "status": "success",
+  "merchantID": "deadbeef20181111"
+}
+  </pre>
+  <pre class="code">
+{
+  "status": "error",
+  "eror": "Invalid API Key",
+  "description": "No user currently has that API key.
+  You might have changed your API key in your account settings, or the API key
+  might be invalid."
+}
+  </pre>
+  <h3>GET /getusername</h3>
+  <p>Returns the username of a user given their API key.</p>
+  <h4>Parameters</h4>
+  <ul>
+    <li>"APIKey" is required</li>
+  </ul>
+  <h4>Examples</h4>
+  <pre class="code">
+GET https://api.gateway.cash/getusername
+?APIKey=aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea
+  </pre>
+  <pre class="code">
+GET https://api.gateway.cash/getusername
+?APIKey=aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73ffffffffffffffffff
+  </pre>
+  <h4>Return Value</h4>
+  <pre class="code">
+{
+  "status": "success",
+  "username": "JohnGalt12"
+}
+  </pre>
+  <pre class="code">
+{
+  "status": "error",
+  "eror": "Invalid API Key",
+  "description": "No user currently has that API key.
+  You might have changed your API key in your account settings, or the API key
+  might be invalid."
+}
+  </pre>
+  <h3>POST /setusername</h3>
+  <p>
+    Sets a new username for the user. Usernames must be between 5 and 24
+    characters, not contain spaces or special characters and be unique to the
+    user.
+  </p>
+  <p>
+    <b>BE AWARE:</b> Usernames will be translated to all lower case before
+    being stored in the database. The username will be sent back in the
+    response message.
+  </p>
+  <h4>Parameters</h4>
+  <ul>
+    <li>"APIKey" is required</li>
+    <li>"username" is required</li>
+  </ul>
+  <h4>Examples</h4>
+  <pre class="code">
+POST https://api.gateway.cash/setusername
+{
+  "APIKey": "aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea",
+  "username": "pneumaultramicroscopic"
+}
+  </pre>
+  <pre class="code">
+POST https://api.gateway.cash/setusername
+{
+  "APIKey": "aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea",
+  "username": "B!ll"
+}
+  </pre>
+  <h4>Return Value</h4>
+  <pre class="code">
+{
+  "status": "success",
+  "username": "pneumaultramicroscopic"
+}
+  </pre>
+  <pre class="code">
+{
+  "status": "error",
+  "eror": "Username In Use",
+  "description": "Someone already has that username. Try another?"
 }
   </pre>
 </body>

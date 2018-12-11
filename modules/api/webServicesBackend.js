@@ -4,27 +4,23 @@
  * @file Starts and manages the web services backend
  */
 const express = require('express')
-const session = require('express-session')
-const FileStore = require('session-file-store')(session)
 const bodyParser = require('body-parser')
 require('dotenv').config()
 
 // include all endpoint modules
-const registerEndpoint = require('./register.js')
-const identifyEndpoint = require('./identify.js')
-const loginEndpoint = require('./login.js')
-const loggedInEndpoint = require('./loggedin.js')
-const getPaymentsEndpoint = require('./getpayments.js')
-const getUnpaidPaymentsEndpoint = require('./getunpaidpayments.js')
-const setUsernameEndpoint = require('./setusername.js')
-const getUsernameEndpoint = require('./getusername.js')
-const getMerchantIDEndpoint = require('./getmerchantid.js')
-const paymentSentEndpoint = require('./paymentsent.js')
-const payEndpoint = require('./pay.js')
+const registerEndpoint = require('./endpoints/register.js')
+const loginEndpoint = require('./endpoints/login.js')
+const getPaymentsEndpoint = require('./endpoints/getpayments.js')
+const getUnpaidEndpoint = require('./endpoints/getunpaid.js')
+const setUsernameEndpoint = require('./endpoints/setusername.js')
+const getUsernameEndpoint = require('./endpoints/getusername.js')
+const getMerchantIDEndpoint = require('./endpoints/getmerchantid.js')
+const paidEndpoint = require('./endpoints/paid.js')
+const payEndpoint = require('./endpoints/pay.js')
 
 // include all service daemons
-const fundsTransferDaemon = require('./fundsTransfer.js')
-const brokenPaymentsDaemon = require('./brokenPayments.js')
+const fundsTransferDaemon = require('./daemons/fundsTransfer.js')
+const brokenPaymentsDaemon = require('./daemons/brokenPayments.js')
 
 // print startup message
 console.log('Starting Web Services Backend...')
@@ -36,25 +32,12 @@ const app = express()
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
-// set up persistant session
-app.use(
-  session({
-    name: 'gateway-session',
-    secret: process.env.WEB_SESSION_SECRET,
-    saveUninitialized: true,
-    resave: true,
-    store: new FileStore()
-  })
-)
-
 // enable CORS to allow for API calls from other sites
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*')
-  res.header('Access-Control-Allow-Credentials', 'true')
-  res.header('Access-Control-Allow-Methods', 'GET, POST')
   res.header(
     'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, *'
+    'Origin, X-Requested-With, Content-Type, Accept'
   )
   next()
 })
@@ -75,14 +58,14 @@ app.listen(process.env.WEB_PORT, () => {
 //var bpd = new brokenPaymentsDaemon()
 
 // finally, utilize API endpoints for appropriate requests
+// POST requests
 app.post('/register', registerEndpoint)
-app.get('/identify', identifyEndpoint)
-app.get('/login', loginEndpoint)
-app.get('/loggedin', loggedInEndpoint)
-app.get('/getpayments', getPaymentsEndpoint)
-app.get('/getunpaidpayments', getUnpaidPaymentsEndpoint)
+app.post('/paid', paidEndpoint)
+app.post('/pay', payEndpoint)
 app.post('/setusername', setUsernameEndpoint)
+// GET requests
+app.get('/login', loginEndpoint)
+app.get('/getpayments', getPaymentsEndpoint)
+app.get('/getunpaid', getUnpaidEndpoint)
 app.get('/getusername', getUsernameEndpoint)
 app.get('/getmerchantid', getMerchantIDEndpoint)
-app.get('/paymentsent', paymentSentEndpoint)
-app.get('/pay', payEndpoint)

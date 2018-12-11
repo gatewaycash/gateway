@@ -30,7 +30,7 @@
     "site-setup": "yarn workspace @gatewaycash/website setup",
     "build": "yarn paybutton-build && yarn inject-build && yarn site-build",
     "dev": "concurrently --kill-others \"yarn site-dev\" \"yarn api-dev\" \"yarn paybutton-dev\" \"yarn inject-dev\"",
-    "setup": "yarn api-setup && yarn site-setup && yarn paybutton-setup"
+    "setup": "yarn api-setup"
   },
   "author": "The Gateway Project Developers <hello@gateway.cash>",
   "license": "AGPL-3.0",

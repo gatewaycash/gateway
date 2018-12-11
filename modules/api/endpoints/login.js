@@ -1,19 +1,18 @@
 /**
  * GET /login API endpoint
  * @author The Gateway Project Developers <hello@gateway.cash>
- * @file Defines the /login API endpoint
+ * @file Defines a GET endpoint for /login
  */
 const url = require('url')
 const bchaddr = require('bchaddrjs')
 const mysql = require('mysql')
-require('dotenv').config()
+const sha256 = require('sha256')
 
 module.exports = function (req, res) {
   console.log('/login requested')
 
   // parse the provided data
   const query = url.parse(req.url, true).query
-  console.log(query)
 
   // define a response object
   const response = {}
