@@ -18,6 +18,7 @@ const getMerchantIDEndpoint = require('./endpoints/getmerchantid.js')
 const paidEndpoint = require('./endpoints/paid.js')
 const payEndpoint = require('./endpoints/pay.js')
 const newAPIKeyEndpoint = require('./endpoints/newapikey.js')
+const totalSalesEndpoint = require('./endpoints/gettotalsales.js')
 
 // include all service daemons
 const fundsTransferDaemon = require('./daemons/fundsTransfer.js')
@@ -71,3 +72,4 @@ app.get('/getunpaid', getUnpaidEndpoint)
 app.get('/getusername', getUsernameEndpoint)
 app.get('/getmerchantid', getMerchantIDEndpoint)
 app.get('/newapikey', newAPIKeyEndpoint)
+app.get('/gettotalsales', totalSalesEndpoint)
