@@ -1,9 +1,12 @@
 import React, { Component } from 'react'
+import join from 'url-join'
+import { stringify } from 'query-string'
 import { navigate } from '@reach/router'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import bchaddr from 'bchaddrjs'
 import { globals } from '@gatewaycash/utils'
+import axios from 'axios'
 
 class IdentificationPage extends Component {
   state = {
@@ -45,33 +48,34 @@ class IdentificationPage extends Component {
   }
 
   submitData(type, value) {
-    let xhr = new XMLHttpRequest()
-    xhr.open(
-      'GET',
-      globals.GATEWAY_BACKEND + '/identify?type=' +
-        type +
-        '&value=' +
-        encodeURIComponent(value),
+    axios.get(
+      join(
+        globals.GATEWAY_BACKEND,
+        'identify',
+        '?',
+        stringify({ type, value }),
+      ),
     )
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
-    xhr.onload = () => {
-      if (xhr.status === 200) {
-        let response = xhr.responseText.trim()
-        console.log('Username check response:', response)
-        if (response === 'login') {
-          navigate('/login')
-        } else if (response === 'register') {
-          navigate('/register')
-        } else {
-          setTimeout(() => {
-            this.setState({ loginError: true })
-          }, 5000)
-        }
-      } else {
-        console.error('Username check request failed', xhr)
-      }
-    }
-    xhr.send()
+
+    // xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+    // xhr.onload = () => {
+    //   if (xhr.status === 200) {
+    //     let response = xhr.responseText.trim()
+    //     console.log('Username check response:', response)
+    //     if (response === 'login') {
+    //       navigate('/login')
+    //     } else if (response === 'register') {
+    //       navigate('/register')
+    //     } else {
+    //       setTimeout(() => {
+    //         this.setState({ loginError: true })
+    //       }, 5000)
+    //     }
+    //   } else {
+    //     console.error('Username check request failed', xhr)
+    //   }
+    // }
+    // xhr.send()
   }
 
   handleSubmit = (event) => {
