@@ -7,7 +7,7 @@ const mysql = require('mysql')
 const url = require('url')
 
 module.exports = function (req, res) {
-  console.log('/getmerchantid requested')
+  console.log('/getpayments requested')
 
   // parse the provided data
   const query = url.parse(req.url, true).query
@@ -72,7 +72,8 @@ module.exports = function (req, res) {
           paymentTXID,
           transferTXID,
           paymentID,
-          created
+          created,
+          paymentKey
           from payments
           where
           merchantID = ?
@@ -90,16 +91,21 @@ module.exports = function (req, res) {
             response.status = 'error'
             response.error = 'No Results'
             response.description = `No payments have been completed to this
-              merchant yet. Make a test payment and see what happens!`
+              merchant yet. Make a test payment with /pay and see what happens!`
             res.end(JSON.stringify(response))
 
           // send the payments to the user
           } else {
             response.status = 'success'
             response.numberOfPayments = result.length
-            response.payments = []
-            for(var i = 0; i < result.length; i++) {
-              response.payments.push(result[i])
+            response.payments = result
+
+            // hide the private keys unless includeKeys is YES
+            const hideKeys = (!query.includeKeys || query.includeKeys !== 'YES')
+            for (var i = 0; i < response.numberOfPayments; i++) {
+              if (hideKeys) {
+                response.payments[i].paymentKey = 'hidden'
+              }
             }
             res.end(JSON.stringify(response))
           }
