@@ -13,7 +13,6 @@ module.exports = function (req, res) {
 
   // parse the provided data
   const query = url.parse(req.url, true).query
-  console.log(query)
 
   // define a response object
   const response = {}

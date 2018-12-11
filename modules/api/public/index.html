@@ -308,7 +308,7 @@ GET https://api.gateway.cash/getusername
   <pre class="code">
 {
   "status": "success",
-  "merchantID": "JohnGalt12"
+  "username": "JohnGalt12"
 }
   </pre>
   <pre class="code">
@@ -318,6 +318,51 @@ GET https://api.gateway.cash/getusername
   "description": "No user currently has that API key.
   You might have changed your API key in your account settings, or the API key
   might be invalid."
+}
+  </pre>
+  <h3>POST /setusername</h3>
+  <p>
+    Sets a new username for the user. Usernames must be between 5 and 24
+    characters, not contain spaces or special characters and be unique to the
+    user.
+  </p>
+  <p>
+    <b>BE AWARE:</b> Usernames will be translated to all lower case before
+    being stored in the database. The username will be sent back in the
+    response message.
+  </p>
+  <h4>Parameters</h4>
+  <ul>
+    <li>"APIKey" is required</li>
+    <li>"username" is required</li>
+  </ul>
+  <h4>Examples</h4>
+  <pre class="code">
+POST https://api.gateway.cash/setusername
+{
+  "APIKey": "aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea",
+  "username": "pneumaultramicroscopic"
+}
+  </pre>
+  <pre class="code">
+POST https://api.gateway.cash/setusername
+{
+  "APIKey": "aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea",
+  "username": "B!ll"
+}
+  </pre>
+  <h4>Return Value</h4>
+  <pre class="code">
+{
+  "status": "success",
+  "username": "pneumaultramicroscopic"
+}
+  </pre>
+  <pre class="code">
+{
+  "status": "error",
+  "eror": "Username In Use",
+  "description": "Someone already has that username. Try another?"
 }
   </pre>
 </body>

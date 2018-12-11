@@ -9,7 +9,6 @@ const sha256 = require('sha256')
 
 module.exports = function (req, res) {
   console.log('/register requested')
-  console.log(req.body)
   // An object to hold the response
   const response = {}
 
