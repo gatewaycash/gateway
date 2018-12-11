@@ -108,7 +108,9 @@ module.exports = function (req, res) {
             if (!req.body.username) {
 
               // create the new user account
-              const merchantID = sha256(req.body.address).substr(0, 16)
+              const merchantID = sha256(
+                require('crypto').randomBytes(32)
+              ).substr(0, 16)
               const passwordSalt = sha256(require('crypto').randomBytes(32))
               const APIKey = sha256(require('crypto').randomBytes(32))
               const passwordHash = sha256(req.body.password + passwordSalt)
@@ -208,7 +210,9 @@ module.exports = function (req, res) {
                 } else {
 
                   // create the new user account
-                  const merchantID = sha256(req.body.address).substr(0, 16)
+                  const merchantID = sha256(
+                    require('crypto').randomBytes(32)
+                  ).substr(0, 16)
                   const passwordSalt = sha256(require('crypto').randomBytes(32))
                   const APIKey = sha256(require('crypto').randomBytes(32))
                   const passwordHash = sha256(req.body.password + passwordSalt)
