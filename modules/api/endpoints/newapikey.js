@@ -5,8 +5,9 @@
  */
 const mysql = require('mysql')
 const url = require('url')
+const sha256 = require('sha256')
 
-module.exports = function (req, res) => {
+module.exports = function (req, res) {
   console.log('/newapikey requested')
 
   // parse the provided data
@@ -57,7 +58,7 @@ module.exports = function (req, res) => {
           set APIKey = ?
           where
           APIKey = ?`
-        const newAPIKey = sha256(require('crypto').getRandomBytes(32))
+        const newAPIKey = sha256(require('crypto').randomBytes(32))
         conn.query(sql, [newAPIKey, query.APIKey], (err, result) => {
           if (err) {
             throw err
