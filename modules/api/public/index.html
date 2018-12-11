@@ -405,6 +405,17 @@ GET https://api.gateway.cash/getpayments
   </pre>
   <pre class="code">
 {
+  "status": "success",
+  "numberOfPayments": 4,
+  "payments": [
+    {
+
+    },
+  ]
+}
+  </pre>
+  <pre class="code">
+{
   "status": "error",
   "error": "No Results",
   "description": "No payments have been completed to this merchant yet. Make a
@@ -423,5 +434,38 @@ GET https://api.gateway.cash/getpayments
     "includeKeys" parameter and giving a value of uppercase "YES". This may be
     useful if you'd like to process your own payments or for debugging.
   </p>
+  <h3>GET /newapikey</h3>
+  <p>
+    Generates a new API key for the user, given their old API key.
+  </p>
+  <p>
+    <b>BE AWARE:</b> Once a new API key is generated, the old one becomes
+    invalid immediately. All new requests must use the new API key. When you log
+    in, your new API key is returned, not your old one. This endpoint might be
+    useful for something like a "log out of all devices" feature.
+  </p>
+  <h4>Parameters</h4>
+  <ul>
+    <li>"APIKey" is required</li>
+  </ul>
+  <h4>Example</h4>
+  <pre class="code">
+GET https://api.gateway.cash/newapikey
+?APIKey=aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea
+  </pre>
+  <h4>Return Value</h4>
+  <pre class="code">
+{
+  "status": "success",
+  "newAPIKey": "deaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeff"
+}
+  </pre>
+  <pre class="code">
+{
+  "status": "error",
+  "error": "Invalid API Key",
+  "description": "The API key you provided was not found in the database."
+}
+  </pre>
 </body>
 </html>
