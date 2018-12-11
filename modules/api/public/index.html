@@ -40,7 +40,23 @@
     spam we may choose to block your access. Like all open-source projects, you
     are also free to run your own server on the internet if you wish.
   </p>
-  <h2>The Gateway API</h2>
+  <h2>Contents</h2>
+  <ul>
+    <li><a href="#gatewayapi">The Gateway API</a></li>
+    <li><a href="#apirequests">API Requests</a></li>
+    <li><a href="#endpoints">API Endpoints</a></li>
+    <li><a href="#getlogin">GET /login</a></li>
+    <li><a href="#postregister">POST /register</a></li>
+    <li><a href="#postpay">POST /pay</a></li>
+    <li><a href="#postpaid">POST /paid</a></li>
+    <li><a href="#getgetmerchantid">GET /getmerchantid</a></li>
+    <li><a href="#getgetusername">GET /getusername</a></li>
+    <li><a href="#postsetusername">POST /setusername</a></li>
+    <li><a href="#getgetpayments">GET /getpayments</a></li>
+    <li><a href="#getgetunpaid">GET /getunpaid</a></li>
+    <li><a href="#getgettotalsales">GET /gettotalsales</a></li>
+  </ul>
+  <h2 id="gatewayapi">The Gateway API</h2>
   <p>
     The Gateway API can be used by merchants and customers to access invoices,
     manage orders and make payments. Merchant API keys are required in order to
@@ -49,7 +65,7 @@
   <p>
     No API keys are required when making or confirming a payment.
   </p>
-  <h2>API Requests</h2>
+  <h2 id="apirequests">API Requests</h2>
   <p>
     Making a request to the API will result in a JSON object string being
     returned. The "status" property of the object will either be "success" or
@@ -64,8 +80,8 @@
     In the case of a "success" status field, the object will contain the
     relevant information as described below for each endpoint.
   </p>
-  <h2>API Endpoints</h2>
-  <h3>GET /login</h3>
+  <h2 id="endpoints">API Endpoints</h2>
+  <h3 id="getlogin">GET /login</h3>
   <p>
     Validates a given session, returning the API key. The API key is required to
     access merchant- and account-related endpoints.
@@ -104,7 +120,7 @@ GET https://api.gateway.cash/login
   "description": "An incorrect address, username or password was provided."
 }
   </pre>
-  <h3>POST /register</h3>
+  <h3 id="postregister">POST /register</h3>
   <p>
     Creates a new merchant account and generates an API key, merchant ID and
     other account information for the user. Once registration is complete,
@@ -169,7 +185,7 @@ POST https://api.gateway.cash/register
   account."
 }
   </pre>
-  <h3>POST /pay</h3>
+  <h3 id="postpay">POST /pay</h3>
   <p>
     Generates an invoice, returning the payment address to the user when the
     user gives the merchant ID. No API key is required for this API call.
@@ -225,7 +241,7 @@ POST https://api.gateway.cash/pay
   Make sure you're sending the correct Merchant ID."
 }
   </pre>
-  <h3>POST /paid</h3>
+  <h3 id="postpaid">POST /paid</h3>
   <p>
     Called by the user once they have made their payment. If the user doesn't
     make an API call to this endpoint, the payment will still eventually get
@@ -258,7 +274,7 @@ POST https://api.gateway.cash/pay
   already been added to the pending payments queue."
 }
   </pre>
-  <h3>GET /getmerchantid</h3>
+  <h3 id="getgetmerchantid">GET /getmerchantid</h3>
   <p>Returns the merchant ID of a user given their API key.</p>
   <h4>Parameters</h4>
   <ul>
@@ -289,7 +305,7 @@ GET https://api.gateway.cash/getmerchantid
   might be invalid."
 }
   </pre>
-  <h3>GET /getusername</h3>
+  <h3 id="getgetusername">GET /getusername</h3>
   <p>Returns the username of a user given their API key.</p>
   <h4>Parameters</h4>
   <ul>
@@ -320,7 +336,7 @@ GET https://api.gateway.cash/getusername
   might be invalid."
 }
   </pre>
-  <h3>POST /setusername</h3>
+  <h3 id="postsetusername">POST /setusername</h3>
   <p>
     Sets a new username for the user. Usernames must be between 5 and 24
     characters, not contain spaces or special characters and be unique to the
@@ -365,7 +381,7 @@ POST https://api.gateway.cash/setusername
   "description": "Someone already has that username. Try another?"
 }
   </pre>
-  <h3>GET /getpayments</h3>
+  <h3 id="getgetpayments">GET /getpayments</h3>
   <p>
     Returns an array of all payments made to a merchant account, given their API
     key as a parameter.
@@ -422,7 +438,7 @@ GET https://api.gateway.cash/getpayments
   test payment with /pay and see what happens!"
 }
   </pre>
-  <h4>GET /getunpaid</h4>
+  <h4 id="getgetunpaid">GET /getunpaid</h4>
   <p>
     This is the same as /getpayments, except that it will include unpaid invoices, incomplete payments, unprocessed payments and other broken and/or
     half-completed transactions. This endpoint might prove useful if you're
@@ -434,7 +450,7 @@ GET https://api.gateway.cash/getpayments
     "includeKeys" parameter and giving a value of uppercase "YES". This may be
     useful if you'd like to process your own payments or for debugging.
   </p>
-  <h3>GET /newapikey</h3>
+  <h3 id="getnewapikey">GET /newapikey</h3>
   <p>
     Generates a new API key for the user, given their old API key.
   </p>
@@ -467,7 +483,7 @@ GET https://api.gateway.cash/newapikey
   "description": "The API key you provided was not found in the database."
 }
   </pre>
-  <h3>GET /gettotalsales</h3>
+  <h3 id="getgettotalsales">GET /gettotalsales</h3>
   <p>
     Returns the total of all payments that have been processed by this merchant
     account. The value returned is in units of satoshi.
