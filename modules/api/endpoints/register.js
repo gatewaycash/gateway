@@ -70,7 +70,7 @@ module.exports = function (req, res) {
       characters or other non-standard characters.`
       res.end(JSON.stringify(response))
 
-    // TODO other requirements for password
+    // make sure address is not in the database already
     } else {
 
       // connect to the database
@@ -84,7 +84,6 @@ module.exports = function (req, res) {
         if (err) {
           throw err
         }
-        // make sure address is not in the database already
         var sql = `select payoutAddress
         from users
         where
@@ -138,53 +137,72 @@ module.exports = function (req, res) {
                 }
               )
 
-            // make sure the username isn't too short
-          } else if (req.body.username.toString().length < 5) {
-              response.status = 'error'
-              response.error = 'Username Too Short'
-              response.description = `Please make sure your username is longer
-                than 5 characters.`
-              res.end(JSON.stringify(response))
+              // verify new username is not too short
+              } else if (req.body.username.length < 5) {
+                response.status = 'error'
+                response.error = 'Username Too Short'
+                response.description = `Username must be at least 5 characters!`
+                res.end(JSON.stringify(response))
 
-            // ensure username is not too long
-            } else if (req.body.username.toString().length > 24) {
-              response.status = 'error'
-              response.error = 'Username Too Long'
-              response.description = `Please make sure your username is shorter
-                than 24 characters.`
-              res.end(JSON.stringify(response))
+              // verify new username is not too long
+              } else if (req.body.username.length > 24) {
+                response.status = 'error'
+                response.error = 'Username Too Long'
+                response.description = `Username can be at most 24 characters!`
+                res.end(JSON.stringify(response))
 
-            // make sure username does not contain odd characters
-            } else if (
-              req.body.username.toString().indexOf(' ') !== -1 ||
-              req.body.username.toString().indexOf('\n') !== -1 ||
-              req.body.username.toString().indexOf('\t') !== -1
-            ) {
-              response.status = 'error'
-              response.error = 'Username Has Odd Characters'
-              response.description = `It seems like your username contains some
-                odd characters. Make sure you don't have any spaces, tabs,
-                return characters or other oddities in your username.`
-              res.end(JSON.stringify(response))
+              // verify username does not contain special characters
+              } else if (
+                req.body.username.indexOf(' ') !== -1 ||
+                req.body.username.indexOf('\n') !== -1 ||
+                req.body.username.indexOf('\t') !== -1 ||
+                req.body.username.indexOf('!') !== -1 ||
+                req.body.username.indexOf('@') !== -1 ||
+                req.body.username.indexOf('#') !== -1 ||
+                req.body.username.indexOf('$') !== -1 ||
+                req.body.username.indexOf('%') !== -1 ||
+                req.body.username.indexOf('^') !== -1 ||
+                req.body.username.indexOf('&') !== -1 ||
+                req.body.username.indexOf('*') !== -1 ||
+                req.body.username.indexOf('()') !== -1 ||
+                req.body.username.indexOf(')') !== -1 ||
+                req.body.username.indexOf('|') !== -1 ||
+                req.body.username.indexOf('\\') !== -1 ||
+                req.body.username.indexOf('/') !== -1 ||
+                req.body.username.indexOf('?') !== -1 ||
+                req.body.username.indexOf('<') !== -1 ||
+                req.body.username.indexOf('>') !== -1 ||
+                req.body.username.indexOf('{') !== -1 ||
+                req.body.username.indexOf('}') !== -1 ||
+                req.body.username.indexOf('[') !== -1 ||
+                req.body.username.indexOf(']') !== -1 ||
+                req.body.username.indexOf(';') !== -1
+              ) {
+                response.status = 'error'
+                response.error = 'No Special Characters'
+                response.description = `Usernames cannot contain special
+                  characters!`
+                res.end(JSON.stringify(response))
 
-            // TODO additional username checks
+              // verify username is not in use
+              } else {
+                var sql = `select username
+                  from users
+                  where
+                  username like ?
+                  limit 1`
+                conn.query(sql, [req.body.username], (err, result) => {
+                  if (err) {
+                    throw err
+                  }
 
-            // make sure the username wasn't already taken
-            } else {
-              var sql = `select username
-                from users
-                where
-                username like ?
-                limit 1`
-              conn.query(sql, [req.body.username], (err, result) => {
-
-                // fail unless there are zero results
-                if (result.length !== 0){
-                  response.status = 'error'
-                  response.error = 'Username Already In Use'
-                  response.description = `Sorry, but that username has already
-                    been taken. Try another?`
-                  res.end(JSON.stringify(response))
+                  // fail unless there are no matches
+                  if (result.length > 0) {
+                    response.status = 'error'
+                    response.error = 'Username In Use'
+                    response.description = `That username is already in use! Try
+                      another?`
+                    res.end(JSON.stringify(response))
 
                 // create the record with the username
                 } else {
@@ -213,7 +231,7 @@ module.exports = function (req, res) {
                       passwordHash,
                       passwordSalt,
                       APIKey,
-                      req.body.username
+                      req.body.username.toString().toLowerCase()
                     ],
                     (err, result) => {
                       if (err) {
