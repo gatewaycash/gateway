@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#000000">
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
+    <script src="pay.js"></script>
+    <title>Gateway</title>
+  </head>
+  <body>
+    <h1>Gateway Payment Button Examples</h1>
+    <p>
+      This page shows some of the many use-cases for the payment button.
+      Most of these are, unfortunately, not implemented yet.
+    </p>
+
+    <h2>Basic donation button to static address</h2>
+    <div
+      class="payButton"
+      address="bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng"
+    ></div>
+
+    <h2>Fixed amount payable to static address</h2>
+    <div
+      class="payButton"
+      address="bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng"
+      amount="0.005"
+    ></div>
+
+    <h2>Pay 5 U.S. Dollars to a static address</h2>
+    <div
+      class="payButton"
+      address="bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng"
+      amount="5.00"
+      currency="USD"
+    ></div>
+
+    <h2>Pay 4 Euros to a static address</h2>
+    <div
+      class="payButton"
+      address="bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng"
+      amount="4.00"
+      currency="EUR"
+    ></div>
+
+    <h2>Pay 5 Euros to a merchant who uses XPUB derivation</h2>
+    <div
+      class="payButton"
+      xpub="xpub66whatever"
+      amount="5.00"
+      currency="EUR"
+    ></div>
+
+    <h2>Pay 0.1337 BCH to a merchant who uses BIP47 payment codes</h2>
+    <div
+      class="payButton"
+      paymentCode="whatever"
+      amount="0.1337"
+    ></div>
+
+    <h2>Basic donation button for a Gateway merchant ID</h2>
+    <div
+      class="payButton"
+      merchantID="deadbeef20181111"
+    ></div>
+
+    <h2>
+      Payment button for a Gateway merchant ID, for 5 U.S. Dollars, with
+      invoice tracking and a callback URL
+    </h2>
+    <div
+      class="payButton"
+      address="deadbeef20181111"
+      amount="5.00"
+      currency="USD"
+      paymentID="32-2145684565-166545688-09"
+      callbackURL="https://example.com/callback.php"
+    ></div>
+  </body>
+</html>
