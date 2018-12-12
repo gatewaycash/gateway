@@ -1,0 +1,7 @@
+{
+  "name": "@gatewaycash/utils",
+  "author": "The Gateway Project Developers <hello@gateway.cash>",
+  "version": "0.1.0",
+  "main": "index.js",
+  "license": "AGPL-3.0"
+}
