@@ -1,6 +1,6 @@
-# Gateway API Backend
+# Gateway API and Backend Server
 
-A server for managing merchants and payments
+A sever for managing merchants and payments
 
 ## Initial Setup
 
