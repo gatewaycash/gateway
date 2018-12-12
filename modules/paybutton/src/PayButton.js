@@ -194,14 +194,14 @@ export default (props) => {
     amountBCH,
     walletURL,
     QRCodeURL
-  }
+  } = false
 
   // When the payment button is clicked, generate a new invoice
-  let handleClick = () => {
+  let handleClick = async () => {
     if (paymentComplete) {
       setDialogOpen(true)
     } else {
-      {
+      let {
         buttonText,
         dialogTitie,
         amountBCH,
@@ -264,9 +264,9 @@ export default (props) => {
   }
 
   // when we find a matching payment, send it to the server to mark invoice paid
-  let sendPaymentToServer = async (txid) {
+  let sendPaymentToServer = async (txid) => {
     let paymentResponse = await axios.post({
-      url: APIURL + '/paid'
+      url: APIURL + '/paid',
       data: {
         paymentAddress: paymentAddress,
         paymentTXID: txid
