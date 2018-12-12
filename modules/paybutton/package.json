@@ -27,6 +27,7 @@
   },
   "description": "Gateway.cash Payment Button",
   "dependencies": {
+    "axios": "^0.18.0",
     "dotenv": "^6.2.0"
   }
 }
