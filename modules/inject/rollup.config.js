@@ -8,6 +8,7 @@ export default {
   output: {
     file: './../website/public/pay.js',
     format: 'umd',
+    sourcemap: true
   },
   plugins: [
     resolve({

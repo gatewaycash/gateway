@@ -177,7 +177,8 @@ let parseProps = async (data) => {
     amountBCH: amountBCH,
     paymentAddress: paymentAddress,
     QRCodeURL: QRCodeURL,
-    walletURL: walletURL
+    walletURL: walletURL,
+    APIURL: APIURL
   }
 }
 
@@ -193,7 +194,8 @@ export default (props) => {
     paymentAddress,
     amountBCH,
     walletURL,
-    QRCodeURL
+    QRCodeURL,
+    APIURL
   } = false
 
   // When the payment button is clicked, generate a new invoice
@@ -207,7 +209,8 @@ export default (props) => {
         amountBCH,
         paymentAddress,
         QRCodeURL,
-        walletURL
+        walletURL,
+        APIURL
       } = await transformData(props)
 
       setState({ dialogOpen: true })
