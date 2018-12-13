@@ -6,13 +6,15 @@ export default {
   input: 'inject.js',
   output: {
     file: './../website/public/pay.js',
-    format: 'iife',
+    format: 'umd',
   },
   plugins: [
-    resolve(),
+    resolve({
+      browser: true
+    }),
     commonjs({ include: '../../node_modules/**' }),
     babel({
-      exclude: '../../node_modules/**', // only transpile our source code
+      exclude: '../../node_modules/**'
     }),
   ],
 }

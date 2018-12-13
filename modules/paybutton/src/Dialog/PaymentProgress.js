@@ -1,7 +1,7 @@
 import React from 'react'
 import Button from '@material-ui/core/Button'
 
-export default ({ amount, address, QRCodeURL, walletURL }) => (
+export default ({ amountBCH, paymentAddress, QRCodeURL, walletURL }) => (
   <center>
     <p
       style={{
@@ -10,7 +10,7 @@ export default ({ amount, address, QRCodeURL, walletURL }) => (
         marginTop: '-1.5em',
       }}
     >
-      Send {amount || 'some'}
+      Send {amountBCH || 'some'}
       Bitcoin&nbsp;Cash (BCH) to this address to complete your payment
     </p>
     <img
@@ -33,7 +33,7 @@ export default ({ amount, address, QRCodeURL, walletURL }) => (
         wordWrap: 'break-word',
       }}
     >
-      {address}
+      {paymentAddress}
     </p>
     <Button variant="contained" color="primary" href={walletURL}>
       OPEN WALLET

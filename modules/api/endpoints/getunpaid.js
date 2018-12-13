@@ -100,7 +100,7 @@ module.exports = function (req, res) {
 
             // hide the private keys unless includeKeys is YES
             const hideKeys = (!query.includeKeys || query.includeKeys !== 'YES')
-            for (var i = 0; i < response.numberOfPayments; i++) {
+            for (var i = 0; hideKeys && i < response.numberOfPayments; i++) {
               if (hideKeys) {
                 response.payments[i].paymentKey = 'hidden'
               }
