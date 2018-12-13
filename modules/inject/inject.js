@@ -3,6 +3,11 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import PayButton from '@gatewaycash/paybutton'
 
+// test a workaround
+var process = {}
+process.env = {}
+process.env.NODE_ENV = 'production'
+
 function createButton(button, id) {
   ReactDOM.render(
     <PayButton
@@ -15,7 +20,7 @@ function createButton(button, id) {
       callbackURL={button.getAttribute('callbackURL')}
       address={button.getAttribute('address')}
     />,
-    document.getElementById(id),
+    document.getElementById(id)
   )
 }
 
