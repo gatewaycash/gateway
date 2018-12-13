@@ -9,7 +9,9 @@ export default {
     format: 'umd',
   },
   plugins: [
-    resolve(),
+    resolve({
+      browser: true
+    }),
     commonjs({ include: '../../node_modules/**' }),
     babel({
       exclude: '../../node_modules/**'
