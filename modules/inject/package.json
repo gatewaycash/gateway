@@ -21,8 +21,8 @@
     "rollup-plugin-uglify": "^6.0.0"
   },
   "scripts": {
-    "build": "rollup -c --environment INCLUDE_DEPS,BUILD:production",
-    "dev": "rollup -c --watch --environment INCLUDE_DEPS,BUILD:development"
+    "build": "rollup --config rollup.prod.js --environment INCLUDE_DEPS,BUILD:production",
+    "dev": "rollup --config rollup.dev.js --watch --environment INCLUDE_DEPS,BUILD:development"
   },
   "description": "Gateway.cash Payment Button injector",
   "dependencies": {

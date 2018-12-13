@@ -35,8 +35,6 @@ node_modules
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 
-# ignore backend sessions (and Jeff Sessions?)
-sessions
-
 # ignore compiled inject code
 modules/website/public/pay.js
+modules/website/public/pay.js.map
