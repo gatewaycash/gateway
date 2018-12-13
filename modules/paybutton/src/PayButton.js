@@ -8,6 +8,7 @@ import Button from '@material-ui/core/Button'
 import Dialog from './Dialog'
 import PaymentComplete from './Dialog/PaymentComplete'
 import PaymentProgress from './Dialog/PaymentProgress'
+
 const bchaddr = require('bchaddrjs')
 const axios = require('axios')
 require('dotenv').config()
