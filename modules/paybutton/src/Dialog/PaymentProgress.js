@@ -10,8 +10,8 @@ export default ({ amountBCH, paymentAddress, QRCodeURL, walletURL }) => (
         marginTop: '-1.5em',
       }}
     >
-      Send {amountBCH || 'some'}
-      Bitcoin&nbsp;Cash (BCH) to this address to complete your payment
+      Send {amountBCH || 'some'} Bitcoin&nbsp;Cash (BCH) to this address to
+      complete your payment
     </p>
     <img
       src={QRCodeURL}

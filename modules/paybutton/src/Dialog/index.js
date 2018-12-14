@@ -4,7 +4,14 @@ import DialogContent from '@material-ui/core/DialogActions'
 import DialogTitle from '@material-ui/core/DialogTitle'
 
 export default ({ open, title, handleClose, children, ...props }) => (
-  <Dialog open={open} keepMounted onClose={handleClose}>
+  <Dialog
+    open={open}
+    keepMounted
+    onClose={handleClose}
+    style={{
+      fontFamily: 'helvetica'
+    }}
+  >
     <DialogTitle>
       <center>{title}</center>
     </DialogTitle>
