@@ -35,7 +35,8 @@ export default {
     builtins(),
     globals(),
     replace({
-      'process.env.NODE_ENV': JSON.stringify( 'development' )
+      'process.env.NODE_ENV': JSON.stringify( 'development' ),
+      '__REACT_DEVTOOLS_GLOBAL_HOOK__': {isDisabled: true}
     })
   ]
 }
