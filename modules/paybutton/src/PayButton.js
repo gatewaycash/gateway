@@ -89,7 +89,7 @@ let parseProps = async (data) => {
 
   // check the protocol of the callback URL for sanity
   let validProtocols = ['http://', 'https://']
-  if (!validProtocols.some((x) => callbackURL.startsWith(x))) {
+  if (callbackURL && !validProtocols.some((x) => callbackURL.startsWith(x))) {
     showError('Callback URL does not start with http:// or https://')
     return
   }
@@ -136,7 +136,7 @@ let parseProps = async (data) => {
   }
 
   // return the parsed data
-  return {
+  let parsedData = {
     buttonText: buttonText,
     dialogTitle: dialogTitle,
     amountBCH: amountBCH,
@@ -146,24 +146,28 @@ let parseProps = async (data) => {
     address: address,
     APIURL: APIURL
   }
+  console.log(parsedData)
+  return parsedData;
 }
 
-export default async (props) => {
+export default (props) => {
   let [dialogOpen, setDialogOpen] = React.useState(false)
   let [paymentComplete, setPaymentComplete] = React.useState(false)
 
-  // some global variables to keep track of some things
-  let sock, paymentAddress, QRCodeURL, walletURL
-  let {
-    buttonText,
-    dialogTitle,
-    amountBCH,
-    merchantID,
-    paymentID,
-    callbackURL,
-    address,
-    APIURL
-  } = await parseProps(props)
+  (async () => {
+    // some global variables to keep track of some things
+    let sock, paymentAddress, QRCodeURL, walletURL
+    let {
+      buttonText,
+      dialogTitle,
+      amountBCH,
+      merchantID,
+      paymentID,
+      callbackURL,
+      address,
+      APIURL
+    } = await parseProps(props)
+  })()
 
   // When the payment button is clicked, generate a new invoice
   let handleClick = async () => {
