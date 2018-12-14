@@ -3,7 +3,6 @@ import commonjs from 'rollup-plugin-commonjs'
 import babel from 'rollup-plugin-babel'
 import replace from 'rollup-plugin-replace'
 import json from 'rollup-plugin-json'
-import builtins from 'rollup-plugin-node-builtins'
 
 export default {
   input: 'src/PayButton.js',
@@ -18,9 +17,11 @@ export default {
       preferBuiltins: false,
       jsnext: true
     }),
-    commonjs({ include: '../../node_modules/**' }),
+    commonjs({
+      include: '../../node_modules/**'
+    }),
     babel({
-      exclude:[
+      exclude: [
         '../../node_modules/**',
         '*.json'
       ]
@@ -28,7 +29,6 @@ export default {
     replace({
       'process.env.NODE_ENV': JSON.stringify( 'development' )
     }),
-    json(),
-    builtins()
+    json()
   ]
 }
