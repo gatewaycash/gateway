@@ -11,6 +11,7 @@ import PaymentProgress from './Dialog/PaymentProgress'
 import bchaddr from 'bchaddrjs'
 import axios from 'axios'
 import 'regenerator-runtime/runtime'
+import io from 'socket.io-client'
 
 /**
  * Displays an error to the user
@@ -141,7 +142,10 @@ let parseProps = (data) => {
 }
 
 export default (props) => {
+  // validate and parse the prop values
   let parsedData = parseProps(props)
+
+  // show an error button in place of the PayButton if there was an error
   if (typeof parsedData !== 'object') {
     return (
       <div style={{ display: 'inline-block', padding: '0.25em' }}>
@@ -155,16 +159,25 @@ export default (props) => {
       </div>
     )
   }
+
+  // set default state variablevalues
   let [dialogOpen, setDialogOpen] = React.useState(false)
   let [paymentComplete, setPaymentComplete] = React.useState(false)
-  let [paymentAddress, setPaymentAddress] = React.useState(parsedData.address)
   let [amountBCH, setAmountBCH] = React.useState(0)
   let [walletURL, setWalletURL] = React.useState('loading...')
   let [QRCodeURL, setQRCodeURL] = React.useState('loading...')
+  let [paymentAddress, setPaymentAddress] = React.useState('loading...')
+
+  let [address, setAddress] = React.useState(parsedData.address)
   let [buttonText, setButtonText] = React.useState(parsedData.buttonText)
   let [dialogTitle, setDialogTitle] = React.useState(parsedData.dialogTitle)
   let [currency, setCurrency] = React.useState(parsedData.currency)
   let [amount, setAmount] = React.useState(parsedData.amount)
+  let [merchantID, setMerchantID] = React.useState(parsedData.merchantID)
+  let [paymentID, setPaymentID] = React.useState(parsedData.paymentID)
+  let [callbackURL, setCallbackURL] = React.useState(parsedData.callbackURL)
+  let [APIURL, setAPIURL] = React.useState(parsedData.APIURL)
+
   let sock
 
   // When the payment button is clicked, generate a new invoice
@@ -176,54 +189,63 @@ export default (props) => {
       // set the amount multiplier based on the currency
       let amountMultiplier = 1.0
       if (currency !== 'BCH') {
-        let marketData = await axios.get({
-          url: 'https://apiv2.bitcoinaverage.com/indices/global/ticker/BCH' +
-          currency,
-        })
-        let exchangeRate = JSON.parse(marketData).averages.day
+        let marketDataURL =
+          'https://apiv2.bitcoinaverage.com/indices/global/ticker/BCH' +
+          currency
+        console.log(marketDataURL)
+        let marketData = await axios.get(marketDataURL)
+        let exchangeRate = marketData.data.averages.day
+        console.log(
+          'GATEWAY: Current',
+          'BCH/' + currency,
+          'exchange rate:',
+          exchangeRate
+        )
         amountMultiplier = 1 / exchangeRate
       }
 
       // multiply amount of fiat by amount multiplier to get amount of BCH
-      setAmountBCH(amount * amountMultiplier)
+      setAmountBCH((amount * amountMultiplier).toFixed(6))
 
       // if no address was given, and a merchantID was given, use the merchantID
       if (!address && merchantID) {
-        let invoiceResult = await axios.post({
-          url: APIURL + '/pay',
-          data: {
-            merchantID: merchantID,
-            paymentID: paymentID,
-            callbackURL: callbackURL
-          }
+        let invoiceResult = await axios.post(APIURL + '/pay', {
+          merchantID: merchantID,
+          paymentID: paymentID,
+          callbackURL: callbackURL
         })
-        invoiceResult = JSON.parse(invoiceResult)
-        if (invoiceResult.status === 'error') {
-          showError(invoiceResult)
+        if (invoiceResult.data.status === 'error') {
+          alert(showError(invoiceResult.data))
+          return
         } else {
-          setPaymentAddress(invoiceResult.paymentAddress)
+          setPaymentAddress(invoiceResult.data.paymentAddress)
         }
+
+      // if a direct deposit address was given, use it for payment address
+      } else {
+        setPaymentAddress(address)
       }
 
       // make sure a payment address was set either way
       if (!paymentAddress) {
-        showError('We did not find a payment address!')
+        alert(showError('We did not find a payment address!'))
+        return
       }
 
       // generate URLs for the QR code image and the wallet l
-      let QRCodeURL = 'https://chart.googleapis.com/'
-      QRCodeURL += 'chart?chs=300x300&cht=qr&chl='
-      QRCodeURL += paymentAddress
-      let walletURL = paymentAddress
+      let newQRCodeURL = 'https://chart.googleapis.com/'
+      newQRCodeURL += 'chart?chs=300x300&cht=qr&chl='
+      newQRCodeURL += paymentAddress
+      let newWalletURL = paymentAddress
       if (amountBCH > 0) {
-        QRCodeURL += '?amount=' + amountBCH
-        walletURL += '?amount=' + amountBCH
+        newQRCodeURL += '?amount=' + amountBCH
+        newWalletURL += '?amount=' + amountBCH
       }
-      setWalletURL(walletURL)
-      setQRCodeURL(QRCodeURL)
+      setWalletURL(newWalletURL)
+      setQRCodeURL(newQRCodeURL)
 
       // TODO change to rest.bitcoin.com
-      sock = new WebSocket('wss://bitcoincash.blockexplorer.com')
+      sock = io('wss://bitcoincash.blockexplorer.com')
       sock.on('connect', () => {
         sock.emit('subscribe', 'inv')
       })
@@ -294,8 +316,18 @@ export default (props) => {
 
   // render everything
   return (
-    <div style={{ display: 'inline-block', padding: '0.25em' }}>
-      <Button onClick={handleClick} variant="contained" color="primary">
+    <div
+      style={{
+        display: 'inline-block',
+        padding: '0.25em'
+      }}
+    >
+      <Button
+        onClick={handleClick}
+        onClose={handleClose}
+        variant="contained"
+        color="primary"
+      >
         {buttonText}
       </Button>
       <Dialog
@@ -304,14 +336,15 @@ export default (props) => {
         onClose={handleClose}
         title={paymentComplete ? 'Thank you!' : dialogTitle}
       >
-        {paymentComplete ? (
-          <PaymentComplete />
-        ) : (
-          <PaymentProgress
-            amountBCH={amountBCH}
-            QRCodeURL={QRCodeURL}
-            paymentAddress={paymentAddress}
-            walletURL={walletURL}
+        {
+          paymentComplete ? (
+            <PaymentComplete />
+          ) : (
+            <PaymentProgress
+              amountBCH={amountBCH}
+              QRCodeURL={QRCodeURL}
+              paymentAddress={paymentAddress}
+              walletURL={walletURL}
             />
           )
         }

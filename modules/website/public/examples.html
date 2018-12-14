@@ -6,24 +6,35 @@
     <meta name="theme-color" content="#000000">
     <script src="pay.js"></script>
     <title>Gateway</title>
+    <style>
+      body {
+        font-family: helvetica;
+      }
+    </style>
   </head>
   <body>
     <h1>Gateway Payment Button Examples</h1>
     <p>
       This page shows some of the many use-cases for the payment button.
-      Most of these are, unfortunately, not implemented yet.
+      Some of these are, unfortunately, not implemented yet.
     </p>
     <p>
       These are all possible with strictly the HTML button inject script usable
       on any website. If the user uses our React component, things like
       dynamically-generated buttons become possible.
     </p>
-
+    <p>
+      All of the buttons on this page will allow you to contribute to the
+      Gateway project, except the one on the bottom, which won't generally work
+      unless you're running a local payment server.
+    </p>
+    <center>
     <h2>Basic donation button to static address</h2>
     <div
       class="payButton"
       address="bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng"
       buttonText="Donate"
+      dialogTitle="Make a Donation"
     ></div>
 
     <h2>Fixed amount payable to static address</h2>
@@ -72,7 +83,8 @@
 
     <h2>
       Payment button for a Gateway merchant ID, for 5 U.S. Dollars, with
-      invoice tracking and a callback URL
+      invoice tracking and a callback URL, using a local Gateway instance
+      server located at http://127.0.0.1:8080
     </h2>
     <div
       class="payButton"
@@ -83,5 +95,6 @@
       callbackURL="https://example.com/callback.php"
       gateway="http://127.0.0.1:8080"
     ></div>
+    </center>
   </body>
 </html>
