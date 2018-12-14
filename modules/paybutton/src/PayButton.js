@@ -8,10 +8,9 @@ import Button from '@material-ui/core/Button'
 import Dialog from './Dialog'
 import PaymentComplete from './Dialog/PaymentComplete'
 import PaymentProgress from './Dialog/PaymentProgress'
-
-const bchaddr = require('bchaddrjs')
-const axios = require('axios')
-require('dotenv').config()
+import bchaddr from 'bchaddrjs'
+import axios from 'axios'
+import 'regenerator-runtime/runtime'
 
 /**
  * Displays an error to the user
@@ -48,7 +47,7 @@ let parseProps = async (data) => {
     - Then we see if the API server was passed in via an environment variable
     - Finally we fall back to https://api.gateway.cash
    */
-  const APIURL = data.gateway ? data.gateway : process.env.GATEWAY_API_BASE
+  let APIURL = data.gateway ? data.gateway : process.env.GATEWAY_API_BASE
   if (!APIURL) {
     APIURL = 'https://api.gateway.cash'
   }
@@ -112,63 +111,28 @@ let parseProps = async (data) => {
     data.dialogTitle :
     'Complete Your Payment'
 
-  // check if an address was provided
-  let paymentAddress = false
+  // check the direct deposit address for sanity, if provided
+  let address = false
   if (data.address) {
     // verify the address is valid, translating to CashAddress if needed
     try {
-      paymentAddress = bchaddr.toCashAddress(data.address)
+      address = bchaddr.toCashAddress(data.address)
     } catch (e) {
       showError('The BCH address provided is invalid!')
       return
     }
+  }
 
-  // since no address was given, a merchant ID is required
-  } else if (data.merchantID) {
-    // verify the merchantID is valid
-    if (data.merchantID.length !== 16) {
-      showError('Merchant ID was not 16 characters!')
-      return
-
-    // create a payment invoice using the merchant ID
-    } else {
-      let invoiceResult = await axios.post({
-        url: APIURL + '/pay',
-        data: {
-          merchantID: merchantID,
-          paymentID: paymentID,
-          callbackURL: callbackURL
-        }
-      })
-      invoiceResult = JSON.parse(invoiceResult)
-      if (invoiceResult.status === 'error') {
-        showError(invoiceResult)
-        return
-      } else {
-        paymentAddress = invoiceResult.paymentAddress
-      }
-    }
-
-  // fail because no address or merchantID was given.
-  } else {
-    showError('You must provide an address or merchant ID to the PayButton!')
+  // check the merchant ID for sanity, if one was provided
+  if (merchantID && merchantID.length !== 16) {
+    showError('Merchant ID was not 16 characters!')
     return
   }
 
-  // make sure a payment address was set
-  if (!paymentAddress) {
-    showError('We did not find a payment address!')
+  // fail if neither a merchant ID nor an address were provided
+  if (!merchantID && !address) {
+    showError('Either an address or a merchantID is required!')
     return
-  }
-
-  // generate URLs for the QR code image and the wallet l
-  let QRCodeURL = 'https://chart.googleapis.com/'
-  QRCodeURL += 'chart?chs=300x300&cht=qr&chl='
-  QRCodeURL += paymentAddress
-  let walletURL = paymentAddress
-  if (amountBCH > 0) {
-    QRCodeURL += '?amount=' + amountBCH
-    walletURL += '?amount=' + amountBCH
   }
 
   // return the parsed data
@@ -176,45 +140,76 @@ let parseProps = async (data) => {
     buttonText: buttonText,
     dialogTitle: dialogTitle,
     amountBCH: amountBCH,
-    paymentAddress: paymentAddress,
-    QRCodeURL: QRCodeURL,
-    walletURL: walletURL,
+    merchantID: merchantID,
+    paymentID: paymentID,
+    callbackURL: callbackURL,
+    address: address,
     APIURL: APIURL
   }
 }
 
-export default (props) => {
+export default async (props) => {
   let [dialogOpen, setDialogOpen] = React.useState(false)
   let [paymentComplete, setPaymentComplete] = React.useState(false)
 
   // some global variables to keep track of some things
+  let sock, paymentAddress, QRCodeURL, walletURL
   let {
-    sock,
     buttonText,
     dialogTitle,
-    paymentAddress,
     amountBCH,
-    walletURL,
-    QRCodeURL,
+    merchantID,
+    paymentID,
+    callbackURL,
+    address,
     APIURL
-  } = false
+  } = await parseProps(props)
 
   // When the payment button is clicked, generate a new invoice
   let handleClick = async () => {
-    if (paymentComplete) {
-      setDialogOpen(true)
-    } else {
-      let {
-        buttonText,
-        dialogTitie,
-        amountBCH,
-        paymentAddress,
-        QRCodeURL,
-        walletURL,
-        APIURL
-      } = await transformData(props)
 
-      setState({ dialogOpen: true })
+    // create a ninvoice only when a payment has not yet been sent
+    if (!paymentComplete) {
+
+      // if no address was given, and a merchantID was given, use the merchantID
+      if (!address && merchantID) {
+        let invoiceResult = await axios.post({
+          url: APIURL + '/pay',
+          data: {
+            merchantID: merchantID,
+            paymentID: paymentID,
+            callbackURL: callbackURL
+          }
+        })
+        invoiceResult = JSON.parse(invoiceResult)
+        if (invoiceResult.status === 'error') {
+          showError(invoiceResult)
+          return
+        } else {
+          paymentAddress = invoiceResult.paymentAddress
+        }
+
+      // when a direct deposit address was given, use the address
+      } else {
+        paymentAddress = address
+      }
+
+      // make sure a payment address was set either way
+      if (!paymentAddress) {
+        showError('We did not find a payment address!')
+        return
+      }
+
+      // generate URLs for the QR code image and the wallet l
+      let QRCodeURL = 'https://chart.googleapis.com/'
+      QRCodeURL += 'chart?chs=300x300&cht=qr&chl='
+      QRCodeURL += paymentAddress
+      let walletURL = paymentAddress
+      if (amountBCH > 0) {
+        QRCodeURL += '?amount=' + amountBCH
+        walletURL += '?amount=' + amountBCH
+      }
+
       // TODO change to rest.bitcoin.com
       sock = new WebSocket('wss://bitcoincash.blockexplorer.com')
       sock.on('connect', () => {
@@ -236,6 +231,7 @@ export default (props) => {
         handlePayment(data)
       })
     }
+    setDialogOpen(true)
   }
 
   // when the dialog box is closed, close the WebSocket
@@ -244,7 +240,7 @@ export default (props) => {
     if (paymentComplete === false) {
       console.log('Gateway: Payment canceled')
     }
-    React.setState({ dialogOpen: false })
+    setDialogOpen(false)
   }
 
   // when a payment comes through, check if it concerns this transaction
@@ -259,7 +255,7 @@ export default (props) => {
       }
     }
     if (valid) {
-      React.setState({ paymentComplete: true })
+      setPaymentComplete(true)
       new Audio('https://gateway.cash/audio/ding.mp3').play()
       console.log('Gateway: Payment sent to address')
       console.log('Gateway: Payment TXID:', data.txid)
@@ -294,7 +290,7 @@ export default (props) => {
         open={dialogOpen}
         keepMounted
         onClose={handleClose}
-        title={paymentComplete ? 'Thank you!' : this.dialogTitle}
+        title={paymentComplete ? 'Thank you!' : dialogTitle}
       >
         {paymentComplete ? (
           <PaymentComplete />
@@ -304,9 +300,12 @@ export default (props) => {
             QRCodeURL={QRCodeURL}
             paymentAddress={paymentAddress}
             walletURL={walletURL}
-          />
-        )}
+            />
+          )
+        }
       </Dialog>
     </div>
   )
+
+
 }

@@ -1,28 +1,20 @@
-import resolve from 'rollup-plugin-node-resolve'
-import commonjs from 'rollup-plugin-commonjs'
-import babel from 'rollup-plugin-babel'
 import replace from 'rollup-plugin-replace'
-import { uglify } from 'rollup-plugin-uglify'
+import uglify from 'rollup-plugin-uglify'
 
-export default {
-  input: 'inject.js',
-  output: {
-    file: './../website/public/pay.js',
-    format: 'iife'
-  },
-  plugins: [
-    resolve({
-      browser: true
-    }),
-    commonjs({ include: '../../node_modules/**' }),
-    babel({
-      exclude: '../../node_modules/**'
-    }),
-    replace({
-      'process.env.NODE_ENV': JSON.stringify( 'production' )
-    }),
-    uglify({
-      sourcemap: false
-    })
-  ],
-}
+// Import the development configuration.
+import config from './rollup.dev.js'
+
+// tweak the config for production
+
+// set NODE_ENV environment variable for production
+config.plugins[6] = replace({
+  'process.env.NODE_ENV': JSON.stringify('production')
+})
+
+// inject uglify
+config.plugins[7] = uglify
+
+// disable source map
+config.output.sourcemap = false
+
+export default config
