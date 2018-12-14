@@ -13,6 +13,7 @@ function createButton(button, id) {
       paymentID={button.getAttribute('paymentID')}
       callbackURL={button.getAttribute('callbackURL')}
       address={button.getAttribute('address')}
+      gateway={button.getAttribute('gateway')}
     />,
     document.getElementById(id)
   )
