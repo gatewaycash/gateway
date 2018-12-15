@@ -17,24 +17,21 @@ module.exports = function (req, res) {
   if (!req.body.paymentAddress) {
     response.status = 'error'
     response.error = 'No Payment Address'
-    response.description = `Please send back the payment address you received
-      when you called /pay so we know which payment you are marking as paid.`
+    response.description = 'Please send back the payment address you received when you called /pay so we know which payment you are marking as paid.'
     res.end(JSON.stringify(response))
 
   // verify a Payment TXID was provided
   } else if (!req.body.paymentTXID) {
     response.status = 'error'
     response.error = 'No Payment TXID'
-    response.description = `Please provide the TXID of the transaction which
-      sends funds to the payment address.`
+    response.description = 'Please provide the TXID of the transaction which sends funds to the payment address.'
     res.end(JSON.stringify(response))
 
   // verify the TXID is the correct length
   } else if (req.body.paymentTXID.length !== 64) {
     response.status = 'error'
     response.error = 'Invalid Payment TXID'
-    response.description = `The TXID you provided is invalid. Check that the
-      payment TXID is correct.`
+    response.description = 'The TXID you provided is invalid. Check that the payment TXID is correct.'
     res.end(JSON.stringify(response))
 
   // verify the provided address is valid
@@ -48,8 +45,7 @@ module.exports = function (req, res) {
     if (address === 'invalid') {
       response.status = 'error'
       response.error = 'Invalid Payment Address'
-      response.description = `Make sure the payment address you provided is
-        valid!`
+      response.description = 'Make sure the payment address you provided is valid!'
       res.end(JSON.stringify(response))
 
     // verify the given address is in the payments table
@@ -75,8 +71,7 @@ module.exports = function (req, res) {
         if (result.length < 1) {
           response.status = 'error'
           response.error = 'Payment Address Error'
-          response.description = `The payment address you provided is not in
-            the database`
+          response.description = 'The payment address you provided is not in the database'
           res.end(JSON.stringify(response))
 
         // verify the TXID is not already pending
@@ -94,7 +89,7 @@ module.exports = function (req, res) {
             if (result.length > 0) {
               response.status = 'error'
               response.error = 'Transaction Already Pending'
-              response.description = `This transaction is already pending!`
+              response.description = 'This transaction is already pending!'
               res.end(JSON.stringify(response))
 
             // verify this TXID is not in the payments table
@@ -117,10 +112,7 @@ module.exports = function (req, res) {
                   if (result.length !== 0) {
                     response.status = 'error'
                     response.error = 'TXID Already Exists'
-                    response.description = `This tXID is already associated
-                      with a payment. Your payment might already have been
-                      processed and sent to a merchant, or you might be sending
-                      a TXID from a previous transaction.`
+                    response.description = 'This tXID is already associated with a payment. Your payment might already have been processed and sent to a merchant, or you might be sending a TXID from a previous transaction.'
                     res.end(JSON.stringify(response))
 
                   // all checks passed, insert this record into pending payments

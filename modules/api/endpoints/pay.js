@@ -18,9 +18,7 @@ module.exports = function (req, res) {
   if (!req.body.merchantID) {
     response.status = 'error'
     response.error = 'No Merchant ID Given'
-    response.description = `A merchant ID is required in order to generate the
-      payment invoice. This is because Gateway needs to know where to send the
-      funds once we receive then.`
+    response.description = 'A merchant ID is required in order to generate the payment invoice. This is because Gateway needs to know where to send the funds once we receive then.'
     res.end(JSON.stringify(response))
 
   // make sure the merchant ID is in the database
@@ -48,8 +46,7 @@ module.exports = function (req, res) {
       if (result.length !== 1) {
         response.status = 'error'
         response.error = 'Merchant ID Not Found'
-        response.description = `The merchant ID you provided wasn't found in
-          the database. Make sure you're sending the correct merchant ID.`
+        response.description = 'The merchant ID you provided wasn\'t found in the database. Make sure you\'re sending the correct merchant ID.'
         res.end(JSON.stringify(response))
 
       // define variables for callback URL and payment ID
@@ -61,9 +58,7 @@ module.exports = function (req, res) {
         if (callbackURL && callbackURL.length > 250) {
           response.status = 'error'
           response.error = 'Callback URL too long'
-          response.description = `The maximum length of a callback URL is 250
-            characters. Please find a way to shorten your callback URL, or
-            consider using a URL shortening service.`
+          response.description = 'The maximum length of a callback URL is 250 characters. Please find a way to shorten your callback URL, or consider using a URL shortening service.'
           res.end(JSON.stringify(response))
 
         // check some basic aspects of the callback URL for validity.
@@ -80,18 +75,14 @@ module.exports = function (req, res) {
         ) {
           response.status = 'error'
           response.error = 'Callback URL is not valid'
-          response.description = `Please check the callback URL you provided
-            and make sure it is valid. Ensure it starts with http:// or https://
-            and that it resolves to a reachable server.`
+          response.description = 'Please check the callback URL you provided and make sure it is valid. Ensure it starts with http:// or https:// and that it resolves to a reachable server.'
           res.end(JSON.stringify(response))
 
         // verify the payment ID is not too long
         } else if (paymentID && paymentID.length > 64) {
           response.status = 'error'
           response.error = 'Payment ID is too long'
-          response.description = `Payment IDs are used for distinguishing one
-            payment from another. The maximum length of a payment ID is 64
-            characters. Please shorten your payment ID.`
+          response.description = 'Payment IDs are used for distinguishing one payment from another. The maximum length of a payment ID is 64 characters. Please shorten your payment ID.'
           res.end(JSON.stringify(response))
 
         // generate the new address

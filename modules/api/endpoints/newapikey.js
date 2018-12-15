@@ -47,9 +47,7 @@ module.exports = function (req, res) {
       if (result.length !== 1) {
         response.status = 'error'
         response.error = 'Invalid API Key'
-        response.description = `No user currently has that API key. You might
-          have changed your API key in your account settings, or the API key
-          might be invalid.`
+        response.description = 'No user currently has that API key. You might have changed your API key in your account settings, or the API key might be invalid.'
         res.end(JSON.stringify(response))
 
       // update the API key
