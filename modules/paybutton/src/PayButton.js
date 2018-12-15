@@ -166,8 +166,6 @@ export default (props) => {
   let [dialogOpen, setDialogOpen] = React.useState(false)
   let [paymentComplete, setPaymentComplete] = React.useState(false)
   let [amountBCH, setAmountBCH] = React.useState(0)
-  let [walletURL, setWalletURL] = React.useState('loading...')
-  let [QRCodeURL, setQRCodeURL] = React.useState('loading...')
   let [paymentAddress, setPaymentAddress] = React.useState('loading...')
 
   let [address, setAddress] = React.useState(parsedData.address)
@@ -230,27 +228,8 @@ export default (props) => {
         setPaymentAddress(address)
       }
 
-      // verify the paymentAddress has been set up correctly
-      if (!paymentAddress || paymentAddress === 'loading...') {
-        alert(showError('We did not find a payment address!'))
-        return
-      }
-
-      // generate URLs for the QR code image and the wallet l
-      let newQRCodeURL = 'https://chart.googleapis.com/'
-      newQRCodeURL += 'chart?chs=300x300&cht=qr&chl='
-      newQRCodeURL += paymentAddress
-      let newWalletURL = paymentAddress
-      if (amountBCH > 0) {
-        newQRCodeURL += '?amount=' + amountBCH
-        newWalletURL += '?amount=' + amountBCH
-      }
-
-      setWalletURL(newWalletURL)
-      setQRCodeURL(newQRCodeURL)
-
       // TODO change to rest.bitcoin.com
-      sock = io('wss://bitcoincash.blockexplorer.com')
+      sock = io('wss://bch.coin.space')
       sock.on('connect', () => {
         sock.emit('subscribe', 'inv')
         console.log('GATEWAY: Connected to block explorer!')
@@ -276,20 +255,22 @@ export default (props) => {
 
   // when the dialog box is closed, close the WebSocket
   let handleClose = () => {
-    sock.close()
     if (paymentComplete === false) {
-      console.log('Gateway: Payment canceled')
+      console.log('GATEWAY: Payment canceled')
     }
     setDialogOpen(false)
   }
 
   // when a payment comes through, check if it concerns this transaction
   let handlePayment = (data) => {
+    console.log(paymentAddress)
+    // figure out why this is still 'loading...'
+    let legacy = bchaddr.toLegacyAddress(paymentAddress)
     var valid = false
     for (var i = 0, l = data.vout.length; i < l; i++) {
       var obj = Object.getOwnPropertyNames(data.vout[i])
       for (var j = 0; j < obj.length; j++) {
-        if (obj[j] === paymentAddress) {
+        if (obj[j] === legacy) {
           valid = true
         }
       }
@@ -297,8 +278,8 @@ export default (props) => {
     if (valid) {
       setPaymentComplete(true)
       new Audio('https://gateway.cash/audio/ding.mp3').play()
-      console.log('Gateway: Payment sent to address')
-      console.log('Gateway: Payment TXID:', data.txid)
+      console.log('GATEWAY: Payment sent to address')
+      console.log('GATEWAY: Payment TXID:', data.txid)
       sendPaymentToServer(data.txid)
     }
   }
@@ -330,7 +311,10 @@ export default (props) => {
     >
       <Button
         onClick={handleClick}
-        onClose={handleClose}
+        onClose={() => {
+          handleClose()
+          sock.close()
+        }}
         variant="contained"
         color="primary"
       >
@@ -340,7 +324,11 @@ export default (props) => {
         open={dialogOpen}
         keepMounted
         onClose={handleClose}
-        title={paymentComplete ? 'Thank you!' : dialogTitle}
+        title={
+          paymentComplete ?
+            'Thank you!' :
+            dialogTitle
+        }
       >
         {
           paymentComplete ? (
@@ -348,9 +336,7 @@ export default (props) => {
           ) : (
             <PaymentProgress
               amountBCH={amountBCH}
-              QRCodeURL={QRCodeURL}
               paymentAddress={paymentAddress}
-              walletURL={walletURL}
             />
           )
         }
