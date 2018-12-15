@@ -123,7 +123,9 @@ let parseProps = (data) => {
 
   // fail if neither a merchant ID nor an address were provided
   if (!merchantID && !address) {
-    return showError('Either an address or a merchantID is required!')
+    return showError(
+      'Either an address or a merchantID is required! (XPUB, BIP47 coming soon)'
+    )
   }
 
   // return the parsed data
@@ -218,16 +220,18 @@ export default (props) => {
           alert(showError(invoiceResult.data))
           return
         } else {
+          // call setupURLs once the address has been set up
           setPaymentAddress(invoiceResult.data.paymentAddress)
         }
 
       // if a direct deposit address was given, use it for payment address
       } else {
+        // call setupURLs once the address has been set up
         setPaymentAddress(address)
       }
 
-      // make sure a payment address was set either way
-      if (!paymentAddress) {
+      // verify the paymentAddress has been set up correctly
+      if (!paymentAddress || paymentAddress === 'loading...') {
         alert(showError('We did not find a payment address!'))
         return
       }
@@ -241,6 +245,7 @@ export default (props) => {
         newQRCodeURL += '?amount=' + amountBCH
         newWalletURL += '?amount=' + amountBCH
       }
+
       setWalletURL(newWalletURL)
       setQRCodeURL(newQRCodeURL)
 
@@ -248,17 +253,18 @@ export default (props) => {
       sock = io('wss://bitcoincash.blockexplorer.com')
       sock.on('connect', () => {
         sock.emit('subscribe', 'inv')
+        console.log('GATEWAY: Connected to block explorer!')
       })
       sock.on('disconnect', () => {
-        console.log('Gateway: Payment server disconnected')
+        console.log('GATEWAY: Disconnected from block explorer')
         console.log(
-          'Gateway: This does not mean that your payment failed',
+          'GATEWAY: This does not mean that your payment failed',
         )
       })
       sock.on('error', () => {
-        console.error('Gateway: Error listening for payments')
+        console.log('GATEWAY: Disconnected from block explorer')
         console.log(
-          'Gateway: This does not mean that your payment failed',
+          'GATEWAY: This does not mean that your payment failed',
         )
       })
       sock.on('tx', (data) => {

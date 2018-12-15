@@ -43,9 +43,7 @@ module.exports = function (req, res) {
       if (result.length !== 1) {
         response.status = 'error'
         response.error = 'Invalid API Key'
-        response.description = `No user currently has that API key. You might
-          have changed your API key in your account settings, or the API key
-          might be invalid.`
+        response.description = 'No user currently has that API key. You might have changed your API key in your account settings, or the API key might be invalid.'
         res.end(JSON.stringify(response))
 
       // search for all complete payments to this merchant ID
@@ -88,8 +86,7 @@ module.exports = function (req, res) {
           if (result.length < 1) {
             response.status = 'error'
             response.error = 'No Results'
-            response.description = `No payments have been completed to this
-              merchant yet. Make a test payment with /pay and see what happens!`
+            response.description = 'No payments have been completed to this merchant yet. Make a test payment with /pay and see what happens!'
             res.end(JSON.stringify(response))
 
           // send the payments to the user

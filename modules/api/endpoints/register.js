@@ -16,9 +16,7 @@ module.exports = function (req, res) {
   if (!req.body.address) {
     response.status = 'error'
     response.error = 'No Address'
-    response.description = `No address was provided as a POST parameter. Please
-      ensure that you have included a Bitcoin Cash (BCH) address as a POST
-      parameter to the registration request.`
+    response.description = 'No address was provided as a POST parameter. Please ensure that you have included a Bitcoin Cash (BCH) address as a POST parameter to the registration request.'
     res.end(JSON.stringify(response))
 
   // make sure the address is a valid Bitcoin Cash address
@@ -33,28 +31,21 @@ module.exports = function (req, res) {
     if (address === 'invalid') {
       response.status = 'error'
       response.error = 'Invalid Address'
-      response.description = `It looks like you provided an invalid Bitcoin Cash
-        address. Make sure you're using the new-style CashAddress format (e.g.
-        bitcoincash:q.....), and not a legacy-style Bitcoin address (starting
-        with a 1 or a 3). Also ensure that you're using a Bitcoin Cash address
-        and not a Bitcoin Core address.`
+      response.description = 'It looks like you provided an invalid Bitcoin Cash address. Make sure you\'re using the new-style CashAddress format (e.g. bitcoincash:q.....), and not a legacy-style Bitcoin address (starting with a 1 or a 3). Also ensure that you\'re using a Bitcoin Cash address and not a Bitcoin Core address.'
       res.end(JSON.stringify(response))
 
     // ensure user has sent a password
     } else if (!req.body.password) {
       response.status = 'error'
       response.error = 'No Password'
-      response.description = `Your account registration request needs to include
-      a password.`
+      response.description = 'Your account registration request needs to include a password.'
       res.end(JSON.stringify(response))
 
     // ensure the password is sufficiently long
     } else if (req.body.password.toString().length < 12) {
       response.status = 'error'
       response.error = 'Password Too Short'
-      response.description = `The security of your account is important. For
-      this reason, your password is required to be at least 12 characters in
-      length.`
+      response.description = 'The security of your account is important. For this reason, your password is required to be at least 12 characters in length.'
       res.end(JSON.stringify(response))
 
     // ensure the password does not contain odd characters
@@ -65,9 +56,7 @@ module.exports = function (req, res) {
     ) {
       response.status = 'error'
       response.error = 'Password Cannot Contain Odd Characters'
-      response.description = `The security of your account is important. For
-      this reason, your password may not contain spaces, tabs, return
-      characters or other non-standard characters.`
+      response.description = 'The security of your account is important. For this reason, your password may not contain spaces, tabs, return characters or other non-standard characters.'
       res.end(JSON.stringify(response))
 
     // make sure address is not in the database already
@@ -97,10 +86,7 @@ module.exports = function (req, res) {
           if (result.length !== 0) {
             response.status = 'error'
             response.error = 'Address Already In Use'
-            response.description = `It looks like that address is already being
-            used by another user! If this is your address, send an email to
-            support@gateway.cash and we'll help you get access to this merchant
-            account.`
+            response.description = 'It looks like that address is already being used by another user! If this is your address, send an email to support@gateway.cash and we\'ll help you get access to this merchant account.'
             res.end(JSON.stringify(response))
           } else {
 
@@ -143,14 +129,14 @@ module.exports = function (req, res) {
               } else if (req.body.username.length < 5) {
                 response.status = 'error'
                 response.error = 'Username Too Short'
-                response.description = `Username must be at least 5 characters!`
+                response.description = 'Username must be at least 5 characters!'
                 res.end(JSON.stringify(response))
 
               // verify new username is not too long
               } else if (req.body.username.length > 24) {
                 response.status = 'error'
                 response.error = 'Username Too Long'
-                response.description = `Username can be at most 24 characters!`
+                response.description = 'Username can be at most 24 characters!'
                 res.end(JSON.stringify(response))
 
               // verify username does not contain special characters
@@ -182,8 +168,7 @@ module.exports = function (req, res) {
               ) {
                 response.status = 'error'
                 response.error = 'No Special Characters'
-                response.description = `Usernames cannot contain special
-                  characters!`
+                response.description = 'Usernames cannot contain special characters!'
                 res.end(JSON.stringify(response))
 
               // verify username is not in use
@@ -202,8 +187,7 @@ module.exports = function (req, res) {
                   if (result.length > 0) {
                     response.status = 'error'
                     response.error = 'Username In Use'
-                    response.description = `That username is already in use! Try
-                      another?`
+                    response.description = 'That username is already in use! Try another?'
                     res.end(JSON.stringify(response))
 
                 // create the record with the username
