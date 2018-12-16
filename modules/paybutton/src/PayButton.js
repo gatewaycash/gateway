@@ -46,7 +46,7 @@ let parseProps = (data) => {
   let validProtocols = ['http://', 'https://']
 
   // find the API basepoint URL
-  let APIURL = data.gateway ?
+  let APIURL = data.gatewayServer ?
     data.gatewayServer :
     'https://api.gateway.cash'
 
@@ -257,7 +257,6 @@ export default (props) => {
         let marketDataURL =
           'https://apiv2.bitcoinaverage.com/indices/global/ticker/BCH' +
           currency
-        console.log(marketDataURL)
         let marketData = await axios.get(marketDataURL)
         let exchangeRate = marketData.data.averages.day
         console.log(
@@ -332,47 +331,49 @@ export default (props) => {
 
   // checks payment destinations to see if they concern this transaction
   let handlePayment = (data) => {
-    try {
-      let legacy = bchaddr.toLegacyAddress(paymentAddress)
-      var valid = false
-      for (var i = 0, l = data.vout.length; i < l; i++) {
-        var obj = Object.getOwnPropertyNames(data.vout[i])
-        for (var j = 0; j < obj.length; j++) {
-          if (obj[j] === legacy) {
+    var valid = false
+    for (var i = 0, l = data.vout.length; !valid && i < l; i++) {
+      var obj = Object.getOwnPropertyNames(data.vout[i])
+      for (var j = 0; !valid && j < obj.length; j++) {
+        try {
+          let comparisonAddress = bchaddr.toCashAddress(obj[j])
+          if (comparisonAddress === paymentAddress) {
             valid = true
           }
+        } catch (e) {
+          return
         }
       }
-      if (valid) {
-        // update the state
-        setPaymentComplete(true)
-        // play the audio clip if enabled
-        if (enablePaymentAudio) {
-          new Audio(paymentCompleteAudio).play()
-        }
-        // close the dialog when completed, if requested
-        if (closeWhenComplete) {
-          handleClose()
-        }
-        // call the local website callback, if requested
-        if (paymentCompleteCallback) {
-          if (typeof window === 'object') {
-            // set the TXID global variable
-            window.gatewayPaymentTXID = data.txid
-          }
-          // create a string to call the callback asynchronously
-          let asyncCallback = '(function(){return new Promise(function(resolve, reject) {resolve(' + paymentCompleteCallback + ');})})();'
-          // call the callback
-          console.log(asyncCallback)
-          eval(asyncCallback)
-        }
-        // send payment to Gateway server if it was not direct deposit
-        if (!address) {
-          sendPaymentToServer(data.txid)
-        }
+    }
+    if (valid) {
+      // update the state
+      setPaymentComplete(true)
+      // play the audio clip if enabled
+      if (enablePaymentAudio) {
+        new Audio(paymentCompleteAudio).play()
       }
-    } catch (e) {
-      return
+      // close the dialog when completed, if requested
+      if (closeWhenComplete) {
+        handleClose()
+      }
+      // call the local website callback, if requested
+      if (paymentCompleteCallback) {
+        if (typeof window === 'object') {
+          // set the TXID global variable
+          window.gatewayPaymentTXID = data.txid
+          window.gatewayPaymentAddress = paymentAddress
+          window.gatewayPaymentAmountBCH = amountBCH
+        }
+        // create a string to call the callback asynchronously
+        let asyncCallback = '(function(){return new Promise(function(resolve, reject) {resolve(' + paymentCompleteCallback + ');})})();'
+        // call the callback
+        console.log(asyncCallback)
+        eval(asyncCallback)
+      }
+      // send payment to Gateway server if it was not direct deposit
+      if (!address) {
+        sendPaymentToServer(data.txid)
+      }
     }
   }
 
