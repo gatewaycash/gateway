@@ -5,36 +5,49 @@
 const readline = require('readline')
 const fs = require('fs')
 const mysql = require('mysql')
+const promisify = require('util').promisify
 
-console.log('\n----------------------------------------')
-console.log('Gateway.cash - API module setup assistant')
-console.log('A local SQL database is requied for API development.')
-console.log('If you do not have one, please set one up now.')
-console.log('Always ensure the database is running while you work.')
+const collectInformation = async () => {
 
-const collectInformation = () => {
+  // create a new readline query stream
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
   })
 
-  rl.question('\nSQL database hostname (ENTER for 127.0.0.1): ', (hostname) => {
-    hostname = hostname === '' ? '127.0.0.1' : hostname
-    rl.question('SQL user name (ENTER for gateway): ', (user) => {
-      user = user === '' ? 'gateway' : user
-      rl.question('SQL user password (ENTER for gateway123): ', (pass) => {
-        pass = pass === '' ? 'gateway123' : pass
-        rl.question('SQL database name (ENTER for gateway): ', (db) => {
-          db = db === '' ? 'gateway' : db
-          rl.question('Web server port (ENTER for 8080): ', (listen) => {
-            listen = listen === '' ? '8080' : listen
-            rl.close()
-            testDatabaseConnection(hostname, user, pass, db, listen)
-          })
-        })
-      })
+  // promisify the readline callback
+  rl.question[promisify.custom] = (query) => {
+    return new Promise((resolve) => {
+      rl.question(query, resolve)
     })
-  })
+  }
+  let question = promisify(rl.question)
+
+  // get the hostname
+  let hostname = await question(
+    '\nSQL database hostname (ENTER for 127.0.0.1): '
+  )
+  hostname = hostname === '' ? '127.0.0.1' : hostname
+
+  // get the username
+  let user = await question('SQL user name (ENTER for gateway): ')
+  user = user === '' ? 'gateway' : user
+
+  // get the password
+  let pass = await question('SQL user password (ENTER for gateway123): ')
+  pass = pass === '' ? 'gateway123' : pass
+
+  // get the database name
+  let db = await question('SQL database name (ENTER for gateway): ')
+  db = db === '' ? 'gateway' : db
+
+  // grab the port to host the API on
+  let listen = await question('Web server port (ENTER for 8080): ')
+  listen = listen === '' ? '8080' : listen
+
+  // close the readline stream
+  rl.close()
+  testDatabaseConnection(hostname, user, pass, db, listen)
 }
 
 const testDatabaseConnection = (host, user, pass, db, listen) => {

@@ -46,12 +46,26 @@ let parseProps = (data) => {
   let validProtocols = ['http://', 'https://']
 
   // find the API basepoint URL
-  let APIURL = data.gateway ? data.gateway : 'https://api.gateway.cash'
+  let APIURL = data.gateway ?
+    data.gatewayServer :
+    'https://api.gateway.cash'
 
   // check the provided API basepoint URL for sanity
   if (!validProtocols.some((x) => APIURL.startsWith(x))) {
     return showError(
       'API basepoint URL does not start with http:// or https://'
+    )
+  }
+
+  // find the block explorer websocket URL
+  var blockExplorerURL = data.blockExplorer ?
+    data.blockExplorer :
+    'wss://bch.coin.space'
+
+  // check the provided API basepoint URL for sanity
+  if (!['ws://', 'wss://'].some((x) => blockExplorerURL.startsWith(x))) {
+    return showError(
+      'Block explorer URL does not start with ws:// or wss://'
     )
   }
 
@@ -128,6 +142,39 @@ let parseProps = (data) => {
     )
   }
 
+  // set the value for the audio file to play when a payment succeeds
+  let paymentCompleteAudio = data.paymentCompleteAudio ?
+    data.paymentCompleteAudio :
+    'https://gateway.cash/audio/ding.mp3'
+
+  // get the value for the payment complete callback function
+  let paymentCompleteCallback = data.paymentCompleteCallback ?
+    data.paymentCompleteCallback :
+    `console.log(
+      "GATEWAY; Payment complete!\n\nTXID: " + window.gatewayPaymentTXID
+    )`
+
+  // ensure the callback is in the correct format
+  if (paymentCompleteCallback.endsWith(';')) {
+    paymentCompleteCallback = paymentCompleteCallback.substr(
+      0,
+      paymentCompleteCallback.length - 1
+    )
+  }
+  if (!paymentCompleteCallback.endsWith(')')) {
+    paymentCompleteCallback += '()'
+  }
+
+  // set the value for whether to close the dialog when the payment succeeds
+  let closeWhenComplete = data.closeWhenComplete ?
+    data.closeWhenComplete :
+    false
+
+  // set the toggle for payment audio
+  let enablePaymentAudio = data.enablePaymentAudio ?
+    data.enablePaymentAudio :
+    true
+
   // return the parsed data
   let parsedData = {
     buttonText: buttonText,
@@ -138,7 +185,12 @@ let parseProps = (data) => {
     paymentID: paymentID,
     callbackURL: callbackURL,
     address: address,
-    APIURL: APIURL
+    APIURL: APIURL,
+    blockExplorerURL: blockExplorerURL,
+    paymentCompleteAudio: paymentCompleteAudio,
+    paymentCompleteCallback: paymentCompleteCallback,
+    closeWhenComplete: closeWhenComplete,
+    enablePaymentAudio: enablePaymentAudio
   }
   return parsedData
 }
@@ -167,7 +219,6 @@ export default (props) => {
   let [paymentComplete, setPaymentComplete] = React.useState(false)
   let [amountBCH, setAmountBCH] = React.useState(0)
   let [paymentAddress, setPaymentAddress] = React.useState('loading...')
-
   let [address, setAddress] = React.useState(parsedData.address)
   let [buttonText, setButtonText] = React.useState(parsedData.buttonText)
   let [dialogTitle, setDialogTitle] = React.useState(parsedData.dialogTitle)
@@ -177,8 +228,22 @@ export default (props) => {
   let [paymentID, setPaymentID] = React.useState(parsedData.paymentID)
   let [callbackURL, setCallbackURL] = React.useState(parsedData.callbackURL)
   let [APIURL, setAPIURL] = React.useState(parsedData.APIURL)
-
-  let sock
+  let [blockExplorerURL, setBlockExplorerURL] = React.useState(
+    parsedData.blockExplorerURL
+  )
+  let [paymentCompleteAudio, setPaymentCompleteAudio] = React.useState(
+    parsedData.paymentCompleteAudio
+  )
+  let [paymentCompleteCallback, setPaymentCompleteCallback] = React.useState(
+    parsedData.paymentCompleteCallback
+  )
+  let [closeWhenComplete, setCloseWhenComplete] = React.useState(
+    parsedData.closeWhenComplete
+  )
+  let [enablePaymentAudio, setEnablePaymentAudio] = React.useState(
+    parsedData.enablePaymentAudio
+  )
+  let [sock, setSock] = React.useState(false)
 
   // When the payment button is clicked, generate a new invoice
   let handleClick = async () => {
@@ -206,30 +271,44 @@ export default (props) => {
 
       // multiply amount of fiat by amount multiplier to get amount of BCH
       setAmountBCH((amount * amountMultiplier).toFixed(6))
+      amountBCH = (amount * amountMultiplier).toFixed(6)
 
       // if no address was given, and a merchantID was given, use the merchantID
       if (!address && merchantID) {
-        let invoiceResult = await axios.post(APIURL + '/pay', {
-          merchantID: merchantID,
-          paymentID: paymentID,
-          callbackURL: callbackURL
-        })
-        if (invoiceResult.data.status === 'error') {
-          alert(showError(invoiceResult.data))
+        try {
+          let invoiceResult = await axios.post(APIURL + '/pay', {
+            merchantID: merchantID,
+            paymentID: paymentID,
+            callbackURL: callbackURL
+          })
+          if (invoiceResult.data.status === 'error') {
+            alert(showError(invoiceResult.data))
+            return
+          } else {
+            setPaymentAddress(invoiceResult.data.paymentAddress)
+            paymentAddress = invoiceResult.data.paymentAddress
+          }
+        } catch (e) {
+          alert(showError(
+            'We\'re having some trouble contacting the Gateway server!'
+          ))
           return
-        } else {
-          // call setupURLs once the address has been set up
-          setPaymentAddress(invoiceResult.data.paymentAddress)
         }
 
       // if a direct deposit address was given, use it for payment address
       } else {
-        // call setupURLs once the address has been set up
         setPaymentAddress(address)
+        paymentAddress = address
+      }
+
+      // verify payment address was set either way
+      if (!paymentAddress || paymentAddress === 'loading...') {
+        alert(showError('We did not find a payment address!'))
       }
 
       // TODO change to rest.bitcoin.com
-      sock = io('wss://bch.coin.space')
+      sock = io(blockExplorerURL)
+      setSock(sock)
       sock.on('connect', () => {
         sock.emit('subscribe', 'inv')
         console.log('GATEWAY: Connected to block explorer!')
@@ -246,58 +325,79 @@ export default (props) => {
           'GATEWAY: This does not mean that your payment failed',
         )
       })
-      sock.on('tx', (data) => {
-        handlePayment(data)
-      })
+      sock.on('tx', handlePayment)
     }
     setDialogOpen(true)
   }
 
-  // when the dialog box is closed, close the WebSocket
-  let handleClose = () => {
-    if (paymentComplete === false) {
-      console.log('GATEWAY: Payment canceled')
-    }
-    setDialogOpen(false)
-  }
-
-  // when a payment comes through, check if it concerns this transaction
+  // checks payment destinations to see if they concern this transaction
   let handlePayment = (data) => {
-    console.log(paymentAddress)
-    // figure out why this is still 'loading...'
-    let legacy = bchaddr.toLegacyAddress(paymentAddress)
-    var valid = false
-    for (var i = 0, l = data.vout.length; i < l; i++) {
-      var obj = Object.getOwnPropertyNames(data.vout[i])
-      for (var j = 0; j < obj.length; j++) {
-        if (obj[j] === legacy) {
-          valid = true
+    try {
+      let legacy = bchaddr.toLegacyAddress(paymentAddress)
+      var valid = false
+      for (var i = 0, l = data.vout.length; i < l; i++) {
+        var obj = Object.getOwnPropertyNames(data.vout[i])
+        for (var j = 0; j < obj.length; j++) {
+          if (obj[j] === legacy) {
+            valid = true
+          }
         }
       }
+      if (valid) {
+        // update the state
+        setPaymentComplete(true)
+        // play the audio clip if enabled
+        if (enablePaymentAudio) {
+          new Audio(paymentCompleteAudio).play()
+        }
+        // close the dialog when completed, if requested
+        if (closeWhenComplete) {
+          handleClose()
+        }
+        // call the local website callback, if requested
+        if (paymentCompleteCallback) {
+          if (typeof window === 'object') {
+            // set the TXID global variable
+            window.gatewayPaymentTXID = data.txid
+          }
+          // create a string to call the callback asynchronously
+          let asyncCallback = '(function(){return new Promise(function(resolve, reject) {resolve(' + paymentCompleteCallback + ');})})();'
+          // call the callback
+          console.log(asyncCallback)
+          eval(asyncCallback)
+        }
+        // send payment to Gateway server if it was not direct deposit
+        if (!address) {
+          sendPaymentToServer(data.txid)
+        }
+      }
+    } catch (e) {
+      return
     }
-    if (valid) {
-      setPaymentComplete(true)
-      new Audio('https://gateway.cash/audio/ding.mp3').play()
-      console.log('GATEWAY: Payment sent to address')
-      console.log('GATEWAY: Payment TXID:', data.txid)
-      sendPaymentToServer(data.txid)
-    }
+  }
+
+  // when the dialog box is closed, close the WebSocket
+  let handleClose = () => {
+    sock.close()
+    setDialogOpen(false)
   }
 
   // when we find a matching payment, send it to the server to mark invoice paid
   let sendPaymentToServer = async (txid) => {
-    let paymentResponse = await axios.post({
-      url: APIURL + '/paid',
-      data: {
-        paymentAddress: paymentAddress,
-        paymentTXID: txid
+    try {
+      let paymentResponse = await axios.post(APIURL + '/paid',
+        {
+          paymentAddress: paymentAddress,
+          paymentTXID: txid
+        }
+      )
+      if (paymentResponse.data.status === 'error') {
+        showError(paymentResponse.data)
       }
-    })
-    paymentResponse = JSON.parse(paymentResponse)
-    if (paymentResponse.status === 'error') {
-      showError(paymentResponse)
-    } else {
-      console.log('GATEWAY: Payment complete!\n\nTXID: ' + txid)
+    } catch (e) {
+      alert(showError(
+        'If you sent the funds, your payment has been received. However, Gateway is having trouble getting a receipt for your transaction. If you are concerned this could be a problem, please include this TXID in a support message to Gateway or to your merchant:\n\n' + txid
+      ))
     }
   }
 
@@ -311,10 +411,7 @@ export default (props) => {
     >
       <Button
         onClick={handleClick}
-        onClose={() => {
-          handleClose()
-          sock.close()
-        }}
+        onClose={handleClose}
         variant="contained"
         color="primary"
       >
