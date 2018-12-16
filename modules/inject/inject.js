@@ -13,7 +13,10 @@ function createButton(button, id) {
       paymentID={button.getAttribute('paymentID')}
       callbackURL={button.getAttribute('callbackURL')}
       address={button.getAttribute('address')}
-      gateway={button.getAttribute('gateway')}
+      gatewayServer={button.getAttribute('gatewayServer')}
+      paymentCompleteAudio={button.getAttribute('paymentCompleteAudio')}
+      paymentCompleteCallback={button.getAttribute('paymentCompleteCallback')}
+      closeWhenComplete={button.getAttribute('closeWhenComplete')}
     />,
     document.getElementById(id)
   )

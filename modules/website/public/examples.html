@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="theme-color" content="#000000">
     <script src="pay.js"></script>
+    <script>
+      window.localCallback = function () {
+        alert('Payment complete! TXID: ' + window.gatewayPaymentTXID)
+      }
+    </script>
     <title>Gateway</title>
     <style>
       body {
@@ -75,10 +80,17 @@
       amount="0.1337"
     ></div>
 
-    <h2>Basic donation button for a Gateway merchant ID</h2>
+    <h2>
+      Donation button for a Gateway merchant ID, with custom payment audio,
+      that automatically closes when complete and has a client-side callbackURL
+      function
+    </h2>
     <div
       class="payButton"
       merchantID="ef0fcea08bfa9cb0"
+      paymentCompleteAudio="audio/ca-ching.wav"
+      closeWhenComplete="true"
+      paymentCompleteCallback="localCallback()"
     ></div>
 
     <h2>
@@ -93,7 +105,7 @@
       currency="USD"
       paymentID="32-2145684565-166545688-09"
       callbackURL="https://example.com/callback.php"
-      gateway="http://127.0.0.1:8080"
+      gatewayServer="http://127.0.0.1:8080"
     ></div>
     </center>
   </body>
