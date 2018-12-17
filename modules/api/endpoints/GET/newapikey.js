@@ -28,7 +28,7 @@ module.exports = async function (req, res) {
 
   // search for and update the record
   let sql = 'select APIKey from users where APIKey = ? limit 1'
-  let result = await conn.query(sql, [query.APIKey])
+  let result = await mysql.query(sql, [query.APIKey])
 
   // fail unless there is exactly 1 record
   if (result.length !== 1) {
@@ -42,7 +42,7 @@ module.exports = async function (req, res) {
   // update the API key
   sql = 'update users set APIKey = ? where APIKey = ?'
   const newAPIKey = sha256(require('crypto').randomBytes(32))
-  await conn.query(sql, [newAPIKey, query.APIKey])
+  await mysql.query(sql, [newAPIKey, query.APIKey])
 
   // send the success message to the user
   response.status = 'success'

@@ -1,7 +1,7 @@
 /**
- * POST /setusername API endpoint
+ * POST /username API endpoint
  * @author The Gateway Project Developers <hello@gateway.cash>
- * @file Defines a POST endpoint for /setusername
+ * @file Defines a POST endpoint for /username
  */
 const mysql = require('../../SQLWrapper')
 
@@ -23,7 +23,7 @@ module.exports = async function (req, res) {
 
   // search the database for the record
   let sql = 'select username from users where APIKey = ? limit 1'
-  let result = conn.query(sql, [req.body.APIKey])
+  let result = mysql.query(sql, [req.body.APIKey])
 
   // fail unless there is exactly 1 record
   if (result.length !== 1) {
@@ -110,7 +110,7 @@ module.exports = async function (req, res) {
 
   // update the username
   sql = 'update users set username = ? where APIKey = ?'
-  conn.query(
+  await mysql.query(
     sql,
     [req.body.username.toString().toLowerCase(), req.body.APIKey]
   )
