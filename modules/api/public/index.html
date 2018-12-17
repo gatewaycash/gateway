@@ -49,12 +49,13 @@
     <li><a href="#postregister">POST /register</a></li>
     <li><a href="#postpay">POST /pay</a></li>
     <li><a href="#postpaid">POST /paid</a></li>
-    <li><a href="#getgetmerchantid">GET /getmerchantid</a></li>
-    <li><a href="#getgetusername">GET /getusername</a></li>
-    <li><a href="#postsetusername">POST /setusername</a></li>
-    <li><a href="#getgetpayments">GET /getpayments</a></li>
-    <li><a href="#getgetunpaid">GET /getunpaid</a></li>
-    <li><a href="#getgettotalsales">GET /gettotalsales</a></li>
+    <li><a href="#getmerchantid">GET /merchantid</a></li>
+    <li><a href="#getusername">GET /username</a></li>
+    <li><a href="#postusername">POST /username</a></li>
+    <li><a href="#getpayments">GET /payments</a></li>
+    <li><a href="#gettotalsales">GET /totalsales</a></li>
+    <li><a href="#getaddress">GET /address</a></li>
+    <li><a href="#postaddress">POST /address</a></li>
   </ul>
   <h2 id="gatewayapi">The Gateway API</h2>
   <p>
@@ -274,7 +275,7 @@ POST https://api.gateway.cash/pay
   already been added to the pending payments queue."
 }
   </pre>
-  <h3 id="getgetmerchantid">GET /getmerchantid</h3>
+  <h3 id="getmerchantid">GET /merchantid</h3>
   <p>Returns the merchant ID of a user given their API key.</p>
   <h4>Parameters</h4>
   <ul>
@@ -282,7 +283,7 @@ POST https://api.gateway.cash/pay
   </ul>
   <h4>Examples</h4>
   <pre class="code">
-GET https://api.gateway.cash/getmerchantid
+GET https://api.gateway.cash/merchantid
 ?APIKey=aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea
   </pre>
   <pre class="code">
@@ -305,7 +306,7 @@ GET https://api.gateway.cash/getmerchantid
   might be invalid."
 }
   </pre>
-  <h3 id="getgetusername">GET /getusername</h3>
+  <h3 id="getusername">GET /username</h3>
   <p>Returns the username of a user given their API key.</p>
   <h4>Parameters</h4>
   <ul>
@@ -313,11 +314,11 @@ GET https://api.gateway.cash/getmerchantid
   </ul>
   <h4>Examples</h4>
   <pre class="code">
-GET https://api.gateway.cash/getusername
+GET https://api.gateway.cash/username
 ?APIKey=aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea
   </pre>
   <pre class="code">
-GET https://api.gateway.cash/getusername
+GET https://api.gateway.cash/username
 ?APIKey=aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73ffffffffffffffffff
   </pre>
   <h4>Return Value</h4>
@@ -336,7 +337,7 @@ GET https://api.gateway.cash/getusername
   might be invalid."
 }
   </pre>
-  <h3 id="postsetusername">POST /setusername</h3>
+  <h3 id="postusername">POST /username</h3>
   <p>
     Sets a new username for the user. Usernames must be between 5 and 24
     characters, not contain spaces or special characters and be unique to the
@@ -354,14 +355,14 @@ GET https://api.gateway.cash/getusername
   </ul>
   <h4>Examples</h4>
   <pre class="code">
-POST https://api.gateway.cash/setusername
+POST https://api.gateway.cash/username
 {
   "APIKey": "aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea",
   "username": "pneumaultramicroscopic"
 }
   </pre>
   <pre class="code">
-POST https://api.gateway.cash/setusername
+POST https://api.gateway.cash/username
 {
   "APIKey": "aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea",
   "username": "B!ll"
@@ -381,10 +382,16 @@ POST https://api.gateway.cash/setusername
   "description": "Someone already has that username. Try another?"
 }
   </pre>
-  <h3 id="getgetpayments">GET /getpayments</h3>
+  <h3 id="getpayments">GET /payments</h3>
   <p>
     Returns an array of all payments made to a merchant account, given their API
     key as a parameter.
+  </p>
+  <p>
+    The includeUnpaid option (set to 'NO' by default) will return all payments,
+    including those where the customer simply opened the dialog box and did not
+    pay. This can be combined with the includeKeys option (discussed below) if
+    you would like to process payments yourself.
   </p>
   <p>
     <b>BE AWARE:</b> Private keys are never included by default. You may always
@@ -396,14 +403,15 @@ POST https://api.gateway.cash/setusername
   <ul>
     <li>"APIKey" is required</li>
     <li>"includeKeys" is optional</li>
+    <li>"includeUnpaid" is optional</li>
   </ul>
   <h4>Examples</h4>
   <pre class="code">
-GET https://api.gateway.cash/getpayments
+GET https://api.gateway.cash/payments
 ?APIKey=aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea
   </pre>
   <pre class="code">
-GET https://api.gateway.cash/getpayments
+GET https://api.gateway.cash/payments
 ?APIKey=aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea
 &includeKeys=YES
   </pre>
@@ -414,19 +422,41 @@ GET https://api.gateway.cash/getpayments
   "numberOfPayments": 4,
   "payments": [
     {
-
+      "paymentAddress":"bitcoincash:qqet0p878uc7e8trwvxqefgmqtkkvqzsvs4vrk4h9s",
+      "paidAmount":9003,
+      "paymentTXID":"ec396d7a28997df889a0c7dfda6d01740ba9e151ac4df182076185d844a687bc",
+      "transferTXID":"8a17fc8f308cbc45e030e41cd0a8a393d9afd3aaf44d86093126f09cbce826fc",
+      "paymentID": "order-fe43dcb493ac",
+      "created": "2018-10-22T23:49:53.000Z",
+      "paymentKey": "hidden"
     },
-  ]
-}
-  </pre>
-  <pre class="code">
-{
-  "status": "success",
-  "numberOfPayments": 4,
-  "payments": [
     {
-
+      "paymentAddress":"bitcoincash:qqucfprkhtwknhhdvthj0jazk5f6erxmxqgjp4ht5q",
+      "paidAmount":10000,
+      "paymentTXID":"afee8509dc5139e28ae8e0ee0b1ea3b6e45aa62bce973a3f942281501cb9b526",
+      "transferTXID":"bc0985d2b7b9ec955318a56cde3481d8beecd87bd325f0c78ee5f79ced96907e",
+      "paymentID":"donation",
+      "created":"2018-10-22T02:10:38.000Z",
+      "paymentKey":"hidden"
     },
+    {
+      "paymentAddress":"bitcoincash:qzm62utwlfccx55qvm0lxjk4cq0x4ag3tsmc8h22jt",
+      "paidAmount":9011,
+      "paymentTXID":"526e318e120fc3d43faf2a502c6de88748457418051090b680ede4760b639f51",
+      "transferTXID":"7974696486a82be8eebd14f3592f902a8f0ee3b50f6f15abace91faf7e548fa7",
+      "paymentID":"null",
+      "created":"2018-10-21T23:32:33.000Z",
+      "paymentKey":"hidden"
+    },
+    {
+      "paymentAddress":"bitcoincash:qphqgzujdyp7034q6p472wdyyxsy5k83hur9d425c9",
+      "paidAmount":100000,
+      "paymentTXID":"0544124297f8ebd0cf8652f3855bc94da57afa0fcbba99da84c07a015aedfc39",
+      "transferTXID":"653ae98d262fde67a7fbef7ad103fd790d61f693ab617b71fe45400b64ed1e0f",
+      "paymentID":"donation-0.001",
+      "created":"2018-10-20T13:30:35.000Z",
+      "paymentKey":"hidden"
+    }
   ]
 }
   </pre>
@@ -438,18 +468,6 @@ GET https://api.gateway.cash/getpayments
   test payment with /pay and see what happens!"
 }
   </pre>
-  <h4 id="getgetunpaid">GET /getunpaid</h4>
-  <p>
-    This is the same as /getpayments, except that it will include unpaid invoices, incomplete payments, unprocessed payments and other broken and/or
-    half-completed transactions. This endpoint might prove useful if you're
-    processing payments yourself.
-  </p>
-  <p>
-    <b>BE AWARE:</b> Private keys are never included by default. You may always
-    request that private keys for payment addresses be included by using the
-    "includeKeys" parameter and giving a value of uppercase "YES". This may be
-    useful if you'd like to process your own payments or for debugging.
-  </p>
   <h3 id="getnewapikey">GET /newapikey</h3>
   <p>
     Generates a new API key for the user, given their old API key.
@@ -483,7 +501,7 @@ GET https://api.gateway.cash/newapikey
   "description": "The API key you provided was not found in the database."
 }
   </pre>
-  <h3 id="getgettotalsales">GET /gettotalsales</h3>
+  <h3 id="gettotalsales">GET /totalsales</h3>
   <p>
     Returns the total of all payments that have been processed by this merchant
     account. The value returned is in units of satoshi.
@@ -494,7 +512,7 @@ GET https://api.gateway.cash/newapikey
   </ul>
   <h4>Example</h4>
   <pre class="code">
-GET https://api.gateway.cash/gettotalsales
+GET https://api.gateway.cash/totalsales
 ?APIKey=aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea
   </pre>
   <h4>Return Value</h4>
@@ -502,6 +520,52 @@ GET https://api.gateway.cash/gettotalsales
 {
   "status": "success",
   "totalSales": 133706969
+}
+  </pre>
+  <h3 id="getaddress">GET /address</h3>
+  <p>
+    Returns the payout address for a merchant account
+  </p>
+  <h4>Parameters</h4>
+  <ul>
+    <li>"APIKey" is required</li>
+  </ul>
+  <h4>Examples</h4>
+  <pre class="code">
+GET https://api.gateway.cash/address
+?APIKey=aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea
+  </pre>
+  <h4>Return Value</h4>
+  <pre class="code">
+{
+  "status": "success",
+  "payoutAddress": "bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng",
+}
+  </pre>
+  <h3 id="postaddress">POST /address</h3>
+  <p>
+    Allows the user to set a new payout address for their account. If the new
+    address is not in CashAddress format, it will be translated. The new
+    address will be sent back in the response.
+  </p>
+  <h4>Parameters</h4>
+  <ul>
+    <li>"APIKey" is required</li>
+    <li>"newAddress" is required</li>
+  </ul>
+  <h4>Examples</h4>
+  <pre class="code">
+POST https://api.gateway.cash/address
+{
+  "APIKey": "aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea",
+  "newAddress": "bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng"
+}
+  </pre>
+  <h4>Return Value</h4>
+  <pre class="code">
+{
+  "status", "success",
+  "newAddress": "bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng"
 }
   </pre>
 </body>
