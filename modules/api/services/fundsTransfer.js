@@ -6,109 +6,93 @@
 const bch = require('bitcore-lib-cash')
 const bchaddr = require('bchaddrjs')
 const mysql = require('mysql')
-const request = require('sync-request')
+const axios = require('axios')
 
-/**
- * This file checks the database for new Gateway transactions,
- * moving them to the merchants and logging them in the database
- * every 60 seconds.
- */
-class fundsTransferDaemon {
+const BLOCK_EXPLORER_BASE = 'https://bch.coin.space/api'
 
-  /**
-   * @constructor
-   * Starts the funds transfer daemon
-   */
-  constructor () {
-    // print startup message
-    console.log('Starting funds transfer daemon...')
-    // scan database immediately
-    this.searchDatabase()
-    // scan database every 60 seconds
-    setInterval(this.searchDatabase, 60000)
+let checkFunds = async (payment) => {
+  let legacyAddress
+  try {
+    legacyAddress = bchaddr.toLegacyAddress(payment.paymentAddress)
+  } catch (e) {
+    return
   }
 
-  /**
-   * Checks if an address has a balance
-   * @param  {object} payment SQL record of the payment
+  // find the combined balance of the payment address
+  let requestURL = BLOCK_EXPLORER_BASE + '/addr/' + legacy + '/balance'
+  let confirmedBalance = await axios.get(requestURL).data
+  requestURL = BLOCK_EXPLORER_BASE + '/addr/' + legacy + '/unconfirmedbalance'
+  let unconfirmedBalance = await axios.get(requestURL).data
+  let balance = parseInt(unconfirmedBalance) + parseInt(confirmedBalance)
+
+  if (balance > 0) {
+    console.log(
+      'Non-zero balance for payment:\n',
+      'Address:',
+      payment.paymentAddress,
+      '\nBalance:',
+      ( balance / 100000000 ),
+      'BCH'
+    )
+    transferFunds(payment)
+  }
+}
+
+let transferFunds = async (payment) => {
+  // get the merchant ID of the merchant for whom this payment is destined
+  let sql = 'select merchantID from payments where paymentAddress = ? limit 1'
+  let merchantID = await mysql.query(sql, [payment.address])[0].merchantID
+
+  // get the payout address and API key of the merchant
+  sql = 'select payoutAddress, APIKey from users where merchantID = ? limit 1'
+  let merchantAddress = await mysql.query(sql, [merchantID])[0].payoutAddress
+
+  // get the full payment information
+  sql = `select
+    paymentKey,
+    callbackURL,
+    paymentID,
+    paymentTXID
+    from payments
+    where
+    paymentAddress = ?
+    limit 1`
+  let {
+    paymentKey,
+    callbackURL,
+    paymentID
+  } = await mysql.query(sql, [payment.address])[0]
+
+  // set up some more variables to keep a handle on things
+  let paymentAddress = payment.address
+  let paymentAddressLegacy = bchaddr.toLegacyAddress(paymentAddress)
+  let paymentTXID = payment.txid
+
+  // find all the UTXOs for the payment address
+  let paymentUTXOs = await axios.get(
+    BLOCK_EXPLORER_BASE + '/addr/' + paymentAddressLegacy + '/utxo'
+  ).data
+
+  /*
+    Create a BCH transaction spending the payment UTXOs to the merchant address
+    (and to Gateway if they elect to contribute)
    */
-  checkFunds (payment) {
-    /** a variable for legacy version of paymentAddress */
-    const legacy = bchaddr.toLegacyAddress(payment.address)
-    // get balance of payment address
-    // request both confirmed and unconfirmed balanes
-    var requestURL = 'https://bitcoincash.blockexplorer.com/api/addr/'
-      + legacy
-      + '/balance'
-    var result = request('GET', requestURL)
-    const confirmedBalance = result.getBody().toString()
-    requestURL = 'https://bitcoincash.blockexplorer.com/api/addr/'
-      + legacy
-      + '/unconfirmedbalance'
-    result = request('GET', requestURL)
-    const unconfirmedBalance = result.getBody().toString()
-    // balances are in denominations of satoshi
-    // validate both balances are whole integers
-    if (!isNaN(confirmedBalance) && !isNaN(unconfirmedBalance)) {
-      const balance = parseInt(unconfirmedBalance) + parseInt(confirmedBalance)
-      // if the address has a balance, send funds to the merchant
-      if (balance > 0) {
-        console.log(
-          'non-zero balance for',
-          payment.address,
-          ( balance / 100000000 ),
-          'BCH'
-        )
-        this.transferFunds(payment)
-      }
-    } else {
-      // something from the request was incorrect
-      console.log('Balance was not a number for address:',legacy)
-    }
+  let transferTransaction = new bch.Transaction()
+  let totalTransferred = 0
+  // the inputs for this transaction are the UTXOs from the payment address
+  for(var i = 0, l = paymentUTXOs.length; i < l; i++) {
+    transferTransaction.from({
+      "txid": paymentUTXOs[i].txid,
+      "vout": paymentUTXOs[i].vout,
+      "address": bchaddr.toLegacyAddress(paymentUTXOs[i].address),
+      "scriptPubKey": paymentUTXOs[i].scriptPubKey,
+      "amount": paymentUTXOs[i].amount
+    })
+    totalTransferred += paymentUTXOs[i].amount
   }
 
-  // transfers funds to the merchant's address
-  transferFunds (payment) {
-    // get merchantID of merchant
-    var sql = 'select merchantID from payments where paymentAddress = ?'
-    conn.query(sql, [payment.address], (err, result) => {
-      if (err) { throw err }
-      var merchantID = result[0].merchantID
-      // get the address of the merchant
-      var sql = 'select payoutAddress from users where merchantID = ?'
-      conn.query(sql, [merchantID], (err, result) => {
-        if (err) {
-          throw err
-        }
-        var toAddress = result[0].payoutAddress
-        toAddress = bchaddr.toLegacyAddress(toAddress)
+          //////////
 
-        // get the private key
-        var sql = 'select paymentKey, callbackURL, paymentID, paymentTXID from payments where paymentAddress = ?'
-        this.conn.query(sql, [payment.address], (err, result) => {
-          var paymentKey = result[0].paymentKey.toString()
-          var callbackURL = result[0].callbackURL.toString()
-          var paymentID = result[0].paymentID.toString()
-
-          // get all UTXOs for address
-          var fromAddress = bchaddr.toLegacyAddress(payment.address)
-          var requestURL = 'https://bitcoincash.blockexplorer.com/api/addr/'+fromAddress+'/utxo'
-          var utxo = request('GET', requestURL).getBody().toString()
-          utxo = JSON.parse(utxo)
-
-          // create BCH transaction
-          var tx = new bch.Transaction()
-          var totalTransferred = 0
-          for(var i = 0, l = utxo.length; i < l; i++) {
-            tx.from({
-              "txid": utxo[i].txid,
-              "vout": utxo[i].vout,
-              "address": bchaddr.toLegacyAddress(utxo[i].address),
-              "scriptPubKey": utxo[i].scriptPubKey,
-              "amount": utxo[i].amount
-            })
-            totalTransferred += utxo[i].amount
-          }
           tx.to(toAddress, tx.inputAmount - 200)
           tx.fee(200)
           tx.sign(bch.PrivateKey.fromWIF(paymentKey))
@@ -158,66 +142,49 @@ class fundsTransferDaemon {
                 }
                 if (callbackURL !== 'None') {
 
-                  // build the callback string
-                  var callbackString = 'paymentTXID=' + payment.txid
-                  callbackString += '&transferTXID=' + transferTXID
-                  callbackString += '&amount=' + totalTransferred
-                  callbackString += '&paymentID=' + + paymentID
-                  callbackString += '&merchantID=' + merchantID
-                  callbackString += '&paymentAddress=' + fromAddress
-                  console.log('callback string', callbackString)
+                // build the callback string
+                var callbackString = 'paymentTXID=' + payment.txid
+                callbackString += '&transferTXID=' + transferTXID
+                callbackString += '&amount=' + totalTransferred
+                callbackString += '&paymentID=' + + paymentID
+                callbackString += '&merchantID=' + merchantID
+                callbackString += '&paymentAddress=' + fromAddress
+                console.log('callback string', callbackString)
 
-                  // call the callback URL
-                  request('POST', callbackURL, {
-                    headers: {
-                      'content-type': 'application/x-www-form-urlencoded'
-                    },
-                    body: callbackString
-                  })
-                }
-              })
+                // call the callback URL
+                request('POST', callbackURL, {
+                  headers: {
+                    'content-type': 'application/x-www-form-urlencoded'
+                  },
+                  body: callbackString
+                })
+              }
             })
           })
         })
       })
     })
-  }
+  })
+}
 
-  /**
-   * Searches database for unprocessed payments
-   */
-  searchDatabase () {
-    const conn = mysql.createConnection({
-      host:     process.env.SQL_DATABASE_HOST,
-      user:     process.env.SQL_DATABASE_USER,
-      password: process.env.SQL_DATABASE_PASSWORD,
-      database: process.env.SQL_DATABASE_DB_NAME
-    })
-    conn.connect((err) => {
-      if (err) {
-        throw err
-      }
-      var sql = `select *
-        from pending
-        order by created
-        desc`
-      conn.query(sql, (err, res) => {
-        if (err)  {
-          throw err
-        }
-        for(var i = 0; i < res.length; i++) {
-          console.log(
-            'Processing payment',
-            '\nTXID:',
-            res[i].txid
-          )
-          this.checkFunds(res[i])
-        }
-        conn.close()
-      })
-    })
-  }
+let executeCallback = async (payment) => {
 
 }
 
-module.exports = fundsTransferDaemon
+let searchDatabase = async () => {
+  let sql = 'select * from pending order by created desc'
+  let result = mysql.query(sql)
+  for(var i = 0; i < res.length; i++) {
+    console.log(
+      'Processing payment',
+      '\nTXID:',
+      res[i].txid
+    )
+    checkFunds(res[i])
+  }
+}
+
+
+module.exports = {
+  run: searchDatabase
+}
