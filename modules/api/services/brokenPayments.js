@@ -58,8 +58,8 @@ searchDatabase = async () => {
     order by created
     desc`
   let result = await mysql.query(sql)
-  for(var i = 0; i < res.length; i++) {
-    checkFunds(res[i])
+  for(var i = 0; i < result.length; i++) {
+    await checkFunds(result[i])
   }
 }
 

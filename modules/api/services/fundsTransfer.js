@@ -5,8 +5,9 @@
  */
 const bch = require('bitcore-lib-cash')
 const bchaddr = require('bchaddrjs')
-const mysql = require('mysql')
+const mysql = require('../SQLWrapper')
 const axios = require('axios')
+const sha256 = require('sha256')
 
 const BLOCK_EXPLORER_BASE = 'https://bch.coin.space/api'
 
@@ -45,7 +46,9 @@ let transferFunds = async (payment) => {
 
   // get the payout address and API key of the merchant
   sql = 'select payoutAddress, APIKey from users where merchantID = ? limit 1'
-  let merchantAddress = await mysql.query(sql, [merchantID])[0].payoutAddress
+  let result = await mysql.query(sql, [merchantID])[0]
+  let merchantAddress = result.payoutAddress
+  let merchantAPIKey = result.APIKey
 
   // get the full payment information
   sql = `select
@@ -79,6 +82,7 @@ let transferFunds = async (payment) => {
    */
   let transferTransaction = new bch.Transaction()
   let totalTransferred = 0
+
   // the inputs for this transaction are the UTXOs from the payment address
   for(var i = 0, l = paymentUTXOs.length; i < l; i++) {
     transferTransaction.from({
@@ -91,96 +95,117 @@ let transferFunds = async (payment) => {
     totalTransferred += paymentUTXOs[i].amount
   }
 
-          //////////
+  // TODO: optional Gateway contributions
+  // to bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng
+  transferTransaction.to(merchantAddress, totalTransferred - 200)
+  transferTransaction.fee(200)
+  transferTransaction.sign(bch.PrivateKey.fromWIF(paymentKey))
+  console.log('Raw transaction:\n\n', transferTransaction.toString())
 
-          tx.to(toAddress, tx.inputAmount - 200)
-          tx.fee(200)
-          tx.sign(bch.PrivateKey.fromWIF(paymentKey))
-          console.log('raw transaction', tx.toString())
+  // broadcast transaction to multiple places
+  // our current block explorer
+  let transferTXID = await axios.post(
+    BLOCK_EXPLORER_BASE + '/tx/send',
+    {
+    headers: {
+      'content-type': 'application/x-www-form-urlencoded'
+    },
+    body: 'rawtx=' + transferTransaction.toString()
+  }).data.txid
+  // bitcoin.com block explorer
+  await axios.post(
+    'https://rest.bitcoin.com/rawtransactions/sendRawTransaction/'
+      + transferTransaction.toString(),
+    {
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      body: 'rawtx=' + transferTransaction.toString()
+    }
+  )
+  // TODO a few others
 
-          // broadcast transaction to multiple places
-          var transferTXID = request('POST', 'https://bitcoincash.blockexplorer.com/api/tx/send', {
-            headers: {
-              'content-type': 'application/x-www-form-urlencoded'
-            },
-            body: 'rawtx=' + tx.toString()
-          }).getBody().toString()
-          request('POST', 'https://rest.bitcoin.com/rawtransactions/sendRawTransaction/' + tx.toString(), {
-            headers: {
-              'content-type': 'application/x-www-form-urlencoded'
-            },
-            body: 'rawtx=' + tx.toString()
-          })
+  // convert the total transferred into units of satoshi
+  totalTransferred = totalTransferred * 100000000
 
-          // find the transfer TXID
-          transferTXID = JSON.parse(transferTXID).txid
-          totalTransferred = totalTransferred * 100000000
-          console.log('transferTXID', transferTXID)
-          console.log('paymentAddress', fromAddress)
-          console.log('paymentTXID', payment.txid)
-          console.log('amountPaid', totalTransferred)
+  // print the payment information
+  console.log('Transfer TXID:   ', transferTXID)
+  console.log('Payment Address: ', paymentAddress)
+  console.log('Payment TXID:    ', paymentTXID)
+  console.log('Amount Paid:     ', totalTransferred)
 
-          // delete transaction from pending
-          var sql = 'delete from pending where txid = ?'
-          this.conn.query(sql, [payment.txid], (err, result) => {
-            if (err) {
-              throw err
-            }
+  // delete transaction from pending
+  sql = 'delete from pending where txid = ?'
+  await mysql.query(sql, [payment.txid])
 
-            // update payments with new data
-            var sql = 'update payments set paymentTXID = ?, paidAmount = ?, transferTXID = ? where paymentAddress = ?'
-            this.conn.query(sql, [payment.txid, totalTransferred, transferTXID, payment.address], (err, result) => {
-              if (err) {
-                throw err
-              }
+  // update payments with new data
+  sql = `update payments
+    set paymentTXID = ?,
+    paidAmount = ?,
+    transferTXID = ?
+    where
+    paymentAddress = ?
+    limit 1`
+  await mysql.query(
+    sql,
+    [payment.txid, totalTransferred, transferTXID, payment.address]
+  )
 
-              // increment the total sales of the merchant
-              var sql = 'update users set totalSales = totalSales + ? where merchantID = ?'
-              this.conn.query(sql, [totalTransferred, merchantID], (err, result) => {
-                if (err) {
-                  throw err
-                }
-                if (callbackURL !== 'None') {
+  // increment the total sales of the merchant
+  sql = 'update users set totalSales = totalSales + ? where merchantID = ?'
+  await mysql.query(sql, [totalTransferred, merchantID])
 
-                // build the callback string
-                var callbackString = 'paymentTXID=' + payment.txid
-                callbackString += '&transferTXID=' + transferTXID
-                callbackString += '&amount=' + totalTransferred
-                callbackString += '&paymentID=' + + paymentID
-                callbackString += '&merchantID=' + merchantID
-                callbackString += '&paymentAddress=' + fromAddress
-                console.log('callback string', callbackString)
+  // verify the callback URL is sane. If not, we are done and we return.
+  if (
+    !callbackRequest.callbackURL.startsWith('https://') &&
+    !callbackRequest.callbackURL.startsWith('http://')
+  ) {
+    console.log(
+      'Unable to execute callback to URL:',
+      callbackRequest.callbackURL
+    )
+    return
+  }
 
-                // call the callback URL
-                request('POST', callbackURL, {
-                  headers: {
-                    'content-type': 'application/x-www-form-urlencoded'
-                  },
-                  body: callbackString
-                })
-              }
-            })
-          })
-        })
-      })
-    })
-  })
-}
+  // build the callback request
+  let callbackRequest = {
+    callbackURL:     callbackURL,
+    secret:          sha256(merchantAPIKey),
+    amountPaid:      totalTransferred,
+    invoiceAddress:  paymentAddress,
+    paymentTXID:     paymentTXID,
+    merchantAddress: merchantAddress,
+    merchantID:      merchantID,
+    paymentID:       paymentID
+  }
 
-let executeCallback = async (payment) => {
-
+  // execute the callback
+  try {
+    await axios.post(callbackRequest.callbackURL, callbackRequest)
+  } catch (e) {
+    console.log(
+      'Unable to execute callback to URL:',
+      callbackRequest.callbackURL
+    )
+    return
+  }
+  console.log(
+    'Successfully executed callback to URL',
+    callbackRequest.callbackURL
+  )
 }
 
 let searchDatabase = async () => {
+  console.log('Checking for new payments to process...')
   let sql = 'select * from pending order by created desc'
-  let result = mysql.query(sql)
-  for(var i = 0; i < res.length; i++) {
+  let result = await mysql.query(sql)
+  for(var i = 0; i < result.length; i++) {
     console.log(
       'Processing payment',
       '\nTXID:',
-      res[i].txid
+      result[i].txid
     )
-    checkFunds(res[i])
+    await checkFunds(result[i])
   }
 }
 
