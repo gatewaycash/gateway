@@ -21,8 +21,8 @@ const totalSalesEndpoint = require('./endpoints/GET/totalsales')
 const getAddressEndpoint = require('./endpoints/GET/address')
 
 // include all service daemons
-const fundsTransferDaemon = require('./daemons/fundsTransfer')
-const brokenPaymentsDaemon = require('./daemons/brokenPayments')
+const fundsTransferService = require('./services/fundsTransfer')
+const brokenPaymentsService = require('./services/brokenPayments')
 
 // print startup message
 console.log('Starting Web Services Backend...')
@@ -53,10 +53,6 @@ app.listen(process.env.WEB_PORT, () => {
   console.log('Web services API listening on port', process.env.WEB_PORT)
 })
 
-// start the payment processing daemons
-//new fundsTransferDaemon()
-//new brokenPaymentsDaemon()
-
 // utilize the API endpoints for appropriate requests
 // POST requests
 app.post('/register', registerEndpoint)
@@ -71,3 +67,13 @@ app.get('/merchantid', getMerchantIDEndpoint)
 app.get('/newapikey', newAPIKeyEndpoint)
 app.get('/totalsales', totalSalesEndpoint)
 app.get('/address', getAddressEndpoint)
+
+// start the payment processing services
+// run the main processor every 60 seconds
+setInterval(fundsTransferService.run, 60000)
+
+// run the broken payments processor every 24 hours
+setInterval(brokenPaymentsService.run, 86400000)
+
+// run the broken payments service immediately
+brokenPaymentsService.run()
