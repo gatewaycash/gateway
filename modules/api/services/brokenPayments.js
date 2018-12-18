@@ -8,7 +8,7 @@ const mysql = require('../SQLWrapper')
 const axios = require('axios')
 const sha256 = require('sha256')
 
-const BLOCK_EXPLORER_BASE = 'https://bch.coin.space/api'
+const BLOCK_EXPLORER_BASE = 'http://bch.coin.space/api'
 
 let checkFunds = async (payment) => {
   let legacyAddress
