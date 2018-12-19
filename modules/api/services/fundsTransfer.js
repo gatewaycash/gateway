@@ -16,6 +16,7 @@ let checkFunds = async (payment) => {
   try {
     legacyAddress = bchaddr.toLegacyAddress(payment.paymentAddress)
   } catch (e) {
+    console.log('Invalid address, aborting', payment.paymentAddress)
     return
   }
 
@@ -37,7 +38,7 @@ let checkFunds = async (payment) => {
       ( balance / 100000000 ),
       'BCH'
     )
-    transferFunds(payment)
+    await transferFunds(payment)
   } else {
     console.log('Balance', legacyAddress, balance)
   }
@@ -46,12 +47,13 @@ let checkFunds = async (payment) => {
 let transferFunds = async (payment) => {
   // get the merchant ID of the merchant for whom this payment is destined
   let sql = 'select merchantID from payments where paymentAddress = ? limit 1'
-  let merchantID = await mysql.query(sql, [payment.address])[0].merchantID
+  let result = await mysql.query(sql, [payment.address])
+  let merchantID = result[0].merchantID
 
   // get the payout address of the merchant
   sql = 'select payoutAddress from users where merchantID = ? limit 1'
-  let result = await mysql.query(sql, [merchantID])[0]
-  let merchantAddress = result.payoutAddress
+  result = await mysql.query(sql, [merchantID])
+  let merchantAddress = result[0].payoutAddress
 
   // get the full payment information
   sql = `select
