@@ -71,13 +71,10 @@ app.get('/address', getAddressEndpoint)
 // start the payment processing services
 
 // run the processing daemon first to clear any backlog
-fundsTransferService.run().then(() => {
-  // then run the broken payments service
-  //brokenPaymentsService.run()
-})
+fundsTransferService.run()
 
 // run the main processor every 60 seconds
-//setInterval(fundsTransferService.run, 60000)
+setInterval(fundsTransferService.run, 60000)
 
 // run the broken payments processor every 24 hours
-//setInterval(brokenPaymentsService.run, 86400000)
+setInterval(brokenPaymentsService.run, 86400000)
