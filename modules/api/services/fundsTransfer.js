@@ -124,7 +124,9 @@ let transferFunds = async (payment) => {
       'content-type': 'application/x-www-form-urlencoded'
     },
     body: 'rawtx=' + transferTransaction.toString()
-  }).data.txid
+  })
+  transferTXID = transferTXID.data.txid
+
   // bitcoin.com block explorer
   await axios.post(
     'https://rest.bitcoin.com/rawtransactions/sendRawTransaction/'
