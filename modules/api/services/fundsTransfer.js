@@ -9,7 +9,7 @@ const mysql = require('../SQLWrapper')
 const axios = require('axios')
 const sha256 = require('sha256')
 
-const BLOCK_EXPLORER_BASE = 'http://bch.coin.space/api'
+const BLOCK_EXPLORER_BASE = 'https://bch.coin.space/api'
 
 let checkFunds = async (payment) => {
   let legacyAddress
@@ -113,24 +113,24 @@ let transferFunds = async (payment) => {
   )
   transferTransaction.fee(200)
   transferTransaction.sign(bch.PrivateKey.fromWIF(paymentKey))
-  console.log('Raw transaction:\n\n', transferTransaction.toString())
+  let rawTransferTransaction = transferTransaction.toString()
+  console.log('Raw transaction:\n\n', rawTransferTransaction)
 
   // broadcast transaction to multiple places
   // our current block explorer
   let transferTXID = await axios.post(
     BLOCK_EXPLORER_BASE + '/tx/send',
     {
-      rawtx: transferTransaction.toString()
+      rawtx: rawTransferTransaction
     }
   )
   transferTXID = transferTXID.data.txid
   console.log('Broadcasted, TXID:', transferTXID)
   // bitcoin.com block explorer
   await axios.post(
-    'https://rest.bitcoin.com/rawtransactions/sendRawTransaction/'
-      + transferTransaction.toString(),
+    'https://api.blockchair.com/bitcoin-cash/push/transaction',
     {
-      rawtx: transferTransaction.toString()
+      data: rawTransferTransaction
     }
   )
   // TODO a few others
