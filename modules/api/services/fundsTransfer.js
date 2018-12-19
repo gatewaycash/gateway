@@ -14,9 +14,9 @@ const BLOCK_EXPLORER_BASE = 'http://bch.coin.space/api'
 let checkFunds = async (payment) => {
   let legacyAddress
   try {
-    legacyAddress = bchaddr.toLegacyAddress(payment.paymentAddress)
+    legacyAddress = bchaddr.toLegacyAddress(payment.address)
   } catch (e) {
-    console.log('Invalid address, aborting', payment.paymentAddress)
+    console.log('Invalid address, aborting', payment.address)
     return
   }
 
@@ -33,14 +33,14 @@ let checkFunds = async (payment) => {
     console.log(
       'Non-zero balance for payment:\n',
       'Address:',
-      payment.paymentAddress,
+      payment.address,
       '\nBalance:',
       ( balance / 100000000 ),
       'BCH'
     )
     await transferFunds(payment)
   } else {
-    console.log('Balance', legacyAddress, balance)
+    console.log('Balance', payment.address, balance)
   }
 }
 
@@ -209,7 +209,6 @@ let searchDatabase = async () => {
   console.log('Checking for new payments to process...')
   let sql = 'select * from pending'
   let result = await mysql.query(sql)
-  console.log(result)
   for(var i = 0; i < result.length; i++) {
     console.log(
       'Processing payment',
