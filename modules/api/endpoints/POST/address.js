@@ -23,7 +23,7 @@ module.exports = async function (req, res) {
 
   // search the database for the record
   let sql = 'select payoutAddress from users where APIKey = ? limit 1'
-  let result = mysql.query(sql, [req.body.APIKey])
+  let result = await mysql.query(sql, [req.body.APIKey])
 
   // fail unless there is exactly 1 record
   if (result.length !== 1) {

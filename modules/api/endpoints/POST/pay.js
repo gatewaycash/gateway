@@ -29,7 +29,7 @@ module.exports = async function (req, res) {
     where
     merchantID = ?
     limit 1`
-  let result = mysql.query(sql, [req.body.merchantID])
+  let result = await mysql.query(sql, [req.body.merchantID])
 
   // fail unless there is exactly 1 result
   if (result.length !== 1) {

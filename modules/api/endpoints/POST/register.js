@@ -177,7 +177,7 @@ module.exports = async function (req, res) {
     where
     username like ?
     limit 1`
-  result = mysql.query(sql, [req.body.username])
+  result = await mysql.query(sql, [req.body.username])
 
   // fail unless there are no matches
   if (result.length > 0) {
