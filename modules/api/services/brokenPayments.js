@@ -36,6 +36,8 @@ let checkFunds = async (payment) => {
       'BCH'
     )
     addPending(payment)
+  } else {
+    console.log('Balance', legacyAddress, '0')
   }
 }
 
@@ -60,6 +62,7 @@ searchDatabase = async () => {
     desc`
   let result = await mysql.query(sql)
   for(var i = 0; i < result.length; i++) {
+    console.log('Checking', result[i].txid)
     await checkFunds(result[i])
   }
 }
