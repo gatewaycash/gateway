@@ -19,8 +19,8 @@ import io from 'socket.io-client'
  */
 let showError = (error) => {
   if (typeof error !== 'object') {
-    var errorText = "We're sorry, but an error is preventing you from "
-    errorText += 'making your payment. For help, please contact the '
+    var errorText = "An error might be causing problems with "
+    errorText += 'your payment. For help, please contact the '
     errorText += 'merchant, or send an email to support@gateway.cash.\n\n'
     errorText += 'The error was:\n\n' + error
     console.error('GATEWAY: Error:\n\n', errorText)
@@ -149,10 +149,7 @@ let parseProps = (data) => {
 
   // get the value for the payment complete callback function
   let paymentCompleteCallback = data.paymentCompleteCallback ?
-    data.paymentCompleteCallback :
-    `console.log(
-      "GATEWAY; Payment complete!\n\nTXID: " + window.gatewayPaymentTXID
-    )`
+    data.paymentCompleteCallback: 'console.log("GATEWAY: Payment complete!\\n\\nTXID: "+window.gatewayPaymentTXID)'
 
   // ensure the callback is in the correct format
   if (paymentCompleteCallback.endsWith(';')) {
@@ -164,6 +161,7 @@ let parseProps = (data) => {
   if (!paymentCompleteCallback.endsWith(')')) {
     paymentCompleteCallback += '()'
   }
+  paymentCompleteCallback += ';'
 
   // set the value for whether to close the dialog when the payment succeeds
   let closeWhenComplete = data.closeWhenComplete ?
@@ -242,6 +240,9 @@ export default (props) => {
   )
   let [enablePaymentAudio, setEnablePaymentAudio] = React.useState(
     parsedData.enablePaymentAudio
+  )
+  let [paymentAudio, setPaymentAudio] = React.useState(
+    new Audio(paymentCompleteAudio)
   )
   let [sock, setSock] = React.useState(false)
 
@@ -330,10 +331,10 @@ export default (props) => {
   }
 
   // checks payment destinations to see if they concern this transaction
-  let handlePayment = (data) => {
-    var valid = false
+  let handlePayment = async (data) => {
+    let valid = false
     for (var i = 0, l = data.vout.length; !valid && i < l; i++) {
-      var obj = Object.getOwnPropertyNames(data.vout[i])
+      let obj = Object.getOwnPropertyNames(data.vout[i])
       for (var j = 0; !valid && j < obj.length; j++) {
         try {
           let comparisonAddress = bchaddr.toCashAddress(obj[j])
@@ -345,34 +346,43 @@ export default (props) => {
         }
       }
     }
+
     if (valid) {
+
+      // send payment to Gateway server if it was not direct deposit
+      if (!address) {
+        await sendPaymentToServer(data.txid)
+      }
+
       // update the state
       setPaymentComplete(true)
+
       // play the audio clip if enabled
       if (enablePaymentAudio) {
-        new Audio(paymentCompleteAudio).play()
+        paymentAudio.play()
       }
+
       // close the dialog when completed, if requested
       if (closeWhenComplete) {
         handleClose()
       }
+
       // call the local website callback, if requested
-      if (paymentCompleteCallback) {
+      if (paymentCompleteCallback && paymentCompleteCallback.length > 0) {
         if (typeof window === 'object') {
+
           // set the TXID global variable
           window.gatewayPaymentTXID = data.txid
           window.gatewayPaymentAddress = paymentAddress
           window.gatewayPaymentAmountBCH = amountBCH
         }
-        // create a string to call the callback asynchronously
-        let asyncCallback = '(function(){return new Promise(function(resolve, reject) {resolve(' + paymentCompleteCallback + ');})})();'
-        // call the callback
-        console.log(asyncCallback)
-        eval(asyncCallback)
-      }
-      // send payment to Gateway server if it was not direct deposit
-      if (!address) {
-        sendPaymentToServer(data.txid)
+
+        // try and call the callback
+        try {
+          eval(paymentCompleteCallback)
+        } catch (e) {
+          showError('Error running your local JavaScript callback!')
+        }
       }
     }
   }
