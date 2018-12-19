@@ -20,27 +20,35 @@ let checkFunds = async (payment) => {
     return
   }
 
-  // find the combined balance of the payment address
-  let requestURL = BLOCK_EXPLORER_BASE + '/addr/' + legacyAddress + '/balance'
-  let confirmedBalance = await axios.get(requestURL)
-  requestURL = BLOCK_EXPLORER_BASE + '/addr/' + legacyAddress
-    + '/unconfirmedbalance'
-  let unconfirmedBalance = await axios.get(requestURL)
-  let balance = parseInt(unconfirmedBalance.data) +
-    parseInt(confirmedBalance.data)
+  try {
+    // find the combined balance of the payment address
+    let requestURL = BLOCK_EXPLORER_BASE + '/addr/' + legacyAddress + '/balance'
+    let confirmedBalance = await axios.get(requestURL)
+    requestURL = BLOCK_EXPLORER_BASE + '/addr/' + legacyAddress
+      + '/unconfirmedbalance'
+    let unconfirmedBalance = await axios.get(requestURL)
 
-  if (balance > 0) {
+    let balance = parseInt(unconfirmedBalance.data) +
+      parseInt(confirmedBalance.data)
+
+    if (balance > 0) {
+      console.log(
+        'Non-zero balance for payment:\n',
+        'Address:',
+        payment.address,
+        '\nBalance:',
+        ( balance / 100000000 ),
+        'BCH'
+      )
+      await transferFunds(payment)
+    } else {
+      console.log('Balance', payment.address, balance)
+    }
+  } catch (e) {
     console.log(
-      'Non-zero balance for payment:\n',
-      'Address:',
-      payment.address,
-      '\nBalance:',
-      ( balance / 100000000 ),
-      'BCH'
+      'Error checking or transferring funds for',
+      payment.address
     )
-    await transferFunds(payment)
-  } else {
-    console.log('Balance', payment.address, balance)
   }
 }
 
@@ -133,10 +141,6 @@ let transferFunds = async (payment) => {
       data: rawTransferTransaction
     }
   )
-  // TODO a few others
-
-  // convert the total transferred into units of satoshi
-  totalTransferred = totalTransferred * 100000000
 
   // print the payment information
   console.log('Transfer TXID:   ', transferTXID)
@@ -167,8 +171,8 @@ let transferFunds = async (payment) => {
 
   // verify the callback URL is sane. If not, we are done and we return.
   if (
-    !callbackRequest.callbackURL.startsWith('https://') &&
-    !callbackRequest.callbackURL.startsWith('http://')
+    !callbackURL.startsWith('https://') &&
+    !callbackURL.startsWith('http://')
   ) {
     console.log(
       'Unable to execute callback to URL:',
@@ -180,7 +184,6 @@ let transferFunds = async (payment) => {
   // build the callback request
   let callbackRequest = {
     callbackURL:     callbackURL,
-    secret:          sha256(merchantAPIKey),
     amountPaid:      totalTransferred,
     invoiceAddress:  paymentAddress,
     paymentTXID:     paymentTXID,
