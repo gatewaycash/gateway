@@ -97,7 +97,7 @@ let transferFunds = async (payment) => {
     transferTransaction.from({
       "txid": paymentUTXOs[i].txid,
       "vout": paymentUTXOs[i].vout,
-      "address": bchaddr.toLegacyAddress(paymentUTXOs[i].address),
+      "address": bchaddr.toCashAddress(paymentUTXOs[i].address),
       "scriptPubKey": paymentUTXOs[i].scriptPubKey,
       "amount": paymentUTXOs[i].amount
     })
@@ -107,7 +107,10 @@ let transferFunds = async (payment) => {
 
   // TODO: optional Gateway contributions
   // to bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng
-  transferTransaction.to(merchantAddress, totalTransferred - 200)
+  transferTransaction.to(
+    bchaddr.toCashAddress(merchantAddress),
+    totalTransferred - 200
+  )
   transferTransaction.fee(200)
   transferTransaction.sign(bch.PrivateKey.fromWIF(paymentKey))
   console.log('Raw transaction:\n\n', transferTransaction.toString())
