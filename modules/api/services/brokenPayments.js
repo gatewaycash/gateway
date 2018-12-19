@@ -43,6 +43,7 @@ let checkFunds = async (payment) => {
 }
 
 let addPending = async (payment) => {
+  // TODO discover the real TXID
   let txid = 'broken-transaction-txid-unknown-' + sha256(
     require('crypto').randomBytes(32)
   ).substr(0, 32)

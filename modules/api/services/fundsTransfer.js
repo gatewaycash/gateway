@@ -120,22 +120,17 @@ let transferFunds = async (payment) => {
   let transferTXID = await axios.post(
     BLOCK_EXPLORER_BASE + '/tx/send',
     {
-    headers: {
-      'content-type': 'application/x-www-form-urlencoded'
-    },
-    body: 'rawtx=' + transferTransaction.toString()
-  })
+      rawtx: transferTransaction.toString()
+    }
+  )
   transferTXID = transferTXID.data.txid
-
+  console.log('Broadcasted, TXID:', transferTXID)
   // bitcoin.com block explorer
   await axios.post(
     'https://rest.bitcoin.com/rawtransactions/sendRawTransaction/'
       + transferTransaction.toString(),
     {
-      headers: {
-        'content-type': 'application/x-www-form-urlencoded'
-      },
-      body: 'rawtx=' + transferTransaction.toString()
+      rawtx: transferTransaction.toString()
     }
   )
   // TODO a few others
