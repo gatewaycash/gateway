@@ -57,8 +57,6 @@ searchDatabase = async () => {
     from payments
     where
     transferTXID is null
-    and
-    paymentTXID is null
     order by created
     desc`
   let result = await mysql.query(sql)

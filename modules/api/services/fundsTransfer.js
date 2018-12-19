@@ -79,7 +79,7 @@ let transferFunds = async (payment) => {
   let paymentUTXOs = await axios.get(
     BLOCK_EXPLORER_BASE + '/addr/' + paymentAddressLegacy + '/utxo'
   )
-  let paymentUTXOs = paymentUTXOs.data
+  paymentUTXOs = paymentUTXOs.data
   console.log('Got UTXOs for', paymentAddress, '\n\n', paymentUTXOs)
 
   /*
@@ -204,8 +204,9 @@ let transferFunds = async (payment) => {
 
 let searchDatabase = async () => {
   console.log('Checking for new payments to process...')
-  let sql = 'select * from pending order by created desc'
+  let sql = 'select * from pending'
   let result = await mysql.query(sql)
+  console.log(result)
   for(var i = 0; i < result.length; i++) {
     console.log(
       'Processing payment',
