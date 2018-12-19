@@ -101,7 +101,7 @@ let transferFunds = async (payment) => {
       "scriptPubKey": paymentUTXOs[i].scriptPubKey,
       "amount": paymentUTXOs[i].amount
     })
-    totalTransferred += paymentUTXOs[i].amount
+    totalTransferred += (paymentUTXOs[i].amount * 100000000)
   }
   console.log('Added UTXOs to the transfer transaction')
 
