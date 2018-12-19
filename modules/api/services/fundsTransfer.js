@@ -37,6 +37,8 @@ let checkFunds = async (payment) => {
       'BCH'
     )
     transferFunds(payment)
+  } else {
+    console.log('Balance', legacyAddress, balance)
   }
 }
 
@@ -45,11 +47,10 @@ let transferFunds = async (payment) => {
   let sql = 'select merchantID from payments where paymentAddress = ? limit 1'
   let merchantID = await mysql.query(sql, [payment.address])[0].merchantID
 
-  // get the payout address and API key of the merchant
-  sql = 'select payoutAddress, APIKey from users where merchantID = ? limit 1'
+  // get the payout address of the merchant
+  sql = 'select payoutAddress from users where merchantID = ? limit 1'
   let result = await mysql.query(sql, [merchantID])[0]
   let merchantAddress = result.payoutAddress
-  let merchantAPIKey = result.APIKey
 
   // get the full payment information
   sql = `select
@@ -61,11 +62,13 @@ let transferFunds = async (payment) => {
     where
     paymentAddress = ?
     limit 1`
+  result = await mysql.query(sql, [payment.address])
+  result = result[0]
   let {
     paymentKey,
     callbackURL,
     paymentID
-  } = await mysql.query(sql, [payment.address])[0]
+  } = result
 
   // set up some more variables to keep a handle on things
   let paymentAddress = payment.address
@@ -75,7 +78,9 @@ let transferFunds = async (payment) => {
   // find all the UTXOs for the payment address
   let paymentUTXOs = await axios.get(
     BLOCK_EXPLORER_BASE + '/addr/' + paymentAddressLegacy + '/utxo'
-  ).data
+  )
+  let paymentUTXOs = paymentUTXOs.data
+  console.log('Got UTXOs for', paymentAddress, '\n\n', paymentUTXOs)
 
   /*
     Create a BCH transaction spending the payment UTXOs to the merchant address
@@ -95,6 +100,7 @@ let transferFunds = async (payment) => {
     })
     totalTransferred += paymentUTXOs[i].amount
   }
+  console.log('Added UTXOs to the transfer transaction')
 
   // TODO: optional Gateway contributions
   // to bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng

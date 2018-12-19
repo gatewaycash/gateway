@@ -37,7 +37,7 @@ let checkFunds = async (payment) => {
     )
     addPending(payment)
   } else {
-    console.log('Balance', legacyAddress, '0')
+    console.log('Balance', legacyAddress, balance)
   }
 }
 
@@ -45,6 +45,7 @@ let addPending = async (payment) => {
   let txid = 'broken-transaction-txid-unknown-' + sha256(
     require('crypto').randomBytes(32)
   ).substr(0, 32)
+  console.log('Add pending', txid)
   var sql = 'insert into pending (txid, address) values (?, ?)'
   await mysql.query(sql, [txid, payment.paymentAddress])
   console.log('Broken payment added to pending payments queue')
@@ -62,7 +63,7 @@ searchDatabase = async () => {
     desc`
   let result = await mysql.query(sql)
   for(var i = 0; i < result.length; i++) {
-    console.log('Checking', result[i].txid)
+    console.log('Checking', result[i].paymentAddress)
     await checkFunds(result[i])
   }
 }
