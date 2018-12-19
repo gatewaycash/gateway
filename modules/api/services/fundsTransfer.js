@@ -21,11 +21,12 @@ let checkFunds = async (payment) => {
 
   // find the combined balance of the payment address
   let requestURL = BLOCK_EXPLORER_BASE + '/addr/' + legacyAddress + '/balance'
-  let confirmedBalance = await axios.get(requestURL).data
+  let confirmedBalance = await axios.get(requestURL)
   requestURL = BLOCK_EXPLORER_BASE + '/addr/' + legacyAddress
     + '/unconfirmedbalance'
-  let unconfirmedBalance = await axios.get(requestURL).data
-  let balance = parseInt(unconfirmedBalance) + parseInt(confirmedBalance)
+  let unconfirmedBalance = await axios.get(requestURL)
+  let balance = parseInt(unconfirmedBalance.data) +
+    parseInt(confirmedBalance.data)
 
   if (balance > 0) {
     console.log(
