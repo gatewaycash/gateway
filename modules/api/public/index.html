@@ -238,24 +238,48 @@
                   <li>
                     <a href="#post-register" class="toc-h2 toc-link" data-title="POST /register">POST /register</a>
                   </li>
+                  <li>
+                    <a href="#post-pay" class="toc-h2 toc-link" data-title="POST /pay">POST /pay</a>
+                  </li>
+                  <li>
+                    <a href="#post-paid" class="toc-h2 toc-link" data-title="POST /paid">POST /paid</a>
+                  </li>
+                  <li>
+                    <a href="#post-address" class="toc-h2 toc-link" data-title="POST /address">POST /address</a>
+                  </li>
+                  <li>
+                    <a href="#post-username" class="toc-h2 toc-link" data-title="POST /username">POST /username</a>
+                  </li>
               </ul>
           </li>
           <li>
-            <a href="#authentication" class="toc-h1 toc-link" data-title="Authentication">Authentication</a>
-          </li>
-          <li>
-            <a href="#kittens" class="toc-h1 toc-link" data-title="Kittens">Kittens</a>
+            <a href="#get-endpoints" class="toc-h1 toc-link" data-title="GET Endpoints">GET Endpoints</a>
               <ul class="toc-list-h2">
                   <li>
-                    <a href="#get-all-kittens" class="toc-h2 toc-link" data-title="Get All Kittens">Get All Kittens</a>
+                    <a href="#get-login" class="toc-h2 toc-link" data-title="GET /login">GET /login</a>
                   </li>
                   <li>
-                    <a href="#get-a-specific-kitten" class="toc-h2 toc-link" data-title="Get a Specific Kitten">Get a Specific Kitten</a>
+                    <a href="#get-payments" class="toc-h2 toc-link" data-title="GET /payments">GET /payments</a>
                   </li>
                   <li>
-                    <a href="#delete-a-specific-kitten" class="toc-h2 toc-link" data-title="Delete a Specific Kitten">Delete a Specific Kitten</a>
+                    <a href="#get-address" class="toc-h2 toc-link" data-title="GET /address">GET /address</a>
+                  </li>
+                  <li>
+                    <a href="#get-merchantid" class="toc-h2 toc-link" data-title="GET /merchantid">GET /merchantid</a>
+                  </li>
+                  <li>
+                    <a href="#get-username" class="toc-h2 toc-link" data-title="GET /username">GET /username</a>
+                  </li>
+                  <li>
+                    <a href="#get-totalsales" class="toc-h2 toc-link" data-title="GET /totalsales">GET /totalsales</a>
+                  </li>
+                  <li>
+                    <a href="#get-newapikey" class="toc-h2 toc-link" data-title="GET /newapikey">GET /newapikey</a>
                   </li>
               </ul>
+          </li>
+          <li>
+            <a href="#callback-urls" class="toc-h1 toc-link" data-title="Callback URLs">Callback URLs</a>
           </li>
       </ul>
         <ul class="toc-footer">
@@ -268,9 +292,11 @@
       <div class="content">
         <h1 id='introduction'>Introduction</h1>
 <blockquote>
-<p>Welcome to the code samples panel! This panel is usually located on the
-right-hand side of the page and provides useful descriptions, annotations and
-examples demonstrating the features of the API.</p>
+<p>Hello there! This panel provides useful descriptions, annotations and
+examples demonstrating the features of the API. It generally shows up on the
+right-hand side of your screen and will stay lined up so that the examples
+always reference what&#39;s being talked about to the left. If you don&#39;t
+understand something, glance over and you&#39;ll find some handy examples.</p>
 </blockquote>
 
 <p>Welcome to the Gateway.cash API! You can use our API to create and manage
@@ -283,12 +309,12 @@ pretty darn cool!</p>
 </blockquote>
 
 <p>The API is served over HTTP or HTTPS with your current URL as a basepoint.
-If you are running a local instance of the server at http://127.0.0.1:8080/
+If you are running a local instance of the server at <code>http://127.0.0.1:8080/</code>
 then your requests will start with that URL.</p>
 
-<p>For example, the endpoint for /login would be http://127.0.0.1:8080/login
+<p>For example, the endpoint for <code>/login</code> would be <code>http://127.0.0.1:8080/login</code>
 on your local instance. The examples in this documentation assume you are
-using a basepoint URL of https://api.gateway.cash/ which is the production
+using a basepoint URL of <code>https://api.gateway.cash/</code> which is the production
 server Gateway uses across all of our services.</p>
 
 <p>You are free to use our API server as you wish. If we receive excessive
@@ -321,9 +347,9 @@ and substitute those values for your actual data before trying to use the API.</
 API. You don&#39;t need a key to create or pay invoices, but to be able to manage
 merchant accounts, you will need to generate an API key.</p>
 
-<p>API keys can be generated using the <code>POST /register</code> endpoint. The API key for
-your account can be retrieved with <code>GET /login</code>, and a new key can be generated
-with <code>GET /newapikey</code>.</p>
+<p>Merchant accounts can be generated using the <code>POST /register</code> endpoint. The API
+key for your account can be retrieved with <code>GET /login</code>, and a new key can be
+generated with <code>GET /newapikey</code>.</p>
 <h1 id='post-endpoints'>POST Endpoints</h1>
 <p>POST endpoints generally create or update information, as opposed to GET which
 is primarily for retrieving information from the server.</p>
@@ -382,173 +408,241 @@ view payments for each button, track your total sales and much more.</p>
 <td>A unique and strong password to protect your new account</td>
 </tr>
 </tbody></table>
-<h1 id='authentication'>Authentication</h1>
-<blockquote>
-<p>This will retrieve your API key</p>
-</blockquote>
-<pre class="highlight shell tab-shell"><code><span class="c"># With shell, you can just pass the correct header with each request</span>
-curl <span class="s2">"api_endpoint_here"</span>
-  -H <span class="s2">"Authorization: meowmeowmeow"</span>
-</code></pre><pre class="highlight javascript tab-javascript"><code><span class="kr">const</span> <span class="nx">kittn</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'kittn'</span><span class="p">);</span>
-
-<span class="kd">let</span> <span class="nx">api</span> <span class="o">=</span> <span class="nx">kittn</span><span class="p">.</span><span class="nx">authorize</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">);</span>
-</code></pre>
-<blockquote>
-<p>Make sure to replace <code>meowmeowmeow</code> with your API key.</p>
-</blockquote>
-
-<p>Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our <a href="http://example.com/developers">developer portal</a>.</p>
-
-<p>Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:</p>
-
-<p><code>Authorization: meowmeowmeow</code></p>
 
 <aside class="notice">
-You must replace <code>meowmeowmeow</code> with your personal API key.
+Please provide your Bitcoin Cash address in CashAddress format. I it is given
+in any other format, it will be translated prior to being stored in the
+database. if we can't understand your address, we can't pay you!
 </aside>
-<h1 id='kittens'>Kittens</h1><h2 id='get-all-kittens'>Get All Kittens</h2><pre class="highlight ruby tab-ruby"><code><span class="nb">require</span> <span class="s1">'kittn'</span>
 
-<span class="n">api</span> <span class="o">=</span> <span class="no">Kittn</span><span class="o">::</span><span class="no">APIClient</span><span class="p">.</span><span class="nf">authorize!</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">)</span>
-<span class="n">api</span><span class="p">.</span><span class="nf">kittens</span><span class="p">.</span><span class="nf">get</span>
-</code></pre><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">kittn</span>
+<aside class="notice">
+The API server does not validate that passwords are secure or have
+entropy. It is the responsibility of the end user and/or the front-end
+service provider to ensure that a secure password is provided. Passwords
+are always salted and hashed prior to storing in the database.
+</aside>
 
-<span class="n">api</span> <span class="o">=</span> <span class="n">kittn</span><span class="o">.</span><span class="n">authorize</span><span class="p">(</span><span class="s">'meowmeowmeow'</span><span class="p">)</span>
-<span class="n">api</span><span class="o">.</span><span class="n">kittens</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-</code></pre><pre class="highlight shell tab-shell"><code>curl <span class="s2">"http://example.com/api/kittens"</span>
-  -H <span class="s2">"Authorization: meowmeowmeow"</span>
-</code></pre><pre class="highlight javascript tab-javascript"><code><span class="kr">const</span> <span class="nx">kittn</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'kittn'</span><span class="p">);</span>
-
-<span class="kd">let</span> <span class="nx">api</span> <span class="o">=</span> <span class="nx">kittn</span><span class="p">.</span><span class="nx">authorize</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">);</span>
-<span class="kd">let</span> <span class="nx">kittens</span> <span class="o">=</span> <span class="nx">api</span><span class="p">.</span><span class="nx">kittens</span><span class="p">.</span><span class="nx">get</span><span class="p">();</span>
+<aside class="notice">
+Your username must be between 5 and 24 characters, must be unique, must not
+contain spaces/tabs or other odd characters, and is an optional parameter at
+registration time. Usernames can always be set later with the `POST /username`
+endpoint. Usernames are converted to lower case before storing in the database.
+</aside>
+<h2 id='post-pay'>POST /pay</h2>
+<blockquote>
+<p>Create a new invoice and generate a payment address:</p>
+</blockquote>
+<pre class="highlight javascript"><code><span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">await</span> <span class="nx">axios</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span>
+  <span class="s1">'https://api.gateway.cash/pay'</span><span class="p">,</span>
+  <span class="p">{</span>
+    <span class="s1">'merchantID'</span><span class="p">:</span> <span class="s1">'MERCHANT_ID'</span><span class="p">,</span>
+    <span class="s1">'paymentID'</span><span class="p">:</span> <span class="s1">'PAYMENT_ID'</span><span class="p">,</span>
+    <span class="s1">'callbackURL'</span><span class="p">:</span> <span class="s1">'CALLBACK_URL'</span>
+  <span class="p">}</span>
+<span class="p">)</span>
 </code></pre>
 <blockquote>
-<p>The above command returns JSON structured like this:</p>
+<p>If successful, you should get back something like this:</p>
 </blockquote>
-<pre class="highlight json tab-json"><code><span class="p">[</span><span class="w">
-  </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Fluffums"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"breed"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calico"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"fluffiness"</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"cuteness"</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="w">
-  </span><span class="p">},</span><span class="w">
-  </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Max"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"breed"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unknown"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"fluffiness"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"cuteness"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="w">
-  </span><span class="p">}</span><span class="w">
-</span><span class="p">]</span><span class="w">
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"success"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"paymentAddress"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BITCOIN_CASH_ADDRESS"</span><span class="w">
+</span><span class="p">}</span><span class="w">
 </span></code></pre>
-<p>This endpoint retrieves all kittens.</p>
-<h3 id='http-request'>HTTP Request</h3>
-<p><code>GET http://example.com/api/kittens</code></p>
-<h3 id='query-parameters'>Query Parameters</h3>
+<blockquote>
+<p>So, to print your payment address:</p>
+</blockquote>
+<pre class="highlight javascript"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">paymentAddress</span><span class="p">)</span>
+</code></pre>
+<p>The /pay endpoint generates a new invoice for the user and provides them with an
+address to pay the merchant.</p>
+<h3 id='parameters-2'>Parameters</h3>
 <table><thead>
 <tr>
-<th>Parameter</th>
-<th>Default</th>
+<th>Required</th>
+<th>Name</th>
 <th>Description</th>
 </tr>
 </thead><tbody>
 <tr>
-<td>include_cats</td>
-<td>false</td>
-<td>If set to true, the result will also include cats.</td>
+<td>YES</td>
+<td><code>merchantID</code></td>
+<td>The ID for the merchant for whom the payment is intended</td>
 </tr>
 <tr>
-<td>available</td>
-<td>true</td>
-<td>If set to false, the result will include kittens that have already been adopted.</td>
+<td>NO</td>
+<td><code>paymentID</code></td>
+<td>An identifier for the payment which will be shown to the merchant</td>
+</tr>
+<tr>
+<td>NO</td>
+<td><code>callbackURL</code></td>
+<td>A callback URL that can be used by the merchant for payment notifications</td>
 </tr>
 </tbody></table>
 
 <aside class="success">
-Remember — a happy kitten is an authenticated kitten!
+Nope! You don't need an API key when using this endpoint.
 </aside>
-<h2 id='get-a-specific-kitten'>Get a Specific Kitten</h2><pre class="highlight ruby tab-ruby"><code><span class="nb">require</span> <span class="s1">'kittn'</span>
 
-<span class="n">api</span> <span class="o">=</span> <span class="no">Kittn</span><span class="o">::</span><span class="no">APIClient</span><span class="p">.</span><span class="nf">authorize!</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">)</span>
-<span class="n">api</span><span class="p">.</span><span class="nf">kittens</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-</code></pre><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">kittn</span>
-
-<span class="n">api</span> <span class="o">=</span> <span class="n">kittn</span><span class="o">.</span><span class="n">authorize</span><span class="p">(</span><span class="s">'meowmeowmeow'</span><span class="p">)</span>
-<span class="n">api</span><span class="o">.</span><span class="n">kittens</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-</code></pre><pre class="highlight shell tab-shell"><code>curl <span class="s2">"http://example.com/api/kittens/2"</span>
-  -H <span class="s2">"Authorization: meowmeowmeow"</span>
-</code></pre><pre class="highlight javascript tab-javascript"><code><span class="kr">const</span> <span class="nx">kittn</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'kittn'</span><span class="p">);</span>
-
-<span class="kd">let</span> <span class="nx">api</span> <span class="o">=</span> <span class="nx">kittn</span><span class="p">.</span><span class="nx">authorize</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">);</span>
-<span class="kd">let</span> <span class="nx">max</span> <span class="o">=</span> <span class="nx">api</span><span class="p">.</span><span class="nx">kittens</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<aside class="warning">
+BE AWARE: Merchants who leverage callback URLs must be careful and make sure to
+validate that payments they receive are legitimate. <b>CALLBACK URLS ARE PUBLIC!!!</b> When you receive a callback from Gateway, it will ALWAYS contain a property called `"transferTXID"` which is a Bitcoin Cash transaction moving funds to the merchant's address. <b>Merchants MUST verify that this transaction
+is valid and that an acceptable amount has been paid.</b>
+</aside>
+<h2 id='post-paid'>POST /paid</h2>
+<blockquote>
+<p>Send the request with the payment address and TXID:</p>
+</blockquote>
+<pre class="highlight javascript"><code><span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">await</span> <span class="nx">axios</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span>
+  <span class="s1">'https://api.gateway.cash/paid'</span><span class="p">,</span>
+  <span class="p">{</span>
+    <span class="s1">'paymentAddress'</span><span class="p">:</span> <span class="s1">'PAYMENT_ADDRESS'</span><span class="p">,</span>
+    <span class="s1">'paymentTXID'</span><span class="p">:</span> <span class="s1">'PAYMENT_TXID'</span>
+  <span class="p">}</span>
+<span class="p">)</span>
 </code></pre>
 <blockquote>
-<p>The above command returns JSON structured like this:</p>
+<p>If successful, you should get back something like this:</p>
 </blockquote>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Max"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"breed"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unknown"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"fluffiness"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"cuteness"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="w">
+  </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"success"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
-<p>This endpoint retrieves a specific kitten.</p>
-
-<aside class="warning">Inside HTML code blocks like this one, you can't use Markdown, so use <code>&lt;code&gt;</code> blocks to denote code.</aside>
-<h3 id='http-request-2'>HTTP Request</h3>
-<p><code>GET http://example.com/kittens/&lt;ID&gt;</code></p>
-<h3 id='url-parameters'>URL Parameters</h3>
+<p>Once an invoice has been paid, use the <code>POST /paid</code> endpoint to give the
+payment TXID to the server for processing.</p>
+<h3 id='parameters-3'>Parameters</h3>
 <table><thead>
 <tr>
-<th>Parameter</th>
+<th>Required</th>
+<th>Name</th>
 <th>Description</th>
 </tr>
 </thead><tbody>
 <tr>
-<td>ID</td>
-<td>The ID of the kitten to retrieve</td>
+<td>YES</td>
+<td><code>paymentAddress</code></td>
+<td>The payment address of the invoice</td>
+</tr>
+<tr>
+<td>YES</td>
+<td><code>paymentTXID</code></td>
+<td>The TXID of the transaction which pays the invoice</td>
 </tr>
 </tbody></table>
-<h2 id='delete-a-specific-kitten'>Delete a Specific Kitten</h2><pre class="highlight ruby tab-ruby"><code><span class="nb">require</span> <span class="s1">'kittn'</span>
 
-<span class="n">api</span> <span class="o">=</span> <span class="no">Kittn</span><span class="o">::</span><span class="no">APIClient</span><span class="p">.</span><span class="nf">authorize!</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">)</span>
-<span class="n">api</span><span class="p">.</span><span class="nf">kittens</span><span class="p">.</span><span class="nf">delete</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-</code></pre><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">kittn</span>
+<aside class="success">
+Nope! You don't need an API key when using this endpoint.
+</aside>
 
-<span class="n">api</span> <span class="o">=</span> <span class="n">kittn</span><span class="o">.</span><span class="n">authorize</span><span class="p">(</span><span class="s">'meowmeowmeow'</span><span class="p">)</span>
-<span class="n">api</span><span class="o">.</span><span class="n">kittens</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-</code></pre><pre class="highlight shell tab-shell"><code>curl <span class="s2">"http://example.com/api/kittens/2"</span>
-  -X DELETE
-  -H <span class="s2">"Authorization: meowmeowmeow"</span>
-</code></pre><pre class="highlight javascript tab-javascript"><code><span class="kr">const</span> <span class="nx">kittn</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'kittn'</span><span class="p">);</span>
-
-<span class="kd">let</span> <span class="nx">api</span> <span class="o">=</span> <span class="nx">kittn</span><span class="p">.</span><span class="nx">authorize</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">);</span>
-<span class="kd">let</span> <span class="nx">max</span> <span class="o">=</span> <span class="nx">api</span><span class="p">.</span><span class="nx">kittens</span><span class="p">.</span><span class="k">delete</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<aside class="notice">
+if an invoice is paid without calling the `POST /paid` endpoint, the payment
+will still eventually be forwarded to the merchant via the Gateway broken
+payments service within 24 hours. However, applications should always send a
+`POST /paid` request whenever possible so the merchant can receive the payment
+instantaneously.
+</aside>
+<h2 id='post-address'>POST /address</h2>
+<blockquote>
+<p>Change the payout address:</p>
+</blockquote>
+<pre class="highlight javascript"><code><span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">await</span> <span class="nx">axios</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span>
+  <span class="s1">'https://api.gateway.cash/address'</span><span class="p">,</span>
+  <span class="p">{</span>
+    <span class="s1">'APIKey'</span><span class="p">:</span> <span class="s1">'YOUR_API_KEY'</span><span class="p">,</span>
+    <span class="s1">'newAddress'</span><span class="p">:</span> <span class="s1">'BITCOIN_CASH_ADDRESS'</span>
+  <span class="p">}</span>
+<span class="p">)</span>
 </code></pre>
 <blockquote>
-<p>The above command returns JSON structured like this:</p>
+<p>Your new address will be sent back for confirmation. If you send an address in
+a format other than CashAddress, the CashAddress formatted version will always
+be returned.</p>
 </blockquote>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"deleted"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">":("</span><span class="w">
+  </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"success"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"newAddress"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BITCOIN_CASH_ADDRESS"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
-<p>This endpoint deletes a specific kitten.</p>
-<h3 id='http-request-3'>HTTP Request</h3>
-<p><code>DELETE http://example.com/kittens/&lt;ID&gt;</code></p>
-<h3 id='url-parameters-2'>URL Parameters</h3>
+<p>Allows a merchant to specify a new payout address for their account.</p>
+<h3 id='parameters-4'>Parameters</h3>
 <table><thead>
 <tr>
-<th>Parameter</th>
+<th>Required</th>
+<th>Name</th>
 <th>Description</th>
 </tr>
 </thead><tbody>
 <tr>
-<td>ID</td>
-<td>The ID of the kitten to delete</td>
+<td>YES</td>
+<td><code>APIKey</code></td>
+<td>The API key of the merchant who&#39;s payout address is to be updated</td>
+</tr>
+<tr>
+<td>YES</td>
+<td><code>newAddress</code></td>
+<td>The new payout address for the merchant</td>
 </tr>
 </tbody></table>
+
+<aside class="notice">
+Please provide your Bitcoin Cash address in CashAddress format. I it is given
+in any other format, it will be translated prior to being stored in the
+database. if we can't understand your address, we can't pay you!
+</aside>
+<h2 id='post-username'>POST /username</h2>
+<blockquote>
+<p>Change the account username:</p>
+</blockquote>
+<pre class="highlight javascript"><code><span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">await</span> <span class="nx">axios</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span>
+  <span class="s1">'https://api.gateway.cash/username'</span><span class="p">,</span>
+  <span class="p">{</span>
+    <span class="s1">'APIKey'</span><span class="p">:</span> <span class="s1">'YOUR_API_KEY'</span><span class="p">,</span>
+    <span class="s1">'newAddress'</span><span class="p">:</span> <span class="s1">'JohnGalt12'</span>
+  <span class="p">}</span>
+<span class="p">)</span>
+</code></pre>
+<blockquote>
+<p>Your new username will be sent back for confirmation. Usernames are converted
+to lower case before storing in a database.</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"success"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"newAddress"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BITCOIN_CASH_ADDRESS"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>Allows a merchant to specify a new payout address for their account.</p>
+<h3 id='parameters-5'>Parameters</h3>
+<table><thead>
+<tr>
+<th>Required</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>YES</td>
+<td><code>APIKey</code></td>
+<td>The API key of the merchant who&#39;s payout address is to be updated</td>
+</tr>
+<tr>
+<td>YES</td>
+<td><code>username</code></td>
+<td>The new username for the merchant account</td>
+</tr>
+</tbody></table>
+
+<aside class="notice">
+Your username must be between 5 and 24 characters, must be unique, must not
+contain spaces/tabs or other odd characters, and is an optional parameter at
+registration time. Usernames can always be set later with the `POST /username`
+endpoint. Usernames are converted to lower case before storing in the database.
+</aside>
+<h1 id='get-endpoints'>GET Endpoints</h1>
+<p>GET endpoints are generally for retrieving information from the server rather
+than updating or changing it.</p>
+<h2 id='get-login'>GET /login</h2><h2 id='get-payments'>GET /payments</h2><h2 id='get-address'>GET /address</h2><h2 id='get-merchantid'>GET /merchantid</h2><h2 id='get-username'>GET /username</h2><h2 id='get-totalsales'>GET /totalsales</h2><h2 id='get-newapikey'>GET /newapikey</h2><h1 id='callback-urls'>Callback URLs</h1>
+<p>callbacks are a thing.</p>
 
       </div>
       <div class="dark-box">

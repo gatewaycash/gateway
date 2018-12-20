@@ -123,6 +123,26 @@ YES | `address` | The Bitcoin Cash address to use for your merchant account
 NO | `username` | You may also provide a username for more convenient login
 YES | `password` | A unique and strong password to protect your new account
 
+<aside class="notice">
+Please provide your Bitcoin Cash address in CashAddress format. I it is given
+in any other format, it will be translated prior to being stored in the
+database. If we can't understand your address, we can't pay you!
+</aside>
+
+<aside class="notice">
+The API server does not validate that passwords are secure or have
+entropy. It is the responsibility of the end user and/or the front-end
+service provider to ensure that a secure password is provided. Passwords
+are always salted and hashed prior to storing in the database.
+</aside>
+
+<aside class="notice">
+Your username must be between 5 and 24 characters, must be unique, must not
+contain spaces/tabs or other odd characters, and is an optional parameter at
+registration time. Usernames can always be set later with the `POST /username`
+endpoint. Usernames are converted to lower case before storing in the database.
+</aside>
+
 ## POST /pay
 
 > Create a new invoice and generate a payment address:
@@ -143,32 +163,160 @@ let result = await axios.post(
 ```json
 {
   "status": "success",
-  "paymentAddress": "BITCOIN_CASH_PAYMENT_ADDRESS"
+  "paymentAddress": "BITCOIN_CASH_ADDRESS"
 }
 ```
+
 > So, to print your payment address:
 
 ```js
 console.log(result.data.paymentAddress)
 ```
 
+The /pay endpoint generates a new invoice for the user and provides them with an
+address to pay the merchant.
+
 ### Parameters
 
 Required | Name | Description
 ---------|------|------------
-YES | merchantID | The ID for the merchant for whom the payment is intended
-NO | paymentID | An identifier for the payment which will be shown to the merchant
-NO | callbackURL | A callback URL that can be used by the merchant for payment notifications
+YES | `merchantID` | The ID for the merchant for whom the payment is intended
+NO | `paymentID` | An identifier for the payment which will be shown to the merchant
+NO | `callbackURL` | A callback URL that can be used by the merchant for payment notifications
 
 <aside class="success">
 Nope! You don't need an API key when using this endpoint.
 </aside>
 
+<aside class="warning">
+BE AWARE: Merchants who leverage callback URLs must be careful and make sure to
+validate that payments they receive are legitimate. <b>CALLBACK URLS ARE PUBLIC!!!</b> When you receive a callback from Gateway, it will ALWAYS contain a property called `"transferTXID"` which is a Bitcoin Cash transaction moving funds to the merchant's address. <b>Merchants MUST verify that this transaction
+is valid and that an acceptable amount has been paid.</b>
+</aside>
+
 ## POST /paid
+
+> Send the request with the payment address and TXID:
+
+```js
+let result = await axios.post(
+  'https://api.gateway.cash/paid',
+  {
+    'paymentAddress': 'PAYMENT_ADDRESS',
+    'paymentTXID': 'PAYMENT_TXID'
+  }
+)
+```
+
+> If successful, you should get back something like this:
+
+```json
+{
+  "status": "success"
+}
+```
+
+Once an invoice has been paid, use the `POST /paid` endpoint to give the
+payment TXID to the server for processing.
+
+### Parameters
+
+Required | Name | Description
+---------|------|------------
+YES | `paymentAddress` | The payment address of the invoice
+YES | `paymentTXID` | The TXID of the transaction which pays the invoice
+
+<aside class="success">
+Nope! You don't need an API key when using this endpoint.
+</aside>
+
+<aside class="notice">
+if an invoice is paid without calling the `POST /paid` endpoint, the payment
+will still eventually be forwarded to the merchant via the Gateway broken
+payments service within 24 hours. However, applications should always send a
+`POST /paid` request whenever possible so the merchant can receive the payment
+instantaneously.
+</aside>
 
 ## POST /address
 
+> Change the payout address:
+
+```js
+let result = await axios.post(
+  'https://api.gateway.cash/address',
+  {
+    'APIKey': 'YOUR_API_KEY',
+    'newAddress': 'BITCOIN_CASH_ADDRESS'
+  }
+)
+```
+
+> Your new address will be sent back for confirmation. If you send an address in
+> a format other than CashAddress, the CashAddress formatted version will always
+> be returned.
+
+```json
+{
+  "status": "success",
+  "newAddress": "BITCOIN_CASH_ADDRESS"
+}
+```
+
+Allows a merchant to specify a new payout address for their account.
+
+### Parameters
+
+Required | Name | Description
+---------|------|------------
+YES | `APIKey` | The API key of the merchant who's payout address is to be updated
+YES | `newAddress` | The new payout address for the merchant
+
+<aside class="notice">
+Please provide your Bitcoin Cash address in CashAddress format. I it is given
+in any other format, it will be translated prior to being stored in the
+database. If we can't understand your address, we can't pay you!
+</aside>
+
 ## POST /username
+
+> Change the account username:
+
+```js
+let result = await axios.post(
+  'https://api.gateway.cash/username',
+  {
+    'APIKey': 'YOUR_API_KEY',
+    'newAddress': 'JohnGalt12'
+  }
+)
+```
+
+> Your new username will be sent back for confirmation. Usernames are converted
+> to lower case before storing in a database.
+
+```json
+{
+  "status": "success",
+  "newAddress": "BITCOIN_CASH_ADDRESS"
+}
+```
+
+Allows a merchant to specify a new payout address for their account.
+
+### Parameters
+
+Required | Name | Description
+---------|------|------------
+YES | `APIKey` | The API key of the merchant who's payout address is to be updated
+YES | `username` | The new username for the merchant account
+
+<aside class="notice">
+Your username must be between 5 and 24 characters, must be unique, must not
+contain spaces/tabs or other odd characters, and is an optional parameter at
+registration time. Usernames can always be set later with the `POST /username`
+endpoint. Usernames are converted to lower case before storing in the database.
+</aside>
 
 # GET Endpoints
 
