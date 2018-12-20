@@ -20,6 +20,7 @@
     "api-dev": "yarn workspace @gatewaycash/api dev",
     "api-prod": "yarn workspace @gatewaycash/api production",
     "api-setup": "yarn workspace @gatewaycash/api setup",
+    "api-docs-build": "cd modules/api-docs && bundle exec middleman build --clean && cp -r build/* ../api/public/",
     "inject-build": "yarn workspace @gatewaycash/inject build",
     "inject-dev": "yarn workspace @gatewaycash/inject dev",
     "paybutton-build": "yarn workspace @gatewaycash/paybutton build",
@@ -28,7 +29,7 @@
     "site-build": "yarn workspace @gatewaycash/website build",
     "site-dev": "yarn workspace @gatewaycash/website start",
     "site-setup": "yarn workspace @gatewaycash/website setup",
-    "build": "yarn paybutton-build && yarn inject-build && yarn site-build",
+    "build": "yarn paybutton-build && yarn inject-build && yarn site-build && yarn api-docs-build",
     "dev": "concurrently --kill-others \"yarn site-dev\" \"yarn api-dev\" \"yarn paybutton-dev\" \"yarn inject-dev\"",
     "setup": "yarn api-setup",
     "cli": "node modules/utils/APIInterface.js"

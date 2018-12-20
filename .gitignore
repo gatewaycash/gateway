@@ -38,3 +38,8 @@ node_modules
 # ignore compiled inject code
 modules/website/public/pay.js
 modules/website/public/pay.js.map
+
+# ignore compiled documentation
+modules/website/public/docs
+modules/api/public
+modules/api-docs/build

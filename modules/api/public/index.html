@@ -1,572 +1,500 @@
-<!DOCTYPE html>
+
+<!doctype html>
 <html>
-<head>
-  <title>Gateway - API landing page</title>
-  <style>
-    body {
-      font-family: helvetica;
-    }
-    .code {
-      font-family: monospace;
-      background-color: #ccc;
-      padding: 0.5em;
-      margin: 0.5em;
-    }
-  </style>
-</head>
-<body>
-  <center>
-    <h1>Gateway.cash API Docs</h1>
-  </center>
-  <p>
-    You've reached the backend server API documentation landing page. This
-    server may be used to interface with the <a href="https://gateway.cash"
-    target="_blank">gateway.cash</a> payment processor.
-  </p>
-  <h2>Overview</h2>
-  <p>
-    The API is served over HTTP or HTTPS with your current URL as a basepoint.
-    If you are running a local instance of the server at http://127.0.0.1:8080/
-    then your requests will start with that URL.
-  </p>
-  <p>
-    For example, the endpoint for /login would be http://127.0.0.1:8080/login
-    on your local instance. The examples in this documentation assume you are
-    using a basepoint URL of https://api.gateway.cash/ which is the production
-    server Gateway uses across all of our services.
-  </p>
-  <p>
-    You are free to use our API server as you wish. If we receive excessive
-    spam we may choose to block your access. Like all open-source projects, you
-    are also free to run your own server on the internet if you wish.
-  </p>
-  <h2>Contents</h2>
-  <ul>
-    <li><a href="#gatewayapi">The Gateway API</a></li>
-    <li><a href="#apirequests">API Requests</a></li>
-    <li><a href="#endpoints">API Endpoints</a></li>
-    <li><a href="#getlogin">GET /login</a></li>
-    <li><a href="#postregister">POST /register</a></li>
-    <li><a href="#postpay">POST /pay</a></li>
-    <li><a href="#postpaid">POST /paid</a></li>
-    <li><a href="#getmerchantid">GET /merchantid</a></li>
-    <li><a href="#getusername">GET /username</a></li>
-    <li><a href="#postusername">POST /username</a></li>
-    <li><a href="#getpayments">GET /payments</a></li>
-    <li><a href="#gettotalsales">GET /totalsales</a></li>
-    <li><a href="#getaddress">GET /address</a></li>
-    <li><a href="#postaddress">POST /address</a></li>
-  </ul>
-  <h2 id="gatewayapi">The Gateway API</h2>
-  <p>
-    The Gateway API can be used by merchants and customers to access invoices,
-    manage orders and make payments. Merchant API keys are required in order to
-    access invoices and account information.
-  </p>
-  <p>
-    No API keys are required when making or confirming a payment.
-  </p>
-  <h2 id="apirequests">API Requests</h2>
-  <p>
-    Making a request to the API will result in a JSON object string being
-    returned. The "status" property of the object will either be "success" or
-    "error" for all requests.
-  </p>
-  <p>
-    In the case of an error, the "error" property will contain a brief error
-    message and "description" will contain a more in-depth description of the
-    problem, suitable for showing to your users.
-  </p>
-  <p>
-    In the case of a "success" status field, the object will contain the
-    relevant information as described below for each endpoint.
-  </p>
-  <h2 id="endpoints">API Endpoints</h2>
-  <h3 id="getlogin">GET /login</h3>
-  <p>
-    Validates a given session, returning the API key. The API key is required to
-    access merchant- and account-related endpoints.
-  </p>
-  <p>
-    The address must be a Bitcoin Cash address. If it is not in the CashAddress
-    format it will be translated.
-  </p>
-  <h4>Parameters</h4>
-  <ul>
-    <li>"username" or "address" is required</li>
-    <li>"password" is required</li>
-  </ul>
-  <h4>Examples</h4>
-  <pre class="code">
-GET https://api.gateway.cash/login
-?address=bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng
-&password=Super$ecret1
-  </pre>
-  <pre class="code">
-GET https://api.gateway.cash/login
-?username=JohnGalt12
-&password=IHeartDagney
-  </pre>
-  <h4>Return Value</h4>
-  <pre class="code">
-{
-  "status": "success",
-  "APIKey": "aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea"
+  <head>
+    <meta charset="utf-8">
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>API Reference</title>
+
+    <style>
+      .highlight table td { padding: 5px; }
+.highlight table pre { margin: 0; }
+.highlight .gh {
+  color: #999999;
 }
-  </pre>
-  <pre class="code">
-{
-  "status": "error",
-  "error": "Invalid Login",
-  "description": "An incorrect address, username or password was provided."
+.highlight .sr {
+  color: #f6aa11;
 }
-  </pre>
-  <h3 id="postregister">POST /register</h3>
-  <p>
-    Creates a new merchant account and generates an API key, merchant ID and
-    other account information for the user. Once registration is complete,
-    the newly-generated API key is returned to the user.
-  </p>
-  <p>
-    The address must be a valid Bitcoin Cash address. If not given in
-    CashAddress format, it will be translated.
-  </p>
-  <p>
-    The username must be between 5 and 24 characters, must be unique, must not
-    contain spaces or other odd characters, and is an optional parameter at
-    registration time. Usernames can always be set later with the /setusername
-    endpoint.
-  </p>
-  <p>
-    The password must be secure, unique and must not contain odd characters such
-    as returns, tabs or spaces.
-  </p>
-  <p>
-    <b>BE AWARE:</b> The API does not validate that passwords are secure or have
-    entropy. It is the responsibility of the user and/or the front-end
-    software provider to ensure that  a secure password is provided. Passwords
-    are always salted and hashed prior to storing in a database.
-  </p>
-  <h4>Parameters</h4>
-  <ul>
-    <li>"address" is required</li>
-    <li>"password" is required</li>
-    <li>"username" is optional</li>
-  </ul>
-  <h4>Examples</h4>
-  <pre class="code">
-POST https://api.gateway.cash/register
-{
-  "address": "bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng",
-  "username": "FidelCastr0",
-  "password": "PowerPowerNomNomN0m"
+.highlight .go {
+  color: #888888;
 }
-  </pre>
-  <pre class="code">
-POST https://api.gateway.cash/register
-{
-  "address": "bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng",
-  "password": "PowerPowerNomNomN0m"
+.highlight .gp {
+  color: #555555;
 }
-  </pre>
-  <h4>Return Value</h4>
-  <pre class="code">
-{
-  "status": "success",
-  "APIKey": "aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea"
+.highlight .gs {
 }
-  </pre>
-  <pre class="code">
-{
-  "status": "error",
-  "error": "Address in use",
-  "description": "It looks like that address is already being used by
-  another user! If this is your address, send an email to
-  support@gateway.cash and we'll help you get access to this merchant
-  account."
+.highlight .gu {
+  color: #aaaaaa;
 }
-  </pre>
-  <h3 id="postpay">POST /pay</h3>
-  <p>
-    Generates an invoice, returning the payment address to the user when the
-    user gives the merchant ID. No API key is required for this API call.
-  </p>
-  <p>
-    Payment IDs can also be sent which will be given to the merchant in order
-    that they can track their orders.
-  </p>
-  <p>
-    Callback URLs can be sent which will be invoked by the server when the
-    payment is received. Callbacks are sent as POST requests and will always
-    contain a "secret" value which is the SHA256 hash of the merchant's API key.
-  </p>
-  <p>
-    <b>BE AWARE:</b> Merchants who leverage callback URLs MUST ALWAYS VERIFY
-    that the request is authentic by making sure the "secret" provided is the
-    SHA256 hash of the merchant's API key. API keys can be viewed and changed in
-    the Settings screen.
-  </p>
-  <h4>Parameters</h4>
-  <ul>
-    <li>"merchantID" is required</li>
-    <li>"paymentID" is optional</li>
-    <li>"callbackURL" is optional</li>
-  </ul>
-  <h4>Examples</h4>
-  <pre class="code">
-POST https://api.gateway.cash/pay
-{
-  "merchantID": "deadbeef20181234"
+.highlight .nb {
+  color: #f6aa11;
 }
-  </pre>
-  <pre class="code">
-POST https://api.gateway.cash/pay
-{
-  "merchantID": "deadbeef20181234",
-  "paymentID": "123001456789789789-1223",
-  "callbackURL": "https://my.super.store/something.php"
+.highlight .cm {
+  color: #75715e;
 }
-  </pre>
-  <h4>Return Value</h4>
-  <pre class="code">
-{
-  "status", "success",
-  "paymentAddress": "bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng"
+.highlight .cp {
+  color: #75715e;
 }
-  </pre>
-  <pre class="code">
-{
-  "status": "error",
-  "error": "Invalid Merchant ID",
-  "description": "The merchant ID you provided wasn't found in the database.
-  Make sure you're sending the correct Merchant ID."
+.highlight .c1 {
+  color: #75715e;
 }
-  </pre>
-  <h3 id="postpaid">POST /paid</h3>
-  <p>
-    Called by the user once they have made their payment. If the user doesn't
-    make an API call to this endpoint, the payment will still eventually get
-    picked up by the broken payments service within 24 hours. No API key is
-    required to use this endpoint.
-  </p>
-  <h4>Parameters</h4>
-  <ul>
-    <li>"paymentAddress" is required</li>
-    <li>"paymentTXID" is required</li>
-  </ul>
-  <h4>Example</h4>
-  <pre class="code">
-{
-  "paymentAddress": "bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng",
-  "paymentTXID": "abcdefabcdef01234567890123456789ababababacadeaf"
+.highlight .cs {
+  color: #75715e;
 }
-  </pre>
-  <h4>Return Value</h4>
-  <pre class="code">
-{
-  "status": "success"
+.highlight .c, .highlight .cd {
+  color: #75715e;
 }
-  </pre>
-  <pre class="code">
-{
-  "status": "error",
-  "error": "Payment Already Pending",
-  "description": "A payment with that payment address and payment TXID has
-  already been added to the pending payments queue."
+.highlight .err {
+  color: #960050;
 }
-  </pre>
-  <h3 id="getmerchantid">GET /merchantid</h3>
-  <p>Returns the merchant ID of a user given their API key.</p>
-  <h4>Parameters</h4>
-  <ul>
-    <li>"APIKey" is required</li>
-  </ul>
-  <h4>Examples</h4>
-  <pre class="code">
-GET https://api.gateway.cash/merchantid
-?APIKey=aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea
-  </pre>
-  <pre class="code">
-GET https://api.gateway.cash/getmerchantid
-?APIKey=aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73ffffffffffffffffff
-  </pre>
-  <h4>Return Value</h4>
-  <pre class="code">
-{
-  "status": "success",
-  "merchantID": "deadbeef20181111"
+.highlight .gr {
+  color: #960050;
 }
-  </pre>
-  <pre class="code">
-{
-  "status": "error",
-  "eror": "Invalid API Key",
-  "description": "No user currently has that API key.
-  You might have changed your API key in your account settings, or the API key
-  might be invalid."
+.highlight .gt {
+  color: #960050;
 }
-  </pre>
-  <h3 id="getusername">GET /username</h3>
-  <p>Returns the username of a user given their API key.</p>
-  <h4>Parameters</h4>
-  <ul>
-    <li>"APIKey" is required</li>
-  </ul>
-  <h4>Examples</h4>
-  <pre class="code">
-GET https://api.gateway.cash/username
-?APIKey=aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea
-  </pre>
-  <pre class="code">
-GET https://api.gateway.cash/username
-?APIKey=aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73ffffffffffffffffff
-  </pre>
-  <h4>Return Value</h4>
-  <pre class="code">
-{
-  "status": "success",
-  "username": "JohnGalt12"
+.highlight .gd {
+  color: #49483e;
 }
-  </pre>
-  <pre class="code">
-{
-  "status": "error",
-  "eror": "Invalid API Key",
-  "description": "No user currently has that API key.
-  You might have changed your API key in your account settings, or the API key
-  might be invalid."
+.highlight .gi {
+  color: #49483e;
 }
-  </pre>
-  <h3 id="postusername">POST /username</h3>
-  <p>
-    Sets a new username for the user. Usernames must be between 5 and 24
-    characters, not contain spaces or special characters and be unique to the
-    user.
-  </p>
-  <p>
-    <b>BE AWARE:</b> Usernames will be translated to all lower case before
-    being stored in the database. The username will be sent back in the
-    response message.
-  </p>
-  <h4>Parameters</h4>
-  <ul>
-    <li>"APIKey" is required</li>
-    <li>"username" is required</li>
-  </ul>
-  <h4>Examples</h4>
-  <pre class="code">
-POST https://api.gateway.cash/username
-{
-  "APIKey": "aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea",
-  "username": "pneumaultramicroscopic"
+.highlight .ge {
+  color: #49483e;
 }
-  </pre>
-  <pre class="code">
-POST https://api.gateway.cash/username
-{
-  "APIKey": "aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea",
-  "username": "B!ll"
+.highlight .kc {
+  color: #66d9ef;
 }
-  </pre>
-  <h4>Return Value</h4>
-  <pre class="code">
-{
-  "status": "success",
-  "username": "pneumaultramicroscopic"
+.highlight .kd {
+  color: #66d9ef;
 }
-  </pre>
-  <pre class="code">
-{
-  "status": "error",
-  "eror": "Username In Use",
-  "description": "Someone already has that username. Try another?"
+.highlight .kr {
+  color: #66d9ef;
 }
-  </pre>
-  <h3 id="getpayments">GET /payments</h3>
-  <p>
-    Returns an array of all payments made to a merchant account, given their API
-    key as a parameter.
-  </p>
-  <p>
-    The includeUnpaid option (set to 'NO' by default) will return all payments,
-    including those where the customer simply opened the dialog box and did not
-    pay. This can be combined with the includeKeys option (discussed below) if
-    you would like to process payments yourself.
-  </p>
-  <p>
-    <b>BE AWARE:</b> Private keys are never included by default. You may always
-    request that private keys for payment addresses be included by using the
-    "includeKeys" parameter and giving a value of uppercase "YES". This may be
-    useful if you'd like to process your own payments or for debugging.
-  </p>
-  <h4>Parameters</h4>
-  <ul>
-    <li>"APIKey" is required</li>
-    <li>"includeKeys" is optional</li>
-    <li>"includeUnpaid" is optional</li>
-  </ul>
-  <h4>Examples</h4>
-  <pre class="code">
-GET https://api.gateway.cash/payments
-?APIKey=aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea
-  </pre>
-  <pre class="code">
-GET https://api.gateway.cash/payments
-?APIKey=aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea
-&includeKeys=YES
-  </pre>
-  <h4>Return Values</h4>
-  <pre class="code">
-{
-  "status": "success",
-  "numberOfPayments": 4,
-  "payments": [
-    {
-      "paymentAddress":"bitcoincash:qqet0p878uc7e8trwvxqefgmqtkkvqzsvs4vrk4h9s",
-      "paidAmount":9003,
-      "paymentTXID":"ec396d7a28997df889a0c7dfda6d01740ba9e151ac4df182076185d844a687bc",
-      "transferTXID":"8a17fc8f308cbc45e030e41cd0a8a393d9afd3aaf44d86093126f09cbce826fc",
-      "paymentID": "order-fe43dcb493ac",
-      "created": "2018-10-22T23:49:53.000Z",
-      "paymentKey": "hidden"
-    },
-    {
-      "paymentAddress":"bitcoincash:qqucfprkhtwknhhdvthj0jazk5f6erxmxqgjp4ht5q",
-      "paidAmount":10000,
-      "paymentTXID":"afee8509dc5139e28ae8e0ee0b1ea3b6e45aa62bce973a3f942281501cb9b526",
-      "transferTXID":"bc0985d2b7b9ec955318a56cde3481d8beecd87bd325f0c78ee5f79ced96907e",
-      "paymentID":"donation",
-      "created":"2018-10-22T02:10:38.000Z",
-      "paymentKey":"hidden"
-    },
-    {
-      "paymentAddress":"bitcoincash:qzm62utwlfccx55qvm0lxjk4cq0x4ag3tsmc8h22jt",
-      "paidAmount":9011,
-      "paymentTXID":"526e318e120fc3d43faf2a502c6de88748457418051090b680ede4760b639f51",
-      "transferTXID":"7974696486a82be8eebd14f3592f902a8f0ee3b50f6f15abace91faf7e548fa7",
-      "paymentID":"null",
-      "created":"2018-10-21T23:32:33.000Z",
-      "paymentKey":"hidden"
-    },
-    {
-      "paymentAddress":"bitcoincash:qphqgzujdyp7034q6p472wdyyxsy5k83hur9d425c9",
-      "paidAmount":100000,
-      "paymentTXID":"0544124297f8ebd0cf8652f3855bc94da57afa0fcbba99da84c07a015aedfc39",
-      "transferTXID":"653ae98d262fde67a7fbef7ad103fd790d61f693ab617b71fe45400b64ed1e0f",
-      "paymentID":"donation-0.001",
-      "created":"2018-10-20T13:30:35.000Z",
-      "paymentKey":"hidden"
-    }
-  ]
+.highlight .no {
+  color: #66d9ef;
 }
-  </pre>
-  <pre class="code">
-{
-  "status": "error",
-  "error": "No Results",
-  "description": "No payments have been completed to this merchant yet. Make a
-  test payment with /pay and see what happens!"
+.highlight .kt {
+  color: #66d9ef;
 }
-  </pre>
-  <h3 id="getnewapikey">GET /newapikey</h3>
-  <p>
-    Generates a new API key for the user, given their old API key.
-  </p>
-  <p>
-    <b>BE AWARE:</b> Once a new API key is generated, the old one becomes
-    invalid immediately. All new requests must use the new API key. When you log
-    in, your new API key is returned, not your old one. This endpoint might be
-    useful for something like a "log out of all devices" feature.
-  </p>
-  <h4>Parameters</h4>
-  <ul>
-    <li>"APIKey" is required</li>
-  </ul>
-  <h4>Example</h4>
-  <pre class="code">
-GET https://api.gateway.cash/newapikey
-?APIKey=aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea
-  </pre>
-  <h4>Return Value</h4>
-  <pre class="code">
-{
-  "status": "success",
-  "newAPIKey": "deaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeff"
+.highlight .mf {
+  color: #ae81ff;
 }
-  </pre>
-  <pre class="code">
-{
-  "status": "error",
-  "error": "Invalid API Key",
-  "description": "The API key you provided was not found in the database."
+.highlight .mh {
+  color: #ae81ff;
 }
-  </pre>
-  <h3 id="gettotalsales">GET /totalsales</h3>
-  <p>
-    Returns the total of all payments that have been processed by this merchant
-    account. The value returned is in units of satoshi.
-  </p>
-  <h4>Parameters</h4>
-  <ul>
-    <li>"APIKey" is required</li>
-  </ul>
-  <h4>Example</h4>
-  <pre class="code">
-GET https://api.gateway.cash/totalsales
-?APIKey=aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea
-  </pre>
-  <h4>Return Value</h4>
-  <pre class="code">
-{
-  "status": "success",
-  "totalSales": 133706969
+.highlight .il {
+  color: #ae81ff;
 }
-  </pre>
-  <h3 id="getaddress">GET /address</h3>
-  <p>
-    Returns the payout address for a merchant account
-  </p>
-  <h4>Parameters</h4>
-  <ul>
-    <li>"APIKey" is required</li>
-  </ul>
-  <h4>Examples</h4>
-  <pre class="code">
-GET https://api.gateway.cash/address
-?APIKey=aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea
-  </pre>
-  <h4>Return Value</h4>
-  <pre class="code">
-{
-  "status": "success",
-  "payoutAddress": "bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng",
+.highlight .mi {
+  color: #ae81ff;
 }
-  </pre>
-  <h3 id="postaddress">POST /address</h3>
-  <p>
-    Allows the user to set a new payout address for their account. If the new
-    address is not in CashAddress format, it will be translated. The new
-    address will be sent back in the response.
-  </p>
-  <h4>Parameters</h4>
-  <ul>
-    <li>"APIKey" is required</li>
-    <li>"newAddress" is required</li>
-  </ul>
-  <h4>Examples</h4>
-  <pre class="code">
-POST https://api.gateway.cash/address
-{
-  "APIKey": "aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea",
-  "newAddress": "bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng"
+.highlight .mo {
+  color: #ae81ff;
 }
-  </pre>
-  <h4>Return Value</h4>
-  <pre class="code">
-{
-  "status", "success",
-  "newAddress": "bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng"
+.highlight .m, .highlight .mb, .highlight .mx {
+  color: #ae81ff;
 }
-  </pre>
-</body>
+.highlight .sc {
+  color: #ae81ff;
+}
+.highlight .se {
+  color: #ae81ff;
+}
+.highlight .ss {
+  color: #ae81ff;
+}
+.highlight .sd {
+  color: #e6db74;
+}
+.highlight .s2 {
+  color: #e6db74;
+}
+.highlight .sb {
+  color: #e6db74;
+}
+.highlight .sh {
+  color: #e6db74;
+}
+.highlight .si {
+  color: #e6db74;
+}
+.highlight .sx {
+  color: #e6db74;
+}
+.highlight .s1 {
+  color: #e6db74;
+}
+.highlight .s {
+  color: #e6db74;
+}
+.highlight .na {
+  color: #a6e22e;
+}
+.highlight .nc {
+  color: #a6e22e;
+}
+.highlight .nd {
+  color: #a6e22e;
+}
+.highlight .ne {
+  color: #a6e22e;
+}
+.highlight .nf {
+  color: #a6e22e;
+}
+.highlight .vc {
+  color: #ffffff;
+}
+.highlight .nn {
+  color: #ffffff;
+}
+.highlight .nl {
+  color: #ffffff;
+}
+.highlight .ni {
+  color: #ffffff;
+}
+.highlight .bp {
+  color: #ffffff;
+}
+.highlight .vg {
+  color: #ffffff;
+}
+.highlight .vi {
+  color: #ffffff;
+}
+.highlight .nv {
+  color: #ffffff;
+}
+.highlight .w {
+  color: #ffffff;
+}
+.highlight {
+  color: #ffffff;
+}
+.highlight .n, .highlight .py, .highlight .nx {
+  color: #ffffff;
+}
+.highlight .ow {
+  color: #f92672;
+}
+.highlight .nt {
+  color: #f92672;
+}
+.highlight .k, .highlight .kv {
+  color: #f92672;
+}
+.highlight .kn {
+  color: #f92672;
+}
+.highlight .kp {
+  color: #f92672;
+}
+.highlight .o {
+  color: #f92672;
+}
+    </style>
+    <link href="stylesheets/screen.css" rel="stylesheet" media="screen" />
+    <link href="stylesheets/print.css" rel="stylesheet" media="print" />
+      <script src="javascripts/all.js"></script>
+  </head>
+
+  <body class="index" data-languages="[&quot;javascript&quot;,&quot;shell&quot;]">
+    <a href="#" id="nav-button">
+      <span>
+        NAV
+        <img src="images/navbar.png" alt="Navbar" />
+      </span>
+    </a>
+    <div class="toc-wrapper">
+      <img src="images/logo.png" class="logo" alt="Logo" />
+        <div class="lang-selector">
+              <a href="#" data-language-name="javascript">javascript</a>
+              <a href="#" data-language-name="shell">shell</a>
+        </div>
+        <div class="search">
+          <input type="text" class="search" id="input-search" placeholder="Search">
+        </div>
+        <ul class="search-results"></ul>
+      <ul id="toc" class="toc-list-h1">
+          <li>
+            <a href="#introduction" class="toc-h1 toc-link" data-title="Introduction">Introduction</a>
+          </li>
+          <li>
+            <a href="#registration" class="toc-h1 toc-link" data-title="Registration">Registration</a>
+          </li>
+          <li>
+            <a href="#authentication" class="toc-h1 toc-link" data-title="Authentication">Authentication</a>
+          </li>
+          <li>
+            <a href="#kittens" class="toc-h1 toc-link" data-title="Kittens">Kittens</a>
+              <ul class="toc-list-h2">
+                  <li>
+                    <a href="#get-all-kittens" class="toc-h2 toc-link" data-title="Get All Kittens">Get All Kittens</a>
+                  </li>
+                  <li>
+                    <a href="#get-a-specific-kitten" class="toc-h2 toc-link" data-title="Get a Specific Kitten">Get a Specific Kitten</a>
+                  </li>
+                  <li>
+                    <a href="#delete-a-specific-kitten" class="toc-h2 toc-link" data-title="Delete a Specific Kitten">Delete a Specific Kitten</a>
+                  </li>
+              </ul>
+          </li>
+          <li>
+            <a href="#errors" class="toc-h1 toc-link" data-title="Errors">Errors</a>
+          </li>
+      </ul>
+        <ul class="toc-footer">
+            <li><a href='https://gateway.cash'>Gateway - Simple Bitcoin Payments</a></li>
+            <li><a href='https://github.com/lord/slate'>Documentation Powered by Slate</a></li>
+        </ul>
+    </div>
+    <div class="page-wrapper">
+      <div class="dark-box"></div>
+      <div class="content">
+        <h1 id='introduction'>Introduction</h1>
+<p>Welcome to the Gateway API! You can use our API to create and manage merchant
+accounts, make and receive Bitcoin Cash payments, keep track of invoices and
+more!</p>
+<h1 id='registration'>Registration</h1>
+<p>Before you can use most portions of the Gateway API, you must first register
+for a merchant account. Without an API key, you can still create invoices and
+mark them as paid.</p>
+<h1 id='authentication'>Authentication</h1>
+<blockquote>
+<p>This will retrieve your API key</p>
+</blockquote>
+<pre class="highlight shell tab-shell"><code><span class="c"># With shell, you can just pass the correct header with each request</span>
+curl <span class="s2">"api_endpoint_here"</span>
+  -H <span class="s2">"Authorization: meowmeowmeow"</span>
+</code></pre><pre class="highlight javascript tab-javascript"><code><span class="kr">const</span> <span class="nx">kittn</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'kittn'</span><span class="p">);</span>
+
+<span class="kd">let</span> <span class="nx">api</span> <span class="o">=</span> <span class="nx">kittn</span><span class="p">.</span><span class="nx">authorize</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">);</span>
+</code></pre>
+<blockquote>
+<p>Make sure to replace <code>meowmeowmeow</code> with your API key.</p>
+</blockquote>
+
+<p>Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our <a href="http://example.com/developers">developer portal</a>.</p>
+
+<p>Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:</p>
+
+<p><code>Authorization: meowmeowmeow</code></p>
+
+<aside class="notice">
+You must replace <code>meowmeowmeow</code> with your personal API key.
+</aside>
+<h1 id='kittens'>Kittens</h1><h2 id='get-all-kittens'>Get All Kittens</h2><pre class="highlight ruby tab-ruby"><code><span class="nb">require</span> <span class="s1">'kittn'</span>
+
+<span class="n">api</span> <span class="o">=</span> <span class="no">Kittn</span><span class="o">::</span><span class="no">APIClient</span><span class="p">.</span><span class="nf">authorize!</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">)</span>
+<span class="n">api</span><span class="p">.</span><span class="nf">kittens</span><span class="p">.</span><span class="nf">get</span>
+</code></pre><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">kittn</span>
+
+<span class="n">api</span> <span class="o">=</span> <span class="n">kittn</span><span class="o">.</span><span class="n">authorize</span><span class="p">(</span><span class="s">'meowmeowmeow'</span><span class="p">)</span>
+<span class="n">api</span><span class="o">.</span><span class="n">kittens</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+</code></pre><pre class="highlight shell tab-shell"><code>curl <span class="s2">"http://example.com/api/kittens"</span>
+  -H <span class="s2">"Authorization: meowmeowmeow"</span>
+</code></pre><pre class="highlight javascript tab-javascript"><code><span class="kr">const</span> <span class="nx">kittn</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'kittn'</span><span class="p">);</span>
+
+<span class="kd">let</span> <span class="nx">api</span> <span class="o">=</span> <span class="nx">kittn</span><span class="p">.</span><span class="nx">authorize</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">);</span>
+<span class="kd">let</span> <span class="nx">kittens</span> <span class="o">=</span> <span class="nx">api</span><span class="p">.</span><span class="nx">kittens</span><span class="p">.</span><span class="nx">get</span><span class="p">();</span>
+</code></pre>
+<blockquote>
+<p>The above command returns JSON structured like this:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">[</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Fluffums"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"breed"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calico"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"fluffiness"</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"cuteness"</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Max"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"breed"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unknown"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"fluffiness"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"cuteness"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span></code></pre>
+<p>This endpoint retrieves all kittens.</p>
+<h3 id='http-request'>HTTP Request</h3>
+<p><code>GET http://example.com/api/kittens</code></p>
+<h3 id='query-parameters'>Query Parameters</h3>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>include_cats</td>
+<td>false</td>
+<td>If set to true, the result will also include cats.</td>
+</tr>
+<tr>
+<td>available</td>
+<td>true</td>
+<td>If set to false, the result will include kittens that have already been adopted.</td>
+</tr>
+</tbody></table>
+
+<aside class="success">
+Remember — a happy kitten is an authenticated kitten!
+</aside>
+<h2 id='get-a-specific-kitten'>Get a Specific Kitten</h2><pre class="highlight ruby tab-ruby"><code><span class="nb">require</span> <span class="s1">'kittn'</span>
+
+<span class="n">api</span> <span class="o">=</span> <span class="no">Kittn</span><span class="o">::</span><span class="no">APIClient</span><span class="p">.</span><span class="nf">authorize!</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">)</span>
+<span class="n">api</span><span class="p">.</span><span class="nf">kittens</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</code></pre><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">kittn</span>
+
+<span class="n">api</span> <span class="o">=</span> <span class="n">kittn</span><span class="o">.</span><span class="n">authorize</span><span class="p">(</span><span class="s">'meowmeowmeow'</span><span class="p">)</span>
+<span class="n">api</span><span class="o">.</span><span class="n">kittens</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</code></pre><pre class="highlight shell tab-shell"><code>curl <span class="s2">"http://example.com/api/kittens/2"</span>
+  -H <span class="s2">"Authorization: meowmeowmeow"</span>
+</code></pre><pre class="highlight javascript tab-javascript"><code><span class="kr">const</span> <span class="nx">kittn</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'kittn'</span><span class="p">);</span>
+
+<span class="kd">let</span> <span class="nx">api</span> <span class="o">=</span> <span class="nx">kittn</span><span class="p">.</span><span class="nx">authorize</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">);</span>
+<span class="kd">let</span> <span class="nx">max</span> <span class="o">=</span> <span class="nx">api</span><span class="p">.</span><span class="nx">kittens</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+</code></pre>
+<blockquote>
+<p>The above command returns JSON structured like this:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Max"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"breed"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unknown"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"fluffiness"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"cuteness"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>This endpoint retrieves a specific kitten.</p>
+
+<aside class="warning">Inside HTML code blocks like this one, you can't use Markdown, so use <code>&lt;code&gt;</code> blocks to denote code.</aside>
+<h3 id='http-request-2'>HTTP Request</h3>
+<p><code>GET http://example.com/kittens/&lt;ID&gt;</code></p>
+<h3 id='url-parameters'>URL Parameters</h3>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>ID</td>
+<td>The ID of the kitten to retrieve</td>
+</tr>
+</tbody></table>
+<h2 id='delete-a-specific-kitten'>Delete a Specific Kitten</h2><pre class="highlight ruby tab-ruby"><code><span class="nb">require</span> <span class="s1">'kittn'</span>
+
+<span class="n">api</span> <span class="o">=</span> <span class="no">Kittn</span><span class="o">::</span><span class="no">APIClient</span><span class="p">.</span><span class="nf">authorize!</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">)</span>
+<span class="n">api</span><span class="p">.</span><span class="nf">kittens</span><span class="p">.</span><span class="nf">delete</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</code></pre><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">kittn</span>
+
+<span class="n">api</span> <span class="o">=</span> <span class="n">kittn</span><span class="o">.</span><span class="n">authorize</span><span class="p">(</span><span class="s">'meowmeowmeow'</span><span class="p">)</span>
+<span class="n">api</span><span class="o">.</span><span class="n">kittens</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</code></pre><pre class="highlight shell tab-shell"><code>curl <span class="s2">"http://example.com/api/kittens/2"</span>
+  -X DELETE
+  -H <span class="s2">"Authorization: meowmeowmeow"</span>
+</code></pre><pre class="highlight javascript tab-javascript"><code><span class="kr">const</span> <span class="nx">kittn</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'kittn'</span><span class="p">);</span>
+
+<span class="kd">let</span> <span class="nx">api</span> <span class="o">=</span> <span class="nx">kittn</span><span class="p">.</span><span class="nx">authorize</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">);</span>
+<span class="kd">let</span> <span class="nx">max</span> <span class="o">=</span> <span class="nx">api</span><span class="p">.</span><span class="nx">kittens</span><span class="p">.</span><span class="k">delete</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+</code></pre>
+<blockquote>
+<p>The above command returns JSON structured like this:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"deleted"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">":("</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>This endpoint deletes a specific kitten.</p>
+<h3 id='http-request-3'>HTTP Request</h3>
+<p><code>DELETE http://example.com/kittens/&lt;ID&gt;</code></p>
+<h3 id='url-parameters-2'>URL Parameters</h3>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>ID</td>
+<td>The ID of the kitten to delete</td>
+</tr>
+</tbody></table>
+<h1 id='errors'>Errors</h1>
+<aside class="notice">
+This error section is stored in a separate file in <code>includes/_errors.md</code>. Slate allows you to optionally separate out your docs into many files...just save them to the <code>includes</code> folder and add them to the top of your <code>index.md</code>'s frontmatter. Files are included in the order listed.
+</aside>
+
+<p>The Kittn API uses the following error codes:</p>
+
+<table><thead>
+<tr>
+<th>Error Code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>400</td>
+<td>Bad Request -- Your request is invalid.</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Unauthorized -- Your API key is wrong.</td>
+</tr>
+<tr>
+<td>403</td>
+<td>Forbidden -- The kitten requested is hidden for administrators only.</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Not Found -- The specified kitten could not be found.</td>
+</tr>
+<tr>
+<td>405</td>
+<td>Method Not Allowed -- You tried to access a kitten with an invalid method.</td>
+</tr>
+<tr>
+<td>406</td>
+<td>Not Acceptable -- You requested a format that isn&#39;t json.</td>
+</tr>
+<tr>
+<td>410</td>
+<td>Gone -- The kitten requested has been removed from our servers.</td>
+</tr>
+<tr>
+<td>418</td>
+<td>I&#39;m a teapot.</td>
+</tr>
+<tr>
+<td>429</td>
+<td>Too Many Requests -- You&#39;re requesting too many kittens! Slow down!</td>
+</tr>
+<tr>
+<td>500</td>
+<td>Internal Server Error -- We had a problem with our server. Try again later.</td>
+</tr>
+<tr>
+<td>503</td>
+<td>Service Unavailable -- We&#39;re temporarily offline for maintenance. Please try again later.</td>
+</tr>
+</tbody></table>
+
+      </div>
+      <div class="dark-box">
+          <div class="lang-selector">
+                <a href="#" data-language-name="javascript">javascript</a>
+                <a href="#" data-language-name="shell">shell</a>
+          </div>
+      </div>
+    </div>
+  </body>
 </html>
