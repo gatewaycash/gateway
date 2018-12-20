@@ -124,7 +124,7 @@ NO | `username` | You may also provide a username for more convenient login
 YES | `password` | A unique and strong password to protect your new account
 
 <aside class="notice">
-Please provide your Bitcoin Cash address in CashAddress format. I it is given
+Please provide your Bitcoin Cash address in CashAddress format. If it is given
 in any other format, it will be translated prior to being stored in the
 database. If we can't understand your address, we can't pay you!
 </aside>
@@ -133,14 +133,15 @@ database. If we can't understand your address, we can't pay you!
 The API server does not validate that passwords are secure or have
 entropy. It is the responsibility of the end user and/or the front-end
 service provider to ensure that a secure password is provided. Passwords
-are always salted and hashed prior to storing in the database.
+are always salted and hashed prior to being stored in the database.
 </aside>
 
 <aside class="notice">
 Your username must be between 5 and 24 characters, must be unique, must not
 contain spaces/tabs or other odd characters, and is an optional parameter at
 registration time. Usernames can always be set later with the `POST /username`
-endpoint. Usernames are converted to lower case before storing in the database.
+endpoint. Usernames are converted to lower case before being stored in the
+database.
 </aside>
 
 ## POST /pay
@@ -231,7 +232,7 @@ Nope! You don't need an API key when using this endpoint.
 </aside>
 
 <aside class="notice">
-if an invoice is paid without calling the `POST /paid` endpoint, the payment
+If an invoice is paid without calling the `POST /paid` endpoint, the payment
 will still eventually be forwarded to the merchant via the Gateway broken
 payments service within 24 hours. However, applications should always send a
 `POST /paid` request whenever possible so the merchant can receive the payment
@@ -273,7 +274,7 @@ YES | `APIKey` | The API key of the merchant who's payout address is to be updat
 YES | `newAddress` | The new payout address for the merchant
 
 <aside class="notice">
-Please provide your Bitcoin Cash address in CashAddress format. I it is given
+Please provide your Bitcoin Cash address in CashAddress format. If it is given
 in any other format, it will be translated prior to being stored in the
 database. If we can't understand your address, we can't pay you!
 </aside>
@@ -293,16 +294,16 @@ let result = await axios.post(
 ```
 
 > Your new username will be sent back for confirmation. Usernames are converted
-> to lower case before storing in a database.
+> to lower case before being stored in the database.
 
 ```json
 {
   "status": "success",
-  "newAddress": "BITCOIN_CASH_ADDRESS"
+  "username": "johngalt12"
 }
 ```
 
-Allows a merchant to specify a new payout address for their account.
+Allows a merchant to specify a new username for their account.
 
 ### Parameters
 
@@ -313,9 +314,8 @@ YES | `username` | The new username for the merchant account
 
 <aside class="notice">
 Your username must be between 5 and 24 characters, must be unique, must not
-contain spaces/tabs or other odd characters, and is an optional parameter at
-registration time. Usernames can always be set later with the `POST /username`
-endpoint. Usernames are converted to lower case before storing in the database.
+contain spaces/tabs or other odd characters will be converted to lower case
+before being stored in the database.
 </aside>
 
 # GET Endpoints
@@ -324,6 +324,67 @@ GET endpoints are generally for retrieving information from the server rather
 than updating or changing it.
 
 ## GET /login
+
+> You may either log into Gateway using your payout address or your username.
+> Logging in by address:
+
+```js
+let result = await axios.get(
+  'https://api.gateway.cash/login',
+  {
+    params: {
+      'address': 'BITCOIN_CASH_ADDRESS',
+      'password': 'IHeartDagney'
+    }
+  }
+)
+```
+
+> Logging in by username:
+
+```js
+let result = await axios.get(
+  'https://api.gateway.cash/login',
+  {
+    params: {
+      'username': 'JohnGalt12',
+      'password': 'IHeartDagney'
+    }
+  }
+)
+```
+
+> Whichever method you choose, a successful response will look like this:
+
+```json
+{
+  "status": "success",
+  "APIKey": "YOUR_API_KEY"
+}
+```
+
+> Use the API key you receive when calling other API endpoints .
+
+The `GET /login` endpoint simply retrieves the API key for your account. You
+may then use the key to access other portions of the API.
+
+### Parameters
+
+One of `address` or `username` is required along with a `password`.
+
+Name | Description
+`address` | The merchant account payout address
+`username` | The username for the merchant account
+`password` | The merchant account password
+
+<aside class="notice">
+The API key for any account will generally remain the same unless GET
+/newapikey is called. If you store the key somewhere, just be aware that it can
+be used to access and change merchant account settings, including the payout
+address. If you're building something like a mobile app where login information
+is generally saved, you should store the API key rather than the username and
+password. You should always encrypt credentials when plausible.
+</aside>
 
 ## GET /payments
 

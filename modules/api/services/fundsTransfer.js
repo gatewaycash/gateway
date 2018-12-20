@@ -209,7 +209,6 @@ let transferFunds = async (payment) => {
 }
 
 let searchDatabase = async () => {
-  console.log('Checking for new payments to process...')
   let sql = 'select * from pending'
   let result = await mysql.query(sql)
   for(var i = 0; i < result.length; i++) {
