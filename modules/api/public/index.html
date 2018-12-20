@@ -201,7 +201,7 @@
       <script src="javascripts/all.js"></script>
   </head>
 
-  <body class="index" data-languages="[&quot;javascript&quot;,&quot;shell&quot;]">
+  <body class="index" data-languages="[&quot;javascript&quot;]">
     <a href="#" id="nav-button">
       <span>
         NAV
@@ -212,7 +212,6 @@
       <img src="images/logo.png" class="logo" alt="Logo" />
         <div class="lang-selector">
               <a href="#" data-language-name="javascript">javascript</a>
-              <a href="#" data-language-name="shell">shell</a>
         </div>
         <div class="search">
           <input type="text" class="search" id="input-search" placeholder="Search">
@@ -221,9 +220,25 @@
       <ul id="toc" class="toc-list-h1">
           <li>
             <a href="#introduction" class="toc-h1 toc-link" data-title="Introduction">Introduction</a>
+              <ul class="toc-list-h2">
+                  <li>
+                    <a href="#overview" class="toc-h2 toc-link" data-title="Overview">Overview</a>
+                  </li>
+                  <li>
+                    <a href="#api-requests" class="toc-h2 toc-link" data-title="API Requests">API Requests</a>
+                  </li>
+                  <li>
+                    <a href="#api-keys" class="toc-h2 toc-link" data-title="API Keys">API Keys</a>
+                  </li>
+              </ul>
           </li>
           <li>
-            <a href="#registration" class="toc-h1 toc-link" data-title="Registration">Registration</a>
+            <a href="#post-endpoints" class="toc-h1 toc-link" data-title="POST Endpoints">POST Endpoints</a>
+              <ul class="toc-list-h2">
+                  <li>
+                    <a href="#post-register" class="toc-h2 toc-link" data-title="POST /register">POST /register</a>
+                  </li>
+              </ul>
           </li>
           <li>
             <a href="#authentication" class="toc-h1 toc-link" data-title="Authentication">Authentication</a>
@@ -242,12 +257,9 @@
                   </li>
               </ul>
           </li>
-          <li>
-            <a href="#errors" class="toc-h1 toc-link" data-title="Errors">Errors</a>
-          </li>
       </ul>
         <ul class="toc-footer">
-            <li><a href='https://gateway.cash'>Gateway - Simple Bitcoin Payments</a></li>
+            <li><span>Copyright &copy 2018 Gateway</span></li>
             <li><a href='https://github.com/lord/slate'>Documentation Powered by Slate</a></li>
         </ul>
     </div>
@@ -255,13 +267,121 @@
       <div class="dark-box"></div>
       <div class="content">
         <h1 id='introduction'>Introduction</h1>
-<p>Welcome to the Gateway API! You can use our API to create and manage merchant
-accounts, make and receive Bitcoin Cash payments, keep track of invoices and
-more!</p>
-<h1 id='registration'>Registration</h1>
+<blockquote>
+<p>Welcome to the code samples panel! This panel is usually located on the
+right-hand side of the page and provides useful descriptions, annotations and
+examples demonstrating the features of the API.</p>
+</blockquote>
+
+<p>Welcome to the Gateway.cash API! You can use our API to create and manage
+merchant accounts, make and receive Bitcoin Cash payments, keep track of invoices and more!</p>
+<h2 id='overview'>Overview</h2>
+<blockquote>
+<p>All code for these demonstrations is written in JavaScript (specifically)
+ES2017. If you haven&#39;t heard of it, you should definately check it out. It&#39;s
+pretty darn cool!</p>
+</blockquote>
+
+<p>The API is served over HTTP or HTTPS with your current URL as a basepoint.
+If you are running a local instance of the server at http://127.0.0.1:8080/
+then your requests will start with that URL.</p>
+
+<p>For example, the endpoint for /login would be http://127.0.0.1:8080/login
+on your local instance. The examples in this documentation assume you are
+using a basepoint URL of https://api.gateway.cash/ which is the production
+server Gateway uses across all of our services.</p>
+
+<p>You are free to use our API server as you wish. If we receive excessive
+spam we may choose to block your access. Like all open-source projects, you
+are also free to run your own server on the internet if you wish.</p>
+<h2 id='api-requests'>API Requests</h2>
+<blockquote>
+<p>All examples on this page use a popular JavaScript library called axios for
+making HTTP and HTTPS requests. Before you use axios, be sure to include it
+in your JavaScript file like so:</p>
+</blockquote>
+<pre class="highlight javascript"><code><span class="kr">const</span> <span class="nx">axios</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'axios'</span><span class="p">)</span>
+</code></pre>
+<p>Making a request to the API will result in a JSON object string being
+returned. The <code>&quot;status&quot;</code> property of the object will either be <code>&quot;success&quot;</code> or
+<code>&quot;error&quot;</code> for all requests.</p>
+
+<p>When <code>&quot;status&quot;</code> is <code>&quot;error&quot;</code>, the JSON object will always contain an <code>&quot;error&quot;</code> property which will consist of a brief error message. <code>&quot;description&quot;</code> will contain a more in-depth explanation of the problem, suitable for showing to your users.</p>
+
+<p>When <code>&quot;status&quot;</code> is <code>&quot;success&quot;</code>, the object will contain the information
+documented here.</p>
+<h2 id='api-keys'>API Keys</h2>
+<blockquote>
+<p>For illustration purposes, we&#39;ll be using placeholders like YOUR_API_KEY
+and BITCOIN_CASH_ADDRESS throughout these examples. Be sure to replace
+and substitute those values for your actual data before trying to use the API.</p>
+</blockquote>
+
+<p>An API key is required in all but a few special cases when working with the
+API. You don&#39;t need a key to create or pay invoices, but to be able to manage
+merchant accounts, you will need to generate an API key.</p>
+
+<p>API keys can be generated using the <code>POST /register</code> endpoint. The API key for
+your account can be retrieved with <code>GET /login</code>, and a new key can be generated
+with <code>GET /newapikey</code>.</p>
+<h1 id='post-endpoints'>POST Endpoints</h1>
+<p>POST endpoints generally create or update information, as opposed to GET which
+is primarily for retrieving information from the server.</p>
+<h2 id='post-register'>POST /register</h2>
+<blockquote>
+<p>Create a new merchant account:</p>
+</blockquote>
+<pre class="highlight javascript"><code><span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">await</span> <span class="nx">axios</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span>
+  <span class="s1">'https://api.gateway.cash/register'</span><span class="p">,</span>
+  <span class="p">{</span>
+    <span class="s1">'address'</span><span class="p">:</span> <span class="s1">'BITCOIN_CASH_ADDRESS'</span><span class="p">,</span>
+    <span class="s1">'username'</span><span class="p">:</span> <span class="s1">'JohnGalt12'</span><span class="p">,</span>
+    <span class="s1">'password'</span><span class="p">:</span> <span class="s1">'IHeartDagney'</span>
+  <span class="p">}</span>
+<span class="p">)</span>
+</code></pre>
+<blockquote>
+<p>When you successfully register a new merchant account, you&#39;ll get something
+like this back:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"success"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"APIKey"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NEW_API_KEY"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>So, to print your new API key:</p>
+</blockquote>
+<pre class="highlight javascript"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">APIKey</span><span class="p">)</span>
+</code></pre>
 <p>Before you can use most portions of the Gateway API, you must first register
 for a merchant account. Without an API key, you can still create invoices and
-mark them as paid.</p>
+mark them as paid. A merchant account allows you to create payment buttons,
+view payments for each button, track your total sales and much more.</p>
+<h3 id='parameters'>Parameters</h3>
+<table><thead>
+<tr>
+<th>Required</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>YES</td>
+<td><code>address</code></td>
+<td>The Bitcoin Cash address to use for your merchant account</td>
+</tr>
+<tr>
+<td>NO</td>
+<td><code>username</code></td>
+<td>You may also provide a username for more convenient login</td>
+</tr>
+<tr>
+<td>YES</td>
+<td><code>password</code></td>
+<td>A unique and strong password to protect your new account</td>
+</tr>
+</tbody></table>
 <h1 id='authentication'>Authentication</h1>
 <blockquote>
 <p>This will retrieve your API key</p>
@@ -429,70 +549,11 @@ Remember — a happy kitten is an authenticated kitten!
 <td>The ID of the kitten to delete</td>
 </tr>
 </tbody></table>
-<h1 id='errors'>Errors</h1>
-<aside class="notice">
-This error section is stored in a separate file in <code>includes/_errors.md</code>. Slate allows you to optionally separate out your docs into many files...just save them to the <code>includes</code> folder and add them to the top of your <code>index.md</code>'s frontmatter. Files are included in the order listed.
-</aside>
-
-<p>The Kittn API uses the following error codes:</p>
-
-<table><thead>
-<tr>
-<th>Error Code</th>
-<th>Meaning</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>400</td>
-<td>Bad Request -- Your request is invalid.</td>
-</tr>
-<tr>
-<td>401</td>
-<td>Unauthorized -- Your API key is wrong.</td>
-</tr>
-<tr>
-<td>403</td>
-<td>Forbidden -- The kitten requested is hidden for administrators only.</td>
-</tr>
-<tr>
-<td>404</td>
-<td>Not Found -- The specified kitten could not be found.</td>
-</tr>
-<tr>
-<td>405</td>
-<td>Method Not Allowed -- You tried to access a kitten with an invalid method.</td>
-</tr>
-<tr>
-<td>406</td>
-<td>Not Acceptable -- You requested a format that isn&#39;t json.</td>
-</tr>
-<tr>
-<td>410</td>
-<td>Gone -- The kitten requested has been removed from our servers.</td>
-</tr>
-<tr>
-<td>418</td>
-<td>I&#39;m a teapot.</td>
-</tr>
-<tr>
-<td>429</td>
-<td>Too Many Requests -- You&#39;re requesting too many kittens! Slow down!</td>
-</tr>
-<tr>
-<td>500</td>
-<td>Internal Server Error -- We had a problem with our server. Try again later.</td>
-</tr>
-<tr>
-<td>503</td>
-<td>Service Unavailable -- We&#39;re temporarily offline for maintenance. Please try again later.</td>
-</tr>
-</tbody></table>
 
       </div>
       <div class="dark-box">
           <div class="lang-selector">
                 <a href="#" data-language-name="javascript">javascript</a>
-                <a href="#" data-language-name="shell">shell</a>
           </div>
       </div>
     </div>

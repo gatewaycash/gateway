@@ -3,226 +3,192 @@ title: API Reference
 
 language_tabs: # must be one of https://git.io/vQNgJ
   - javascript
-  - shell
 
 toc_footers:
-  - <a href='https://gateway.cash'>Gateway - Simple Bitcoin Payments</a>
+  - <span>Copyright &copy 2018 Gateway</span>
   - <a href='https://github.com/lord/slate'>Documentation Powered by Slate</a>
-
-includes:
-  - errors
 
 search: true
 ---
 
 # Introduction
 
-Welcome to the Gateway API! You can use our API to create and manage merchant
-accounts, make and receive Bitcoin Cash payments, keep track of invoices and
-more!
+> Hello there! This panel provides useful descriptions, annotations and
+> examples demonstrating the features of the API. It generally shows up on the
+> right-hand side of your screen and will stay lined up so that the examples
+> always reference what's being talked about to the left. If you don't
+> understand something, glance over and you'll find some handy examples.
 
-# Registration
+Welcome to the Gateway.cash API! You can use our API to create and manage
+merchant accounts, make and receive Bitcoin Cash payments, keep track of invoices and more!
+
+## Overview
+
+> All code for these demonstrations is written in JavaScript (specifically)
+> ES2017. If you haven't heard of it, you should definately check it out. It's
+> pretty darn cool!
+
+The API is served over HTTP or HTTPS with your current URL as a basepoint.
+If you are running a local instance of the server at `http://127.0.0.1:8080/`
+then your requests will start with that URL.
+
+For example, the endpoint for `/login` would be `http://127.0.0.1:8080/login`
+on your local instance. The examples in this documentation assume you are
+using a basepoint URL of `https://api.gateway.cash/` which is the production
+server Gateway uses across all of our services.
+
+You are free to use our API server as you wish. If we receive excessive
+spam we may choose to block your access. Like all open-source projects, you
+are also free to run your own server on the internet if you wish.
+
+## API Requests
+
+> All examples on this page use a popular JavaScript library called axios for
+> making HTTP and HTTPS requests. Before you use axios, be sure to include it
+> in your JavaScript file like so:
+
+```js
+const axios = require('axios')
+```
+
+Making a request to the API will result in a JSON object string being
+returned. The `"status"` property of the object will either be `"success"` or
+`"error"` for all requests.
+
+When `"status"` is `"error"`, the JSON object will always contain an `"error"` property which will consist of a brief error message. `"description"` will contain a more in-depth explanation of the problem, suitable for showing to your users.
+
+When `"status"` is `"success"`, the object will contain the information
+documented here.
+
+## API Keys
+
+> For illustration purposes, we'll be using placeholders like YOUR_API_KEY
+> and BITCOIN_CASH_ADDRESS throughout these examples. Be sure to replace
+> and substitute those values for your actual data before trying to use the API.
+
+An API key is required in all but a few special cases when working with the
+API. You don't need a key to create or pay invoices, but to be able to manage
+merchant accounts, you will need to generate an API key.
+
+Merchant accounts can be generated using the `POST /register` endpoint. The API
+key for your account can be retrieved with `GET /login`, and a new key can be
+generated with `GET /newapikey`.
+
+# POST Endpoints
+
+POST endpoints generally create or update information, as opposed to GET which
+is primarily for retrieving information from the server.
+
+## POST /register
+
+> Create a new merchant account:
+
+```js
+let result = await axios.post(
+  'https://api.gateway.cash/register',
+  {
+    'address': 'BITCOIN_CASH_ADDRESS',
+    'username': 'JohnGalt12',
+    'password': 'IHeartDagney'
+  }
+)
+```
+
+> When you successfully register a new merchant account, you'll get something
+> like this back:
+
+```json
+{
+  "status": "success",
+  "APIKey": "NEW_API_KEY"
+}
+```
+
+> So, to print your new API key:
+
+```js
+console.log(result.data.APIKey)
+```
 
 Before you can use most portions of the Gateway API, you must first register
 for a merchant account. Without an API key, you can still create invoices and
-mark them as paid.
+mark them as paid. A merchant account allows you to create payment buttons,
+view payments for each button, track your total sales and much more.
 
-# Authentication
+### Parameters
 
-> This will retrieve your API key
+Required | Name | Description
+---------|------|------------
+YES | `address` | The Bitcoin Cash address to use for your merchant account
+NO | `username` | You may also provide a username for more convenient login
+YES | `password` | A unique and strong password to protect your new account
 
-```shell
-# With shell, you can just pass the correct header with each request
-curl "api_endpoint_here"
-  -H "Authorization: meowmeowmeow"
+## POST /pay
+
+> Create a new invoice and generate a payment address:
+
+```js
+let result = await axios.post(
+  'https://api.gateway.cash/pay',
+  {
+    'merchantID': 'MERCHANT_ID',
+    'paymentID': 'PAYMENT_ID',
+    'callbackURL': 'CALLBACK_URL'
+  }
+)
 ```
 
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-```
-
-> Make sure to replace `meowmeowmeow` with your API key.
-
-Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our [developer portal](http://example.com/developers).
-
-Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:
-
-`Authorization: meowmeowmeow`
-
-<aside class="notice">
-You must replace <code>meowmeowmeow</code> with your personal API key.
-</aside>
-
-# Kittens
-
-## Get All Kittens
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get()
-```
-
-```shell
-curl "http://example.com/api/kittens"
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let kittens = api.kittens.get();
-```
-
-> The above command returns JSON structured like this:
+> If successful, you should get back something like this:
 
 ```json
-[
-  {
-    "id": 1,
-    "name": "Fluffums",
-    "breed": "calico",
-    "fluffiness": 6,
-    "cuteness": 7
-  },
-  {
-    "id": 2,
-    "name": "Max",
-    "breed": "unknown",
-    "fluffiness": 5,
-    "cuteness": 10
-  }
-]
+{
+  "status": "success",
+  "paymentAddress": "BITCOIN_CASH_PAYMENT_ADDRESS"
+}
+```
+> So, to print your payment address:
+
+```js
+console.log(result.data.paymentAddress)
 ```
 
-This endpoint retrieves all kittens.
+### Parameters
 
-### HTTP Request
-
-`GET http://example.com/api/kittens`
-
-### Query Parameters
-
-Parameter | Default | Description
---------- | ------- | -----------
-include_cats | false | If set to true, the result will also include cats.
-available | true | If set to false, the result will include kittens that have already been adopted.
+Required | Name | Description
+---------|------|------------
+YES | merchantID | The ID for the merchant for whom the payment is intended
+NO | paymentID | An identifier for the payment which will be shown to the merchant
+NO | callbackURL | A callback URL that can be used by the merchant for payment notifications
 
 <aside class="success">
-Remember — a happy kitten is an authenticated kitten!
+Nope! You don't need an API key when using this endpoint.
 </aside>
 
-## Get a Specific Kitten
+## POST /paid
 
-```ruby
-require 'kittn'
+## POST /address
 
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get(2)
-```
+## POST /username
 
-```python
-import kittn
+# GET Endpoints
 
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get(2)
-```
+GET endpoints are generally for retrieving information from the server rather
+than updating or changing it.
 
-```shell
-curl "http://example.com/api/kittens/2"
-  -H "Authorization: meowmeowmeow"
-```
+## GET /login
 
-```javascript
-const kittn = require('kittn');
+## GET /payments
 
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.get(2);
-```
+## GET /address
 
-> The above command returns JSON structured like this:
+## GET /merchantid
 
-```json
-{
-  "id": 2,
-  "name": "Max",
-  "breed": "unknown",
-  "fluffiness": 5,
-  "cuteness": 10
-}
-```
+## GET /username
 
-This endpoint retrieves a specific kitten.
+## GET /totalsales
 
-<aside class="warning">Inside HTML code blocks like this one, you can't use Markdown, so use <code>&lt;code&gt;</code> blocks to denote code.</aside>
+## GET /newapikey
 
-### HTTP Request
+# Callback URLs
 
-`GET http://example.com/kittens/<ID>`
-
-### URL Parameters
-
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to retrieve
-
-## Delete a Specific Kitten
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.delete(2)
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.delete(2)
-```
-
-```shell
-curl "http://example.com/api/kittens/2"
-  -X DELETE
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.delete(2);
-```
-
-> The above command returns JSON structured like this:
-
-```json
-{
-  "id": 2,
-  "deleted" : ":("
-}
-```
-
-This endpoint deletes a specific kitten.
-
-### HTTP Request
-
-`DELETE http://example.com/kittens/<ID>`
-
-### URL Parameters
-
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to delete
+callbacks are a thing.
