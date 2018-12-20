@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "nodemon --ignore sessions webServicesBackend.js",
+    "dev": "nodemon --ignore public webServicesBackend.js",
     "production": "pm2 start webServicesBackend.js",
     "setup": "node setupEnvironment.js"
   },
