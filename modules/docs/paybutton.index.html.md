@@ -26,10 +26,10 @@ The Gateway.cash payment button is far more than its name suggests. it provides 
 <script src="https://gateway.cash/pay.js"></script>
 <div
   class="payButton"
-  merchantID=""
+  merchantID="ef0fcea08bfa9cb0"
   buttonText="Donate to Gateway.cash"
   dialogTitle="Make a Donation"
-  closeWhenComplete="true"
+  closeWhenComplete="true"></div>
 </center>
 
 ## Overview
