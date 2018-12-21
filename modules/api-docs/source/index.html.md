@@ -25,7 +25,7 @@ merchant accounts, make and receive Bitcoin Cash payments, keep track of invoice
 ## Overview
 
 > All code for these demonstrations is written in JavaScript (specifically)
-> ES2017. If you haven't heard of it, you should definately check it out. It's
+> ES2017. If you haven't heard of it, you should definitely check it out. It's
 > pretty darn cool!
 
 The API is served over HTTP or HTTPS with your current URL as a basepoint.
@@ -130,8 +130,8 @@ database. If we can't understand your address, we can't pay you!
 </aside>
 
 <aside class="notice">
-The API server does not validate that passwords are secure or have
-entropy. It is the responsibility of the end user and/or the front-end
+The API server does not evaluate the security or entropy of provided passwords.
+It is the responsibility of the end user and/or the front-end
 service provider to ensure that a secure password is provided. Passwords
 are always salted and hashed prior to being stored in the database.
 </aside>
