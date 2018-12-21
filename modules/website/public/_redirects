@@ -1,1 +1,10 @@
+# Redirect default Netlify subdomain to primary domain
+https://gatewaycash.netlify.com/* https://gateway.cash/:splat 301!
+
+# Ensure the docs load correctly
+/docs    /docs/index.html  200
+/doc     /docs/index.html  200
+/button  /docs/index.html  200
+
+# Finally, redirect to index.html for processing with React
 /*    /index.html   200
