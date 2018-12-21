@@ -312,7 +312,7 @@ merchant accounts, make and receive Bitcoin Cash payments, keep track of invoice
 <h2 id='overview'>Overview</h2>
 <blockquote>
 <p>All code for these demonstrations is written in JavaScript (specifically)
-ES2017. If you haven&#39;t heard of it, you should definately check it out. It&#39;s
+ES2017. If you haven&#39;t heard of it, you should definitely check it out. It&#39;s
 pretty darn cool!</p>
 </blockquote>
 
@@ -424,8 +424,8 @@ database. If we can't understand your address, we can't pay you!
 </aside>
 
 <aside class="notice">
-The API server does not validate that passwords are secure or have
-entropy. It is the responsibility of the end user and/or the front-end
+The API server does not evaluate the security or entropy of provided passwords.
+It is the responsibility of the end user and/or the front-end
 service provider to ensure that a secure password is provided. Passwords
 are always salted and hashed prior to being stored in the database.
 </aside>
@@ -433,7 +433,7 @@ are always salted and hashed prior to being stored in the database.
 <aside class="notice">
 Your username must be between 5 and 24 characters, must be unique, must not
 contain spaces/tabs or other odd characters, and is an optional parameter at
-registration time. Usernames can always be set later with the `POST /username`
+registration time. Usernames can always be set later with the POST /username
 endpoint. Usernames are converted to lower case before being stored in the
 database.
 </aside>
@@ -632,7 +632,7 @@ to lower case before being stored in the database.</p>
 <tr>
 <td>YES</td>
 <td><code>APIKey</code></td>
-<td>The API key of the merchant who&#39;s payout address is to be updated</td>
+<td>The API key of the merchant who&#39;s username is to be updated</td>
 </tr>
 <tr>
 <td>YES</td>
@@ -643,7 +643,7 @@ to lower case before being stored in the database.</p>
 
 <aside class="notice">
 Your username must be between 5 and 24 characters, must be unique, must not
-contain spaces/tabs or other odd characters will be converted to lower case
+contain spaces/tabs or other odd characters and will be converted to lower case
 before being stored in the database.
 </aside>
 <h1 id='get-endpoints'>GET Endpoints</h1>
@@ -686,7 +686,7 @@ Logging in by address:</p>
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
 <blockquote>
-<p>Use the API key you receive when calling other API endpoints .</p>
+<p>Use the API key you receive when calling other endpoints.</p>
 </blockquote>
 
 <p>The <code>GET /login</code> endpoint simply retrieves the API key for your account. You
@@ -859,7 +859,7 @@ for debugging your payment invoices.
 <tr>
 <td>YES</td>
 <td>APIKey</td>
-<td>The mrrchant account API key</td>
+<td>The merchant account API key</td>
 </tr>
 </tbody></table>
 <h2 id='get-merchantid'>GET /merchantid</h2>
@@ -895,7 +895,7 @@ for debugging your payment invoices.
 <tr>
 <td>YES</td>
 <td>APIKey</td>
-<td>The mrrchant account API key</td>
+<td>The merchant account API key</td>
 </tr>
 </tbody></table>
 <h2 id='get-username'>GET /username</h2>
@@ -931,7 +931,7 @@ for debugging your payment invoices.
 <tr>
 <td>YES</td>
 <td>APIKey</td>
-<td>The mrrchant account API key</td>
+<td>The merchant account API key</td>
 </tr>
 </tbody></table>
 <h2 id='get-totalsales'>GET /totalsales</h2>
@@ -967,7 +967,7 @@ for debugging your payment invoices.
 <tr>
 <td>YES</td>
 <td>APIKey</td>
-<td>The mrrchant account API key</td>
+<td>The merchant account API key</td>
 </tr>
 </tbody></table>
 
@@ -1008,7 +1008,7 @@ old API key.</p>
 <tr>
 <td>YES</td>
 <td>APIKey</td>
-<td>The mrrchant account API key</td>
+<td>The old merchant account API key</td>
 </tr>
 </tbody></table>
 
@@ -1045,7 +1045,7 @@ transfers funds directly to your merchant account payout address.</p>
 callback URLs are public, it is not enough simply to verify the field exists.
 Merchants MUST, I repeat, <b>MUST VERIFY that the <code>transferTXID</code> field points at a Bitcoin Cash transaction transferring AN ACCEPTABLE payment amount to AN ADDRESS CONTROLLED BY THE MERCHANT.</b></p>
 
-<p>Failure to perfom this validation <b>will lead to hackers defrauding you</b>.</p>
+<p>Failure to perform this validation <b>will lead to hackers defrauding you</b>.</p>
 <h2 id='parameters-13'>Parameters</h2>
 <p>In addition to the above, callbacks contain several pieces of information.</p>
 
