@@ -280,6 +280,14 @@
           </li>
           <li>
             <a href="#callback-urls" class="toc-h1 toc-link" data-title="Callback URLs">Callback URLs</a>
+              <ul class="toc-list-h2">
+                  <li>
+                    <a href="#don-39-t-trust-verify" class="toc-h2 toc-link" data-title="Don't Trust. Verify.">Don't Trust. Verify.</a>
+                  </li>
+                  <li>
+                    <a href="#parameters-13" class="toc-h2 toc-link" data-title="Parameters">Parameters</a>
+                  </li>
+              </ul>
           </li>
       </ul>
         <ul class="toc-footer">
@@ -360,9 +368,9 @@ is primarily for retrieving information from the server.</p>
 <pre class="highlight javascript"><code><span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">await</span> <span class="nx">axios</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span>
   <span class="s1">'https://api.gateway.cash/register'</span><span class="p">,</span>
   <span class="p">{</span>
-    <span class="s1">'address'</span><span class="p">:</span> <span class="s1">'BITCOIN_CASH_ADDRESS'</span><span class="p">,</span>
-    <span class="s1">'username'</span><span class="p">:</span> <span class="s1">'JohnGalt12'</span><span class="p">,</span>
-    <span class="s1">'password'</span><span class="p">:</span> <span class="s1">'IHeartDagney'</span>
+    <span class="na">address</span><span class="p">:</span> <span class="s1">'BITCOIN_CASH_ADDRESS'</span><span class="p">,</span>
+    <span class="na">username</span><span class="p">:</span> <span class="s1">'JohnGalt12'</span><span class="p">,</span>
+    <span class="na">password</span><span class="p">:</span> <span class="s1">'IHeartDagney'</span>
   <span class="p">}</span>
 <span class="p">)</span>
 </code></pre>
@@ -410,7 +418,7 @@ view payments for each button, track your total sales and much more.</p>
 </tbody></table>
 
 <aside class="notice">
-Please provide your Bitcoin Cash address in CashAddress format. I it is given
+Please provide your Bitcoin Cash address in CashAddress format. If it is given
 in any other format, it will be translated prior to being stored in the
 database. If we can't understand your address, we can't pay you!
 </aside>
@@ -419,14 +427,15 @@ database. If we can't understand your address, we can't pay you!
 The API server does not validate that passwords are secure or have
 entropy. It is the responsibility of the end user and/or the front-end
 service provider to ensure that a secure password is provided. Passwords
-are always salted and hashed prior to storing in the database.
+are always salted and hashed prior to being stored in the database.
 </aside>
 
 <aside class="notice">
 Your username must be between 5 and 24 characters, must be unique, must not
 contain spaces/tabs or other odd characters, and is an optional parameter at
 registration time. Usernames can always be set later with the `POST /username`
-endpoint. Usernames are converted to lower case before storing in the database.
+endpoint. Usernames are converted to lower case before being stored in the
+database.
 </aside>
 <h2 id='post-pay'>POST /pay</h2>
 <blockquote>
@@ -435,9 +444,9 @@ endpoint. Usernames are converted to lower case before storing in the database.
 <pre class="highlight javascript"><code><span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">await</span> <span class="nx">axios</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span>
   <span class="s1">'https://api.gateway.cash/pay'</span><span class="p">,</span>
   <span class="p">{</span>
-    <span class="s1">'merchantID'</span><span class="p">:</span> <span class="s1">'MERCHANT_ID'</span><span class="p">,</span>
-    <span class="s1">'paymentID'</span><span class="p">:</span> <span class="s1">'PAYMENT_ID'</span><span class="p">,</span>
-    <span class="s1">'callbackURL'</span><span class="p">:</span> <span class="s1">'CALLBACK_URL'</span>
+    <span class="na">merchantID</span><span class="p">:</span> <span class="s1">'MERCHANT_ID'</span><span class="p">,</span>
+    <span class="na">paymentID</span><span class="p">:</span> <span class="s1">'PAYMENT_ID'</span><span class="p">,</span>
+    <span class="na">callbackURL</span><span class="p">:</span> <span class="s1">'CALLBACK_URL'</span>
   <span class="p">}</span>
 <span class="p">)</span>
 </code></pre>
@@ -486,7 +495,7 @@ Nope! You don't need an API key when using this endpoint.
 </aside>
 
 <aside class="warning">
-BE AWARE: Merchants who leverage callback URLs must be careful and make sure to
+Merchants who leverage callback URLs must be careful and make sure to
 validate that payments they receive are legitimate. <b>CALLBACK URLS ARE PUBLIC!!!</b> When you receive a callback from Gateway, it will ALWAYS contain a property called `"transferTXID"` which is a Bitcoin Cash transaction moving funds to the merchant's address. <b>Merchants MUST verify that this transaction
 is valid and that an acceptable amount has been paid.</b>
 </aside>
@@ -497,8 +506,8 @@ is valid and that an acceptable amount has been paid.</b>
 <pre class="highlight javascript"><code><span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">await</span> <span class="nx">axios</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span>
   <span class="s1">'https://api.gateway.cash/paid'</span><span class="p">,</span>
   <span class="p">{</span>
-    <span class="s1">'paymentAddress'</span><span class="p">:</span> <span class="s1">'PAYMENT_ADDRESS'</span><span class="p">,</span>
-    <span class="s1">'paymentTXID'</span><span class="p">:</span> <span class="s1">'PAYMENT_TXID'</span>
+    <span class="na">paymentAddress</span><span class="p">:</span> <span class="s1">'PAYMENT_ADDRESS'</span><span class="p">,</span>
+    <span class="na">paymentTXID</span><span class="p">:</span> <span class="s1">'PAYMENT_TXID'</span>
   <span class="p">}</span>
 <span class="p">)</span>
 </code></pre>
@@ -536,7 +545,7 @@ Nope! You don't need an API key when using this endpoint.
 </aside>
 
 <aside class="notice">
-if an invoice is paid without calling the `POST /paid` endpoint, the payment
+If an invoice is paid without calling the `POST /paid` endpoint, the payment
 will still eventually be forwarded to the merchant via the Gateway broken
 payments service within 24 hours. However, applications should always send a
 `POST /paid` request whenever possible so the merchant can receive the payment
@@ -549,8 +558,8 @@ instantaneously.
 <pre class="highlight javascript"><code><span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">await</span> <span class="nx">axios</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span>
   <span class="s1">'https://api.gateway.cash/address'</span><span class="p">,</span>
   <span class="p">{</span>
-    <span class="s1">'APIKey'</span><span class="p">:</span> <span class="s1">'YOUR_API_KEY'</span><span class="p">,</span>
-    <span class="s1">'newAddress'</span><span class="p">:</span> <span class="s1">'BITCOIN_CASH_ADDRESS'</span>
+    <span class="na">APIKey</span><span class="p">:</span> <span class="s1">'YOUR_API_KEY'</span><span class="p">,</span>
+    <span class="na">newAddress</span><span class="p">:</span> <span class="s1">'BITCOIN_CASH_ADDRESS'</span>
   <span class="p">}</span>
 <span class="p">)</span>
 </code></pre>
@@ -586,7 +595,7 @@ be returned.</p>
 </tbody></table>
 
 <aside class="notice">
-Please provide your Bitcoin Cash address in CashAddress format. I it is given
+Please provide your Bitcoin Cash address in CashAddress format. If it is given
 in any other format, it will be translated prior to being stored in the
 database. If we can't understand your address, we can't pay you!
 </aside>
@@ -597,21 +606,21 @@ database. If we can't understand your address, we can't pay you!
 <pre class="highlight javascript"><code><span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">await</span> <span class="nx">axios</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span>
   <span class="s1">'https://api.gateway.cash/username'</span><span class="p">,</span>
   <span class="p">{</span>
-    <span class="s1">'APIKey'</span><span class="p">:</span> <span class="s1">'YOUR_API_KEY'</span><span class="p">,</span>
-    <span class="s1">'newAddress'</span><span class="p">:</span> <span class="s1">'JohnGalt12'</span>
+    <span class="na">APIKey</span><span class="p">:</span> <span class="s1">'YOUR_API_KEY'</span><span class="p">,</span>
+    <span class="na">newAddress</span><span class="p">:</span> <span class="s1">'JohnGalt12'</span>
   <span class="p">}</span>
 <span class="p">)</span>
 </code></pre>
 <blockquote>
 <p>Your new username will be sent back for confirmation. Usernames are converted
-to lower case before storing in a database.</p>
+to lower case before being stored in the database.</p>
 </blockquote>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
   </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"success"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"newAddress"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BITCOIN_CASH_ADDRESS"</span><span class="w">
+  </span><span class="s2">"username"</span><span class="p">:</span><span class="w"> </span><span class="s2">"johngalt12"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
-<p>Allows a merchant to specify a new payout address for their account.</p>
+<p>Allows a merchant to specify a new username for their account.</p>
 <h3 id='parameters-5'>Parameters</h3>
 <table><thead>
 <tr>
@@ -634,15 +643,440 @@ to lower case before storing in a database.</p>
 
 <aside class="notice">
 Your username must be between 5 and 24 characters, must be unique, must not
-contain spaces/tabs or other odd characters, and is an optional parameter at
-registration time. Usernames can always be set later with the `POST /username`
-endpoint. Usernames are converted to lower case before storing in the database.
+contain spaces/tabs or other odd characters will be converted to lower case
+before being stored in the database.
 </aside>
 <h1 id='get-endpoints'>GET Endpoints</h1>
 <p>GET endpoints are generally for retrieving information from the server rather
 than updating or changing it.</p>
-<h2 id='get-login'>GET /login</h2><h2 id='get-payments'>GET /payments</h2><h2 id='get-address'>GET /address</h2><h2 id='get-merchantid'>GET /merchantid</h2><h2 id='get-username'>GET /username</h2><h2 id='get-totalsales'>GET /totalsales</h2><h2 id='get-newapikey'>GET /newapikey</h2><h1 id='callback-urls'>Callback URLs</h1>
-<p>callbacks are a thing.</p>
+<h2 id='get-login'>GET /login</h2>
+<blockquote>
+<p>You may either log into Gateway using your payout address or your username.
+Logging in by address:</p>
+</blockquote>
+<pre class="highlight javascript"><code><span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">await</span> <span class="nx">axios</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span>
+  <span class="s1">'https://api.gateway.cash/login'</span><span class="p">,</span>
+  <span class="p">{</span>
+    <span class="na">params</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">address</span><span class="p">:</span> <span class="s1">'BITCOIN_CASH_ADDRESS'</span><span class="p">,</span>
+      <span class="na">password</span><span class="p">:</span> <span class="s1">'IHeartDagney'</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">)</span>
+</code></pre>
+<blockquote>
+<p>Logging in by username:</p>
+</blockquote>
+<pre class="highlight javascript"><code><span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">await</span> <span class="nx">axios</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span>
+  <span class="s1">'https://api.gateway.cash/login'</span><span class="p">,</span>
+  <span class="p">{</span>
+    <span class="na">params</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">username</span><span class="p">:</span> <span class="s1">'JohnGalt12'</span><span class="p">,</span>
+      <span class="na">password</span><span class="p">:</span> <span class="s1">'IHeartDagney'</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">)</span>
+</code></pre>
+<blockquote>
+<p>Whichever method you choose, a successful response will look like this:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"success"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"APIKey"</span><span class="p">:</span><span class="w"> </span><span class="s2">"YOUR_API_KEY"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Use the API key you receive when calling other API endpoints .</p>
+</blockquote>
+
+<p>The <code>GET /login</code> endpoint simply retrieves the API key for your account. You
+may then use the key to access other portions of the API.</p>
+<h3 id='parameters-6'>Parameters</h3>
+<p>One of <code>address</code> or <code>username</code> is required along with a <code>password</code>.</p>
+
+<table><thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code>address</code></td>
+<td>The merchant account payout address</td>
+</tr>
+<tr>
+<td><code>username</code></td>
+<td>The username for the merchant account</td>
+</tr>
+<tr>
+<td><code>password</code></td>
+<td>The merchant account password</td>
+</tr>
+</tbody></table>
+
+<aside class="notice">
+The API key for any account will generally remain the same unless GET
+/newapikey is called. If you store the key somewhere, just be aware that it can
+be used to access and change merchant account settings, including the payout
+address. If you're building something like a mobile app where login information
+is generally saved, you should store the API key rather than the username and
+password. You should always encrypt credentials when plausible.
+</aside>
+<h2 id='get-payments'>GET /payments</h2>
+<blockquote>
+<p>Get a list of invoices for your account:</p>
+</blockquote>
+<pre class="highlight javascript"><code><span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">await</span> <span class="nx">axios</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span>
+  <span class="s1">'https://api.gateway.cash/payments'</span><span class="p">,</span>
+  <span class="p">{</span>
+    <span class="na">params</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">APIKey</span><span class="p">:</span> <span class="s1">'YOUR_API_KEY'</span><span class="p">,</span>
+      <span class="na">includeKeys</span><span class="p">:</span> <span class="s1">'NO'</span><span class="p">,</span>
+      <span class="na">includeUnpaid</span><span class="p">:</span> <span class="s1">'NO'</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">)</span>
+</code></pre>
+<blockquote>
+<p>The response will look something like this:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"success"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"numberOfPayments"</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"payments"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"paymentAddress"</span><span class="p">:</span><span class="s2">"bitcoincash:qqet0p878uc7e8trwvxqefgmqtkkvqzsvs4vrk4h9s"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"paidAmount"</span><span class="p">:</span><span class="mi">9003</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"paymentTXID"</span><span class="p">:</span><span class="s2">"ec396d7a28997df889a0c7dfda6d01740ba9e151ac4df182076185d844a687bc"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"transferTXID"</span><span class="p">:</span><span class="s2">"8a17fc8f308cbc45e030e41cd0a8a393d9afd3aaf44d86093126f09cbce826fc"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"paymentID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"order-fe43dcb493ac"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"created"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-10-22T23:49:53.000Z"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"paymentKey"</span><span class="p">:</span><span class="w"> </span><span class="s2">"hidden"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"paymentAddress"</span><span class="p">:</span><span class="s2">"bitcoincash:qqucfprkhtwknhhdvthj0jazk5f6erxmxqgjp4ht5q"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"paidAmount"</span><span class="p">:</span><span class="mi">10000</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"paymentTXID"</span><span class="p">:</span><span class="s2">"afee8509dc5139e28ae8e0ee0b1ea3b6e45aa62bce973a3f942281501cb9b526"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"transferTXID"</span><span class="p">:</span><span class="s2">"bc0985d2b7b9ec955318a56cde3481d8beecd87bd325f0c78ee5f79ced96907e"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"paymentID"</span><span class="p">:</span><span class="s2">"donation"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"created"</span><span class="p">:</span><span class="s2">"2018-10-22T02:10:38.000Z"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"paymentKey"</span><span class="p">:</span><span class="s2">"hidden"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"paymentAddress"</span><span class="p">:</span><span class="s2">"bitcoincash:qzm62utwlfccx55qvm0lxjk4cq0x4ag3tsmc8h22jt"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"paidAmount"</span><span class="p">:</span><span class="mi">9011</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"paymentTXID"</span><span class="p">:</span><span class="s2">"526e318e120fc3d43faf2a502c6de88748457418051090b680ede4760b639f51"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"transferTXID"</span><span class="p">:</span><span class="s2">"7974696486a82be8eebd14f3592f902a8f0ee3b50f6f15abace91faf7e548fa7"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"paymentID"</span><span class="p">:</span><span class="s2">"null"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"created"</span><span class="p">:</span><span class="s2">"2018-10-21T23:32:33.000Z"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"paymentKey"</span><span class="p">:</span><span class="s2">"hidden"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"paymentAddress"</span><span class="p">:</span><span class="s2">"bitcoincash:qphqgzujdyp7034q6p472wdyyxsy5k83hur9d425c9"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"paidAmount"</span><span class="p">:</span><span class="mi">100000</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"paymentTXID"</span><span class="p">:</span><span class="s2">"0544124297f8ebd0cf8652f3855bc94da57afa0fcbba99da84c07a015aedfc39"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"transferTXID"</span><span class="p">:</span><span class="s2">"653ae98d262fde67a7fbef7ad103fd790d61f693ab617b71fe45400b64ed1e0f"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"paymentID"</span><span class="p">:</span><span class="s2">"donation-0.001"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"created"</span><span class="p">:</span><span class="s2">"2018-10-20T13:30:35.000Z"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"paymentKey"</span><span class="p">:</span><span class="s2">"hidden"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>This endpoint allows merchants to get a list of their payment invoices.</p>
+<h3 id='parameters-7'>Parameters</h3>
+<table><thead>
+<tr>
+<th>Required</th>
+<th>Name</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>YES</td>
+<td><code>APIKey</code></td>
+<td><code>N/A</code></td>
+<td>The merchant account API key</td>
+</tr>
+<tr>
+<td>NO</td>
+<td><code>includeKeys</code></td>
+<td><code>NO</code></td>
+<td>Include payment address private keys in the response</td>
+</tr>
+<tr>
+<td>NO</td>
+<td><code>includeUnpaid</code></td>
+<td><code>NO</code></td>
+<td>Include broken, unpaid or half-complete invoices</td>
+</tr>
+</tbody></table>
+
+<aside class="notice">
+Private keys are never included by default. You may always request that private
+keys for payment addresses be included by using the "includeKeys" parameter and
+giving a value of uppercase "YES". This may be useful if you'd like to process
+your own payments or for debugging.
+</aside>
+
+<aside class="notice">
+You may set the "includeUnpaid" parameter to uppercase "YES" to include invoices
+that are broken, unpaid, half-processed or otherwise deformed. This is useful
+for hunting down stuck payments (which can be recovered with "includeKeys"), and
+for debugging your payment invoices.
+</aside>
+<h2 id='get-address'>GET /address</h2>
+<blockquote>
+<p>Get the payout address for the merchant account:</p>
+</blockquote>
+<pre class="highlight javascript"><code><span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">await</span> <span class="nx">axios</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span>
+  <span class="s1">'https://api.gateway.cash/address'</span><span class="p">,</span>
+  <span class="p">{</span>
+    <span class="na">params</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">APIKey</span><span class="p">:</span> <span class="s1">'YOUR_API_KEY'</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">)</span>
+</code></pre>
+<blockquote>
+<p>A successful response will look like this:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"success"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"payoutAddress"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BITCOIN_CASH_ADDRESS"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>This endpoint returns the current merchant account payout address.</p>
+<h3 id='parameters-8'>Parameters</h3>
+<table><thead>
+<tr>
+<th>Required</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>YES</td>
+<td>APIKey</td>
+<td>The mrrchant account API key</td>
+</tr>
+</tbody></table>
+<h2 id='get-merchantid'>GET /merchantid</h2>
+<blockquote>
+<p>Get the merchant ID for the account:</p>
+</blockquote>
+<pre class="highlight javascript"><code><span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">await</span> <span class="nx">axios</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span>
+  <span class="s1">'https://api.gateway.cash/merchantid'</span><span class="p">,</span>
+  <span class="p">{</span>
+    <span class="na">params</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">APIKey</span><span class="p">:</span> <span class="s1">'YOUR_API_KEY'</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">)</span>
+</code></pre>
+<blockquote>
+<p>A successful response will look like this:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"success"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"merchantID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MERCHANT_ID"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>This endpoint returns the merchant ID.</p>
+<h3 id='parameters-9'>Parameters</h3>
+<table><thead>
+<tr>
+<th>Required</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>YES</td>
+<td>APIKey</td>
+<td>The mrrchant account API key</td>
+</tr>
+</tbody></table>
+<h2 id='get-username'>GET /username</h2>
+<blockquote>
+<p>Get the current username for the merchant account:</p>
+</blockquote>
+<pre class="highlight javascript"><code><span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">await</span> <span class="nx">axios</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span>
+  <span class="s1">'https://api.gateway.cash/username'</span><span class="p">,</span>
+  <span class="p">{</span>
+    <span class="na">params</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">APIKey</span><span class="p">:</span> <span class="s1">'YOUR_API_KEY'</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">)</span>
+</code></pre>
+<blockquote>
+<p>A successful response will look like this:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"success"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"username"</span><span class="p">:</span><span class="w"> </span><span class="s2">"johngalt12"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>This endpoint returns the current merchant account username.</p>
+<h3 id='parameters-10'>Parameters</h3>
+<table><thead>
+<tr>
+<th>Required</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>YES</td>
+<td>APIKey</td>
+<td>The mrrchant account API key</td>
+</tr>
+</tbody></table>
+<h2 id='get-totalsales'>GET /totalsales</h2>
+<blockquote>
+<p>Get total sales information for the merchant account:</p>
+</blockquote>
+<pre class="highlight javascript"><code><span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">await</span> <span class="nx">axios</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span>
+  <span class="s1">'https://api.gateway.cash/totalsales'</span><span class="p">,</span>
+  <span class="p">{</span>
+    <span class="na">params</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">APIKey</span><span class="p">:</span> <span class="s1">'YOUR_API_KEY'</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">)</span>
+</code></pre>
+<blockquote>
+<p>A successful response will look like this:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"success"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"totalsales"</span><span class="p">:</span><span class="w"> </span><span class="mi">133706969</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>This endpoint returns the total sales for the merchant account.</p>
+<h3 id='parameters-11'>Parameters</h3>
+<table><thead>
+<tr>
+<th>Required</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>YES</td>
+<td>APIKey</td>
+<td>The mrrchant account API key</td>
+</tr>
+</tbody></table>
+
+<aside class="notice">
+Total sales are returned in units of satoshi.
+</aside>
+<h2 id='get-newapikey'>GET /newapikey</h2>
+<blockquote>
+<p>Generate a new API key for the merchant account:</p>
+</blockquote>
+<pre class="highlight javascript"><code><span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">await</span> <span class="nx">axios</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span>
+  <span class="s1">'https://api.gateway.cash/newapikey'</span><span class="p">,</span>
+  <span class="p">{</span>
+    <span class="na">params</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">APIKey</span><span class="p">:</span> <span class="s1">'YOUR_API_KEY'</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">)</span>
+</code></pre>
+<blockquote>
+<p>A successful response will look like this:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"success"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"newAPIKey"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NEW_API_KEY"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>This endpoint will generate a new API key for your account, invalidating the
+old API key.</p>
+<h3 id='parameters-12'>Parameters</h3>
+<table><thead>
+<tr>
+<th>Required</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>YES</td>
+<td>APIKey</td>
+<td>The mrrchant account API key</td>
+</tr>
+</tbody></table>
+
+<aside class="notice">
+When you change your API key, your old key immediately becomes invalid. You must
+use your new API key for subsequent requests.
+</aside>
+<h1 id='callback-urls'>Callback URLs</h1>
+<p>Merchants can leverage callback URLs to get notified when a payment reaches
+their payout address. While callback URLs can be handy, there are a few things
+you need to keep in mind when building your applications.</p>
+<h2 id='don-39-t-trust-verify'>Don&#39;t Trust. Verify.</h2>
+<blockquote>
+<p>Callbacks will be sent as POST requests to the URL provided by the customer
+when they requested the invoice. The data contained in a legitimate callback
+will look like this:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"transferTXID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"VALIDATE_THE_TRANSFER_TXID_BEFORE_SHIPPING_ORDERS"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"paymentAddress"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GATEWAY_INVOICE_PAYMENT_ADDRESS"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"paymentTXID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CUSTOMER_PAYMENT_TXID"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>When you create a payment button and publish it on the internet (on your
+website, a check-out page, a mobile app or a point-of-sale system), your
+callback URL becomes public. This means that any malicious customer can see
+your callback URL and make illegitimate callbacks.</p>
+
+<p>To solve this rather large problem, Gateway will always and only send a
+callback containing the Transaction Identifier (TXID) of a transaction which
+transfers funds directly to your merchant account payout address.</p>
+
+<p>This TXID will always be in a field called <code>&quot;transferTXID&quot;</code>. However, since
+callback URLs are public, it is not enough simply to verify the field exists.
+Merchants MUST, I repeat, <b>MUST VERIFY that the <code>transferTXID</code> field points at a Bitcoin Cash transaction transferring AN ACCEPTABLE payment amount to AN ADDRESS CONTROLLED BY THE MERCHANT.</b></p>
+
+<p>Failure to perfom this validation <b>will lead to hackers defrauding you</b>.</p>
+<h2 id='parameters-13'>Parameters</h2>
+<p>In addition to the above, callbacks contain several pieces of information.</p>
+
+<table><thead>
+<tr>
+<th>Required</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>YES</td>
+<td><code>transferTXID</code></td>
+<td>A TXID moving an appropriate amount of funds to a merchant address (MUST BE VALIDATED BY MERCHANT!!!)</td>
+</tr>
+<tr>
+<td>NO</td>
+<td>paymentAddress</td>
+<td>The Gateway payment address used by the customer to pay the invoice</td>
+</tr>
+<tr>
+<td>NO</td>
+<td>paymentTXID</td>
+<td>The TXID of a transaction moving funds from the customer&#39;s address to the Gateway invoice address</td>
+</tr>
+</tbody></table>
+
+<aside class="warning">
+The "paymentTXID" was provided by the customer and so may not be valid. It is
+provided for record keeping and the customer's convenience only.
+</aside>
 
       </div>
       <div class="dark-box">
