@@ -1,23 +1,9 @@
 import React, { Component } from 'react'
 import Button from '@material-ui/core/Button'
-import { Link, navigate } from '@reach/router'
-import faviconImage from './../res/favicon.svg'
-require('dotenv').config()
+import { navigate } from '@reach/router'
+import logo from './../res/logo.svg'
 
 class StartPage extends Component {
-  constructor(props) {
-    super(props)
-    var xhr = new XMLHttpRequest()
-    xhr.open('GET', process.env.REACT_APP_GATEWAY_BACKEND + '/loggedin')
-    xhr.onload = () => {
-      if (xhr.readyState === 4) {
-        if (xhr.responseText.toString().trim() === 'true') {
-          navigate('createbutton')
-        }
-      }
-    }
-    xhr.send()
-  }
 
   render() {
     return (
@@ -25,14 +11,19 @@ class StartPage extends Component {
         <img
           className="logoImage"
           alt="Gateway Logo"
-          src={faviconImage}
+          src={logo}
         />
-        <h1 className="mainHeading">Service Temporarily Unavailable (under construction)</h1>
-        <Link to="/identification">
-          <Button variant="contained" color="primary" size="large">
-            GET STARTED
-          </Button>
-        </Link>
+        <h1 className="mainHeading">
+          Service Temporarily Unavailable (under construction)
+        </h1>
+        <Button
+          variant="contained"
+          color="primary"
+          size="large"
+          onClick={navigate('identification')}
+        >
+          GET STARTED
+        </Button>
         <br />
         <br />
         <Button
