@@ -2,7 +2,7 @@
 title: PayButton Reference
 
 language_tabs: # must be one of https://git.io/vQNgJ
-  - html
+  - HTML
 
 toc_footers:
   - <span>Copyright &copy 2018 Gateway</span>
