@@ -6,7 +6,7 @@ export default ({ page }) => (
   <div>
     <center>
       <h1>{page}</h1>
-      <Link to="/createbutton">
+      <Link to="/portal/create">
         <Button
           variant={page === 'Create a Button' && 'contained'}
           color="primary"
@@ -14,7 +14,7 @@ export default ({ page }) => (
           Create Button
         </Button>
       </Link>
-      <Link to="/payments">
+      <Link to="/portal/payments">
         <Button
           variant={page === 'View Payments' && 'contained'}
           color="primary"
@@ -22,7 +22,7 @@ export default ({ page }) => (
           View Payments
         </Button>
       </Link>
-      <Link to="/settings">
+      <Link to="/portal/settings">
         <Button
           variant={page === 'Settings' && 'contained'}
           color="primary"
