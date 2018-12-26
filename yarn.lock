@@ -877,11 +877,6 @@
   resolved "https://registry.yarnpkg.com/@csstools/convert-colors/-/convert-colors-1.4.0.tgz#ad495dc41b12e75d588c6db8b9834f08fa131eb7"
   integrity sha512-5a6wqoJV/xEdbRNKVo6I4hO3VjyDq//8q2f9I6PBAvMesJHFauXDorcNCsr9RzvsZnaWi5NYCcfyqP1QeFHFbw==
 
-"@gatewaycash/paybutton@^0.1.0":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@gatewaycash/paybutton/-/paybutton-0.1.1.tgz#b3f3416b61f79d6a45d824be31119b79cb6e04a4"
-  integrity sha512-BXOXMw/HXMCMg2dcSbhElPyUVyRxOhMIOST9y2IGnV6ZpKmNlzFVpiA1FVe1UmnyLYLnTMluJEDdEC2Yz/h6IQ==
-
 "@material-ui/core@^3.5.1":
   version "3.6.2"
   resolved "https://registry.yarnpkg.com/@material-ui/core/-/core-3.6.2.tgz#b1e300ebd717909ffc4c7fd456f48e568156091a"
