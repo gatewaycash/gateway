@@ -31,7 +31,7 @@
     "site-dev": "yarn workspace @gatewaycash/website start",
     "site-setup": "yarn workspace @gatewaycash/website setup",
     "build": "yarn paybutton-build && yarn inject-build && yarn site-build && yarn api-docs-build && yarn paybutton-docs-build",
-    "dev": "concurrently \"yarn site-dev\" \"yarn api-dev\" \"yarn paybutton-dev\" \"yarn inject-dev\" \"yarn paybutton-docs-build\"",
+    "dev": "concurrently \"yarn site-dev\" \"yarn api-dev\" \"yarn paybutton-dev\" \"yarn inject-dev\" \"yarn paybutton-docs-build && parn api-docs-build\"",
     "setup": "yarn api-docs-build && yarn paybutton-docs-build && yarn api-setup",
     "cli": "node modules/utils/APIInterface.js"
   },

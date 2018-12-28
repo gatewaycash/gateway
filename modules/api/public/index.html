@@ -201,7 +201,7 @@
       <script src="javascripts/all.js"></script>
   </head>
 
-  <body class="index" data-languages="[&quot;javascript&quot;]">
+  <body class="index" data-languages="[&quot;JavaScript&quot;]">
     <a href="#" id="nav-button">
       <span>
         NAV
@@ -211,7 +211,7 @@
     <div class="toc-wrapper">
       <img src="images/logo.png" class="logo" alt="Logo" />
         <div class="lang-selector">
-              <a href="#" data-language-name="javascript">javascript</a>
+              <a href="#" data-language-name="JavaScript">JavaScript</a>
         </div>
         <div class="search">
           <input type="text" class="search" id="input-search" placeholder="Search">
@@ -229,6 +229,17 @@
                   </li>
                   <li>
                     <a href="#api-keys" class="toc-h2 toc-link" data-title="API Keys">API Keys</a>
+                  </li>
+              </ul>
+          </li>
+          <li>
+            <a href="#payment-processing" class="toc-h1 toc-link" data-title="Payment Processing">Payment Processing</a>
+              <ul class="toc-list-h2">
+                  <li>
+                    <a href="#broken-payments" class="toc-h2 toc-link" data-title="Broken Payments">Broken Payments</a>
+                  </li>
+                  <li>
+                    <a href="#extended-public-keys-xpub" class="toc-h2 toc-link" data-title="Extended Public Keys (XPUB)">Extended Public Keys (XPUB)</a>
                   </li>
               </ul>
           </li>
@@ -309,6 +320,12 @@ understand something, glance over and you&#39;ll find some handy examples.</p>
 
 <p>Welcome to the Gateway.cash API! You can use our API to create and manage
 merchant accounts, make and receive Bitcoin Cash payments, keep track of invoices and more!</p>
+
+<aside class="notice">
+This documentation is for the Gateway.cash back-end server API. If you are only
+trying to use the Gateway payment button, you may be looking for the
+[Gateway Payment Button Documentation](https://gateway.cash/docs).
+</aside>
 <h2 id='overview'>Overview</h2>
 <blockquote>
 <p>All code for these demonstrations is written in JavaScript (specifically)
@@ -358,6 +375,35 @@ merchant accounts, you will need to generate an API key.</p>
 <p>Merchant accounts can be generated using the <code>POST /register</code> endpoint. The API
 key for your account can be retrieved with <code>GET /login</code>, and a new key can be
 generated with <code>GET /newapikey</code>.</p>
+<h1 id='payment-processing'>Payment Processing</h1>
+<p>All payments received by the Gateway service are forwarded to the merchant&#39;s
+payout address as soon as we receive them. Generally, this will happen within 60
+seconds of the payment being sent.</p>
+
+<aside class="notice">
+The Gateway payment processing daemon now runs every 30 seconds! This means a
+faster merchant and customer experience as well as lower latency for Gateway
+payments.
+</aside>
+<h2 id='broken-payments'>Broken Payments</h2>
+<p>When a customer pays an invoice but neglects to call the <code>POST /paid</code> endpoint
+and mark it as paid, the payment will still eventually arrive at the merchant&#39;s
+address.</p>
+
+<p>The Gateway Broken Payments Service runs every 12 hours and checks the balances
+of all addresses over which Gateway has custody. Any invoices who&#39;s payment
+addresses have a balance are immediately moved to the pending payments queue
+at which point the payment is processed as normal.</p>
+
+<aside class="notice">
+You may notice payments with TXIDs such as "broken-payment-txid-unknown-xxxxx".
+These payments were made to invoice payment addresses without the customer
+</aside>
+<h2 id='extended-public-keys-xpub'>Extended Public Keys (XPUB)</h2>
+<p>There are plans to support the use of merchant extended public keys for invoice
+address derivation in the future. When this is implemented, payments are never
+held in the custody of Gateway and Gateway only provides invoice tracking for
+these orders.</p>
 <h1 id='post-endpoints'>POST Endpoints</h1>
 <p>POST endpoints generally create or update information, as opposed to GET which
 is primarily for retrieving information from the server.</p>
@@ -858,7 +904,7 @@ for debugging your payment invoices.
 </thead><tbody>
 <tr>
 <td>YES</td>
-<td>APIKey</td>
+<td><code>APIKey</code></td>
 <td>The merchant account API key</td>
 </tr>
 </tbody></table>
@@ -894,7 +940,7 @@ for debugging your payment invoices.
 </thead><tbody>
 <tr>
 <td>YES</td>
-<td>APIKey</td>
+<td><code>APIKey</code></td>
 <td>The merchant account API key</td>
 </tr>
 </tbody></table>
@@ -930,7 +976,7 @@ for debugging your payment invoices.
 </thead><tbody>
 <tr>
 <td>YES</td>
-<td>APIKey</td>
+<td><code>APIKey</code></td>
 <td>The merchant account API key</td>
 </tr>
 </tbody></table>
@@ -966,7 +1012,7 @@ for debugging your payment invoices.
 </thead><tbody>
 <tr>
 <td>YES</td>
-<td>APIKey</td>
+<td><code>APIKey</code></td>
 <td>The merchant account API key</td>
 </tr>
 </tbody></table>
@@ -1007,7 +1053,7 @@ old API key.</p>
 </thead><tbody>
 <tr>
 <td>YES</td>
-<td>APIKey</td>
+<td><code>APIKey</code></td>
 <td>The old merchant account API key</td>
 </tr>
 </tbody></table>
@@ -1063,12 +1109,12 @@ Merchants MUST, I repeat, <b>MUST VERIFY that the <code>transferTXID</code> fiel
 </tr>
 <tr>
 <td>NO</td>
-<td>paymentAddress</td>
+<td><code>paymentAddress</code></td>
 <td>The Gateway payment address used by the customer to pay the invoice</td>
 </tr>
 <tr>
 <td>NO</td>
-<td>paymentTXID</td>
+<td><code>paymentTXID</code></td>
 <td>The TXID of a transaction moving funds from the customer&#39;s address to the Gateway invoice address</td>
 </tr>
 </tbody></table>
@@ -1078,10 +1124,16 @@ The "paymentTXID" was provided by the customer and so may not be valid. It is
 provided for record keeping and the customer's convenience only.
 </aside>
 
+<aside class="notice">
+The amount of information contained in callbacks is intentionally kept sparse.
+In particular, the amount being paid is never sent so that the merchant
+validates this information by querying the transferTXID from the network.
+</aside>
+
       </div>
       <div class="dark-box">
           <div class="lang-selector">
-                <a href="#" data-language-name="javascript">javascript</a>
+                <a href="#" data-language-name="JavaScript">JavaScript</a>
           </div>
       </div>
     </div>

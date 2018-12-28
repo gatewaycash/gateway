@@ -22,6 +22,12 @@ search: true
 Welcome to the Gateway.cash API! You can use our API to create and manage
 merchant accounts, make and receive Bitcoin Cash payments, keep track of invoices and more!
 
+<aside class="notice">
+This documentation is for the Gateway.cash back-end server API. If you are only
+trying to use the Gateway payment button, you may be looking for the
+[Gateway Payment Button Documentation](https://gateway.cash/docs).
+</aside>
+
 ## Overview
 
 > All code for these demonstrations is written in JavaScript (specifically)
@@ -73,6 +79,41 @@ merchant accounts, you will need to generate an API key.
 Merchant accounts can be generated using the `POST /register` endpoint. The API
 key for your account can be retrieved with `GET /login`, and a new key can be
 generated with `GET /newapikey`.
+
+# Payment Processing
+
+All payments received by the Gateway service are forwarded to the merchant's
+payout address as soon as we receive them. Generally, this will happen within 60
+seconds of the payment being sent.
+
+<aside class="notice">
+The Gateway payment processing daemon now runs every 30 seconds! This means a
+faster merchant and customer experience as well as lower latency for Gateway
+payments.
+</aside>
+
+## Broken Payments
+
+When a customer pays an invoice but neglects to call the `POST /paid` endpoint
+and mark it as paid, the payment will still eventually arrive at the merchant's
+address.
+
+The Gateway Broken Payments Service runs every 12 hours and checks the balances
+of all addresses over which Gateway has custody. Any invoices who's payment
+addresses have a balance are immediately moved to the pending payments queue
+at which point the payment is processed as normal.
+
+<aside class="notice">
+You may notice payments with TXIDs such as "broken-payment-txid-unknown-xxxxx".
+These payments were made to invoice payment addresses without the customer
+</aside>
+
+## Extended Public Keys (XPUB)
+
+There are plans to support the use of merchant extended public keys for invoice
+address derivation in the future. When this is implemented, payments are never
+held in the custody of Gateway and Gateway only provides invoice tracking for
+these orders.
 
 # POST Endpoints
 
@@ -505,7 +546,7 @@ This endpoint returns the current merchant account payout address.
 
 Required | Name | Description
 ---------|------|------------
-YES | APIKey | The merchant account API key
+YES | `APIKey` | The merchant account API key
 
 ## GET /merchantid
 
@@ -537,7 +578,7 @@ This endpoint returns the merchant ID.
 
 Required | Name | Description
 ---------|------|------------
-YES | APIKey | The merchant account API key
+YES | `APIKey` | The merchant account API key
 
 ## GET /username
 
@@ -569,7 +610,7 @@ This endpoint returns the current merchant account username.
 
 Required | Name | Description
 ---------|------|------------
-YES | APIKey | The merchant account API key
+YES | `APIKey` | The merchant account API key
 
 ## GET /totalsales
 
@@ -601,7 +642,7 @@ This endpoint returns the total sales for the merchant account.
 
 Required | Name | Description
 ---------|------|------------
-YES | APIKey | The merchant account API key
+YES | `APIKey` | The merchant account API key
 
 <aside class="notice">
 Total sales are returned in units of satoshi.
@@ -638,7 +679,7 @@ old API key.
 
 Required | Name | Description
 ---------|------|------------
-YES | APIKey | The old merchant account API key
+YES | `APIKey` | The old merchant account API key
 
 <aside class="notice">
 When you change your API key, your old key immediately becomes invalid. You must
@@ -687,10 +728,16 @@ In addition to the above, callbacks contain several pieces of information.
 Required | Name | Description
 ---------|------|------------
 YES | `transferTXID` | A TXID moving an appropriate amount of funds to a merchant address (MUST BE VALIDATED BY MERCHANT!!!)
-NO | paymentAddress | The Gateway payment address used by the customer to pay the invoice
-NO | paymentTXID | The TXID of a transaction moving funds from the customer's address to the Gateway invoice address
+NO | `paymentAddress` | The Gateway payment address used by the customer to pay the invoice
+NO | `paymentTXID` | The TXID of a transaction moving funds from the customer's address to the Gateway invoice address
 
 <aside class="warning">
 The "paymentTXID" was provided by the customer and so may not be valid. It is
 provided for record keeping and the customer's convenience only.
+</aside>
+
+<aside class="notice">
+The amount of information contained in callbacks is intentionally kept sparse.
+In particular, the amount being paid is never sent so that the merchant
+validates this information by querying the transferTXID from the network.
 </aside>
