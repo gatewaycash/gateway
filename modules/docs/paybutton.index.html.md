@@ -2,8 +2,8 @@
 title: PayButton Reference
 
 language_tabs: # must be one of https://git.io/vQNgJ
-  - HTML
-  - JSON
+  - html: HTML
+  - javascript: JavaScript
 
 toc_footers:
   - <span>Copyright &copy 2018 Gateway</span>
@@ -23,8 +23,8 @@ search: true
 
 The Gateway.cash payment button is far more than its name suggests. it provides a powerful and seamless way to integrate highly advanced payment processing features into any number of websites, mobile apps, point-of-sale systems and even IoT devices. The use-cases and possibilities for the button are almost endless. For example, you can use the button below to contribute to the Gateway project:
 
-<center>
 <script src="/pay.js"></script>
+<center>
 <div
   class="payButton"
   merchantID="ef0fcea08bfa9cb0"
@@ -58,27 +58,33 @@ You may put as many payment buttons on a page as you wish.
 
 ## Using the ReactJS Element
 
+> Use the React component like so:
+
+```html
+<PayButton
+  merchantID="MERCHANT_ID"
+  amount="4.99"
+  currency="USD"
+  buttonText="Buy Now"
+/>
+```
+
 If your project utilizes the NodeJS/ReactJS ecosystem, you may install and
 import the `@gatewaycash/paybutton` package into your project from the NPM
 package registry. Once installed, instead of using
-`<div class="payButton"></div>`, replace it with `<PayButton></PayButton>` in
-ypur project.
+`<div class="payButton"></div>`, replace it with `<PayButton>` in ypur project.
 
 ## PayButton.render()
 
-```html
-<script>
-// ...
+```js
 window.PayButton.render(
   document.getElementById('example'),
   {
-    "merchantID": "MERCHANT_ID",
-    "amount": "4.99",
-    "currency": "USD",
+    merchantID: "MERCHANT_ID",
+    amount: "4.99",
+    currency: "USD"
   }
 )
-// ...
-</script>
 ```
 
 When you include the button injector script onto a page, it creates a function
@@ -103,8 +109,8 @@ of button properties. The provided examples are formatted for use with the
 Gateway will make this easier in the future. This is being worked on, but until
 it is complete you may simply download the file at `https://gateway.cash/pay.js`
 and host it yourself, or clone our
-[https://github.com/gatewaycash/gateway](GitHub repo) and compile it yourself
-from source.
+[GitHub repo](https://github.com/gatewaycash/gateway) and compile it from
+source.
 
 # Basic Usage
 
@@ -117,35 +123,33 @@ from source.
 ```html
 <div
   class="payButton"
-  merchantID="invalid0invalid1"
+  merchantID="invalid0invalid"
 ></div>
 ```
 
-```json
+```javascript
 {
-  "merchantID": "invalid0invalid1"
+  merchantID: "invalid0invalid1"
 }
 ```
 
 As you create and test payment buttons, you may run across errors which can
-prevent the buttons from working properly.
+prevent the buttons from working properly. In some cases, these errors are detectable immediately when the page loads (`load-time`). Other times, an error may not be detected until after the button is clicked (`invoice creation time`).
 
-In some cases, these errors are detectable immediately when the page loads. Other times, an error may not be detected until after the button is clicked.
+This is an example of what happens when a `load-time` error occurs:
 
-This is an example of what happens when a load-time error occurs:
-
-<center>
 <div class="payButton" foo="bar"></div>
-</center>
 
-This is an example of what happens when an error occurs at invoice creation
-time:
+This is an example of what happens when an error occurs at `invoice creation
+time`:
 
-<center>
 <div class="payButton" merchantID="invalid0invalid1"></div>
-</center>
 
-# Parameters
+# Button Properties
+
+Button properties are passed as HTML attributes or React `props`. Properties
+control the behavior and functionality of your payment button, allowing a wide
+array of customization.
 
 ## buttonText
 
