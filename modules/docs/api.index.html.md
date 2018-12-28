@@ -1,9 +1,6 @@
 ---
 title: API Reference
 
-language_tabs: # must be one of https://git.io/vQNgJ
-  - JavaScript
-
 toc_footers:
   - <span>Copyright &copy 2018 Gateway</span>
   - <a href='https://github.com/lord/slate'>Documentation Powered by Slate</a>
@@ -25,7 +22,7 @@ merchant accounts, make and receive Bitcoin Cash payments, keep track of invoice
 <aside class="notice">
 This documentation is for the Gateway.cash back-end server API. If you are only
 trying to use the Gateway payment button, you may be looking for the
-[Gateway Payment Button Documentation](https://gateway.cash/docs).
+<a href="https://gateway.cash/docs">Gateway Payment Button Documentation</a>.
 </aside>
 
 ## Overview
@@ -232,7 +229,7 @@ Nope! You don't need an API key when using this endpoint.
 
 <aside class="warning">
 Merchants who leverage callback URLs must be careful and make sure to
-validate that payments they receive are legitimate. <b>CALLBACK URLS ARE PUBLIC!!!</b> When you receive a callback from Gateway, it will ALWAYS contain a property called `"transferTXID"` which is a Bitcoin Cash transaction moving funds to the merchant's address. <b>Merchants MUST verify that this transaction
+validate that payments they receive are legitimate. <b>CALLBACK URLS ARE PUBLIC!!!</b> When you receive a callback from Gateway, it will ALWAYS contain a property called "transferTXID" which is a Bitcoin Cash transaction moving funds to the merchant's address. <b>Merchants MUST verify that this transaction
 is valid and that an acceptable amount has been paid.</b>
 </aside>
 
@@ -273,10 +270,10 @@ Nope! You don't need an API key when using this endpoint.
 </aside>
 
 <aside class="notice">
-If an invoice is paid without calling the `POST /paid` endpoint, the payment
+If an invoice is paid without calling the POST /paid endpoint, the payment
 will still eventually be forwarded to the merchant via the Gateway broken
 payments service within 24 hours. However, applications should always send a
-`POST /paid` request whenever possible so the merchant can receive the payment
+POST /paid request whenever possible so the merchant can receive the payment
 instantaneously.
 </aside>
 

@@ -25,7 +25,7 @@
     "inject-dev": "yarn workspace @gatewaycash/inject dev",
     "paybutton-build": "yarn workspace @gatewaycash/paybutton build",
     "paybutton-dev": "yarn workspace @gatewaycash/paybutton dev",
-    "paybutton-docs-build": "cd modules/docs && cp -f paybutton.index.html.md source/index.html.md && bundle install && bundle exec middleman build --clean && mkdir -p ../website/build/docs/ && cp -r build/* ../website/build/docs/ && rm -f source/index.html.md",
+    "paybutton-docs-build": "cd modules/docs && cp -f paybutton.index.html.md source/index.html.md && bundle install && bundle exec middleman build --clean && mkdir -p ../website/build/docs/ && cp -r build/* ../website/build/docs/ && mkdir -p ../website/public/docs && cp -r build/* ../website/public/docs/ && rm -f source/index.html.md",
     "paybutton-setup": "yarn workspace @gatewaycash/paybotton setup",
     "site-build": "yarn workspace @gatewaycash/website build",
     "site-dev": "yarn workspace @gatewaycash/website start",

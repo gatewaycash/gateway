@@ -201,7 +201,7 @@
       <script src="javascripts/all.js"></script>
   </head>
 
-  <body class="index" data-languages="[&quot;JavaScript&quot;]">
+  <body class="index" data-languages="[]">
     <a href="#" id="nav-button">
       <span>
         NAV
@@ -210,9 +210,6 @@
     </a>
     <div class="toc-wrapper">
       <img src="images/logo.png" class="logo" alt="Logo" />
-        <div class="lang-selector">
-              <a href="#" data-language-name="JavaScript">JavaScript</a>
-        </div>
         <div class="search">
           <input type="text" class="search" id="input-search" placeholder="Search">
         </div>
@@ -324,7 +321,7 @@ merchant accounts, make and receive Bitcoin Cash payments, keep track of invoice
 <aside class="notice">
 This documentation is for the Gateway.cash back-end server API. If you are only
 trying to use the Gateway payment button, you may be looking for the
-[Gateway Payment Button Documentation](https://gateway.cash/docs).
+<a href="https://gateway.cash/docs">Gateway Payment Button Documentation</a>.
 </aside>
 <h2 id='overview'>Overview</h2>
 <blockquote>
@@ -542,7 +539,7 @@ Nope! You don't need an API key when using this endpoint.
 
 <aside class="warning">
 Merchants who leverage callback URLs must be careful and make sure to
-validate that payments they receive are legitimate. <b>CALLBACK URLS ARE PUBLIC!!!</b> When you receive a callback from Gateway, it will ALWAYS contain a property called `"transferTXID"` which is a Bitcoin Cash transaction moving funds to the merchant's address. <b>Merchants MUST verify that this transaction
+validate that payments they receive are legitimate. <b>CALLBACK URLS ARE PUBLIC!!!</b> When you receive a callback from Gateway, it will ALWAYS contain a property called "transferTXID" which is a Bitcoin Cash transaction moving funds to the merchant's address. <b>Merchants MUST verify that this transaction
 is valid and that an acceptable amount has been paid.</b>
 </aside>
 <h2 id='post-paid'>POST /paid</h2>
@@ -591,10 +588,10 @@ Nope! You don't need an API key when using this endpoint.
 </aside>
 
 <aside class="notice">
-If an invoice is paid without calling the `POST /paid` endpoint, the payment
+If an invoice is paid without calling the POST /paid endpoint, the payment
 will still eventually be forwarded to the merchant via the Gateway broken
 payments service within 24 hours. However, applications should always send a
-`POST /paid` request whenever possible so the merchant can receive the payment
+POST /paid request whenever possible so the merchant can receive the payment
 instantaneously.
 </aside>
 <h2 id='post-address'>POST /address</h2>
@@ -1132,9 +1129,6 @@ validates this information by querying the transferTXID from the network.
 
       </div>
       <div class="dark-box">
-          <div class="lang-selector">
-                <a href="#" data-language-name="JavaScript">JavaScript</a>
-          </div>
       </div>
     </div>
   </body>
