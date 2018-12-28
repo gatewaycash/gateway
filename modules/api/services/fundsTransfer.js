@@ -184,11 +184,9 @@ let transferFunds = async (payment) => {
   // build the callback request
   let callbackRequest = {
     callbackURL:     callbackURL,
-    amountPaid:      totalTransferred,
     invoiceAddress:  paymentAddress,
     paymentTXID:     paymentTXID,
     merchantAddress: merchantAddress,
-    merchantID:      merchantID,
     paymentID:       paymentID
   }
 

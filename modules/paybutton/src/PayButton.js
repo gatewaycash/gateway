@@ -22,6 +22,9 @@ let showError = (error) => {
     var errorText = "An error might be causing problems with "
     errorText += 'your payment. For help, please contact the '
     errorText += 'merchant, or send an email to support@gateway.cash.\n\n'
+    errorText += 'If you are the merchant or a developer, you should reference '
+    errorText += 'the Gateway Payment Button documentation for help:\n\n'
+    errorText += 'https://gateway.cash/docs\n\n'
     errorText += 'The error was:\n\n' + error
     console.error('GATEWAY: Error:\n\n', errorText)
     return errorText
