@@ -19,7 +19,7 @@ import io from 'socket.io-client'
  */
 let showError = (error) => {
   if (typeof error !== 'object') {
-    var errorText = "An error might be causing problems with "
+    let errorText = "An error might be causing problems with "
     errorText += 'your payment. For help, please contact the '
     errorText += 'merchant, or send an email to support@gateway.cash.\n\n'
     errorText += 'If you are the merchant or a developer, you should reference '
@@ -29,9 +29,12 @@ let showError = (error) => {
     console.error('GATEWAY: Error:\n\n', errorText)
     return errorText
   } else {
-    var errorText = "We're sorry, but an error is preventing you from "
-    errorText += 'making your payment. For help, please contact the '
+    let errorText = "An error might be causing problems with "
+    errorText += 'your payment. For help, please contact the '
     errorText += 'merchant, or send an email to support@gateway.cash.\n\n'
+    errorText += 'If you are the merchant or a developer, you should reference '
+    errorText += 'the Gateway Payment Button documentation for help:\n\n'
+    errorText += 'https://gateway.cash/docs\n\n'
     errorText += 'The error was:\n\n' + error.error + '\n\n' + error.description
     console.error('GATEWAY: Error:\n\n', errorText)
     return errorText
@@ -176,6 +179,10 @@ let parseProps = (data) => {
     data.enablePaymentAudio :
     true
 
+  let elementID = data.elementID ?
+    data.elementID :
+    'pay-' + Math.floor(Math.random() * 100000)
+
   // return the parsed data
   let parsedData = {
     buttonText: buttonText,
@@ -191,7 +198,8 @@ let parseProps = (data) => {
     paymentCompleteAudio: paymentCompleteAudio,
     paymentCompleteCallback: paymentCompleteCallback,
     closeWhenComplete: closeWhenComplete,
-    enablePaymentAudio: enablePaymentAudio
+    enablePaymentAudio: enablePaymentAudio,
+    elementID: elementID
   }
   return parsedData
 }
@@ -248,6 +256,7 @@ export default (props) => {
     new Audio(paymentCompleteAudio)
   )
   let [sock, setSock] = React.useState(false)
+  let [elementID, setElementID] = React.useState(parsedData.elementID)
 
   // When the payment button is clicked, generate a new invoice
   let handleClick = async () => {
@@ -422,6 +431,7 @@ export default (props) => {
         display: 'inline-block',
         padding: '0.25em'
       }}
+      id={elementID}
     >
       <Button
         onClick={handleClick}
