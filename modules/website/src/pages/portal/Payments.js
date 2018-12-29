@@ -1,7 +1,7 @@
-import React, { Component } from 'react'
+  import React, { Component } from 'react'
 import Button from '@material-ui/core/Button'
 import Paper from '@material-ui/core/Paper'
-import NavigationMenu from 'NavigationMenu'
+import NavigationMenu from './NavigationMenu'
 require('dotenv').config()
 
 class PaymentsPage extends Component {

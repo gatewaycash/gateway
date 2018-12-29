@@ -1,25 +1,16 @@
 import React from 'react'
 import { Router } from '@reach/router'
-import * as pages from 'pages'
-
-let NotFound = () => (
-  <div>
-    <center>
-      <h1>Page not found</h1>
-      <p>
-        Check the URL and try again. If you believe this is an error, please
-        send an email to support@gateway.cash for assistance. Please include
-        your current web address in the email.
-      </p>
-    </center>
-  </div>
-)
+import { Welcome } from './pages'
+import { CreateButton, Settings, Payments, Portal } from './pages/portal'
+import NotFound from './NotFound'
 
 export default () => (
   <Router>
-    <pages.Start path="/" />
-    <pages.Identification path="/identification" />
-    <pages.Login path="/login" />
+    <Welcome key="Welcome" path="/" />
+    <Portal key="Portal" path="portal" />
+    <CreateButton key="CreateButton" path="portal/create" />
+    <Settings key="Settings" path="portal/settings" />
+    <Payments key="Payments" path="portal/payments" />
     <NotFound default />
   </Router>
 )
