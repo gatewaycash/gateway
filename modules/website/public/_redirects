@@ -1,1 +1,10 @@
-/*    /index.html   200
+# Redirect default Netlify subdomain to primary domain
+https://gatewaycash.netlify.com/* https://gateway.cash/:splat 301!
+
+# Proxy legacy /api/ requests to https://api.gateway.cash
+/api/*  https://api.gateway.cash/:splat  200
+
+/docs/* /docs/index.html:splat 200
+
+# Finally, redirect the portal to index.html for processing with React
+/portal/*    /index.html   200

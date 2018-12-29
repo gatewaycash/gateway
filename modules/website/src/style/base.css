@@ -10,6 +10,17 @@ body {
   -o-background-size: cover;
   background-size: cover;
 }
+
 html {
   height: 100%
+}
+
+a {
+	color: blue;
+	text-decoration: none;
+}
+
+a:visited {
+	color: blue;
+	text-decoration: none;
 }

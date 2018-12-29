@@ -7,7 +7,9 @@
     <script src="pay.js"></script>
     <script>
       window.localCallback = function () {
-        alert('Payment complete! TXID: ' + window.gatewayPaymentTXID)
+        alert('Thank you for your contribution. Your transaction ID:\n\n'
+          + window.gatewayPaymentTXID
+        )
       }
     </script>
     <title>Gateway</title>
@@ -91,18 +93,18 @@
       paymentCompleteAudio="audio/ca-ching.wav"
       closeWhenComplete="true"
       paymentCompleteCallback="localCallback()"
+      buttonText="Donate to Gateway"
+      dialogTitle="Contribute to Gateway"
     ></div>
 
     <h2>
-      Payment button for a Gateway merchant ID, for 5 U.S. Dollars, with
+      Payment button for a Gateway merchant ID, with
       invoice tracking and a callback URL, using a local Gateway instance
       server located at http://127.0.0.1:8080
     </h2>
     <div
       class="payButton"
       merchantID="deadbeef20181111"
-      amount="5.00"
-      currency="USD"
       paymentID="32-2145684565-166545688-09"
       callbackURL="https://example.com/callback.php"
       gatewayServer="http://127.0.0.1:8080"

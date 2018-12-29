@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "nodemon --ignore sessions webServicesBackend.js",
+    "dev": "nodemon --ignore public webServicesBackend.js",
     "production": "pm2 start webServicesBackend.js",
     "setup": "node setupEnvironment.js"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "bitcore-lib-cash": "^0.19.0",
     "dotenv": "^6.1.0",
     "express-session": "^1.15.6",

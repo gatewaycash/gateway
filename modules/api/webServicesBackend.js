@@ -8,21 +8,21 @@ const bodyParser = require('body-parser')
 require('dotenv').config()
 
 // include all endpoint modules
-const registerEndpoint = require('./endpoints/register.js')
-const loginEndpoint = require('./endpoints/login.js')
-const getPaymentsEndpoint = require('./endpoints/getpayments.js')
-const getUnpaidEndpoint = require('./endpoints/getunpaid.js')
-const setUsernameEndpoint = require('./endpoints/setusername.js')
-const getUsernameEndpoint = require('./endpoints/getusername.js')
-const getMerchantIDEndpoint = require('./endpoints/getmerchantid.js')
-const paidEndpoint = require('./endpoints/paid.js')
-const payEndpoint = require('./endpoints/pay.js')
-const newAPIKeyEndpoint = require('./endpoints/newapikey.js')
-const totalSalesEndpoint = require('./endpoints/gettotalsales.js')
+const registerEndpoint = require('./endpoints/POST/register')
+const loginEndpoint = require('./endpoints/GET/login')
+const getPaymentsEndpoint = require('./endpoints/GET/payments')
+const setUsernameEndpoint = require('./endpoints/POST/username')
+const getUsernameEndpoint = require('./endpoints/GET/username')
+const getMerchantIDEndpoint = require('./endpoints/GET/merchantid')
+const paidEndpoint = require('./endpoints/POST/paid')
+const payEndpoint = require('./endpoints/POST/pay')
+const newAPIKeyEndpoint = require('./endpoints/GET/newapikey')
+const totalSalesEndpoint = require('./endpoints/GET/totalsales')
+const getAddressEndpoint = require('./endpoints/GET/address')
 
 // include all service daemons
-const fundsTransferDaemon = require('./daemons/fundsTransfer.js')
-const brokenPaymentsDaemon = require('./daemons/brokenPayments.js')
+const fundsTransferService = require('./services/fundsTransfer')
+const brokenPaymentsService = require('./services/brokenPayments')
 
 // print startup message
 console.log('Starting Web Services Backend...')
@@ -53,23 +53,25 @@ app.listen(process.env.WEB_PORT, () => {
   console.log('Web services API listening on port', process.env.WEB_PORT)
 })
 
-// start the payment processing daemons
-// assign to variables to prevent garbage collection
-// TODO make this work
-//var ftd = new fundsTransferDaemon()
-//var bpd = new brokenPaymentsDaemon()
-
-// finally, utilize API endpoints for appropriate requests
+// utilize the API endpoints for appropriate requests
 // POST requests
 app.post('/register', registerEndpoint)
 app.post('/paid', paidEndpoint)
 app.post('/pay', payEndpoint)
-app.post('/setusername', setUsernameEndpoint)
+app.post('/username', setUsernameEndpoint)
 // GET requests
 app.get('/login', loginEndpoint)
-app.get('/getpayments', getPaymentsEndpoint)
-app.get('/getunpaid', getUnpaidEndpoint)
-app.get('/getusername', getUsernameEndpoint)
-app.get('/getmerchantid', getMerchantIDEndpoint)
+app.get('/payments', getPaymentsEndpoint)
+app.get('/username', getUsernameEndpoint)
+app.get('/merchantid', getMerchantIDEndpoint)
 app.get('/newapikey', newAPIKeyEndpoint)
-app.get('/gettotalsales', totalSalesEndpoint)
+app.get('/totalsales', totalSalesEndpoint)
+app.get('/address', getAddressEndpoint)
+
+// start the payment processing services
+
+// run the main processor every 30 seconds
+setInterval(fundsTransferService.run, 30000)
+
+// run the broken payments processor every 12 hours
+setInterval(brokenPaymentsService.run, 43200000)

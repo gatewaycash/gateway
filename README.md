@@ -26,6 +26,12 @@ After you've installed MySQL, create a blank database and a new user with full
 permissions over the database. Make sure your SQL database is running while you
 work.
 
+### Ruby and Bundler
+
+In order to build the documentation websites (yes, we have multiple), you will
+need to install Ruby and Bundler. Once you've installed Ruby, simply run
+`gem install bundler` before you build the project.
+
 ### NodeJS and Yarn
 
 Being a "pure JavaScript" project, Gateway development requires you to install
