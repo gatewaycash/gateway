@@ -1,9 +1,21 @@
 import React from 'react'
 import { Router } from '@reach/router'
-import { Welcome } from './pages'
-import { CreateButton, Settings, Payments, Portal } from './pages/portal'
-import NotFound from './NotFound'
 
+// import the top-level pages
+import {
+  Welcome,
+  NotFound
+} from './pages'
+
+// import the portal's pages
+import {
+  CreateButton,
+  Settings,
+  Payments,
+  Portal
+} from './pages/portal'
+
+// render the website
 export default () => (
   <Router>
     <Welcome key="Welcome" path="/" />

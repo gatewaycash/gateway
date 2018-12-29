@@ -4,7 +4,7 @@ import PayButton from './../paybutton/src/PayButton.js'
 
 // create a local .render() function
 window.PayButton = {}
-window.PayButton.render = function (element, props) {
+window.PayButton.render = function (elementID, props) {
   ReactDOM.render(
     <PayButton
       buttonText={props.buttonText}
@@ -19,8 +19,9 @@ window.PayButton.render = function (element, props) {
       paymentCompleteAudio={props.paymentCompleteAudio}
       paymentCompleteCallback={props.paymentCompleteCallback}
       closeWhenComplete={props.closeWhenComplete}
+      elementID={elementID}
     />,
-    element
+    document.getElementById(elementID)
   )
 }
 
@@ -46,7 +47,7 @@ window.onload = function() {
 
     // send all attributes to the render function
     window.PayButton.render(
-      document.getElementById(buttonID),
+      buttonID,
       {
         buttonText: button.getAttribute('buttonText'),
         dialogTitle: button.getAttribute('dialogTitle'),
@@ -60,6 +61,7 @@ window.onload = function() {
         paymentCompleteAudio: button.getAttribute('paymentCompleteAudio'),
         paymentCompleteCallback: button.getAttribute('paymentCompleteCallback'),
         closeWhenComplete: button.getAttribute('closeWhenComplete'),
+        elementID: buttonID
       }
     )
   }
