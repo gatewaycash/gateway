@@ -62,6 +62,7 @@ let transferFunds = async (payment) => {
   sql = 'select payoutAddress from users where merchantID = ? limit 1'
   result = await mysql.query(sql, [merchantID])
   let merchantAddress = result[0].payoutAddress
+  console.log('Merchant address:', merchantAddress)
 
   // get the full payment information
   sql = `select
@@ -80,6 +81,7 @@ let transferFunds = async (payment) => {
     callbackURL,
     paymentID
   } = result
+  console.log('Got payment key, length', paymentKey.length)
 
   // set up some more variables to keep a handle on things
   let paymentAddress = payment.address
@@ -91,7 +93,11 @@ let transferFunds = async (payment) => {
     BLOCK_EXPLORER_BASE + '/addr/' + paymentAddressLegacy + '/utxo'
   )
   paymentUTXOs = paymentUTXOs.data
-  console.log('Got UTXOs for', paymentAddress, '\n\n', paymentUTXOs)
+  console.log('Got', paymentUTXOs.length, 'payment UTXOs')
+  if (isNaN(paymentUTXOs.length) || paymentUTXOs.length <= 0) {
+    console.log('No UTXOs for payment')
+    return
+  }
 
   /*
     Create a BCH transaction spending the payment UTXOs to the merchant address

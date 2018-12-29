@@ -29,7 +29,7 @@ class SettingsPage extends Component {
   render() {
     return (
       <div className="container">
-        <NavigationMenu page="Settings" />
+        <NavigationMenu page="Your Account" />
         <div className="leftPanel">
           <Paper className="paper">
             <h2>Display Currency</h2>

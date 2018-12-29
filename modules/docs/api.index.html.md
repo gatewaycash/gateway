@@ -102,7 +102,8 @@ at which point the payment is processed as normal.
 
 <aside class="notice">
 You may notice payments with TXIDs such as "broken-payment-txid-unknown-xxxxx".
-These payments were made to invoice payment addresses without the customer
+These payments were made to invoice addresses without the customer's browser
+calling the POST /paid endpoint after paying.
 </aside>
 
 ## Extended Public Keys (XPUB)
