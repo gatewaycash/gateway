@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import NavigationMenu from 'NavigationMenu'
+import NavigationMenu from '../NavigationMenu'
 import PreviewButton from './PreviewButton'
 import CreateButtonForm from './CreateButtonForm'
 import PaymentIDInfo from './PaymentIDInfo'
