@@ -2,26 +2,36 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import PayButton from './../paybutton/src/PayButton.js'
 
-// create a local .render() function
+// create a local .render() function accessible from the window object
 window.PayButton = {}
 window.PayButton.render = function (elementID, props) {
+
+  // first, we clear anything that might be in the element
   ReactDOM.render(
-    <PayButton
-      buttonText={props.buttonText}
-      dialogTitle={props.dialogTitle}
-      amount={props.amount}
-      currency={props.currency}
-      merchantID={props.merchantID}
-      paymentID={props.paymentID}
-      callbackURL={props.callbackURL}
-      address={props.address}
-      gatewayServer={props.gatewayServer}
-      paymentCompleteAudio={props.paymentCompleteAudio}
-      paymentCompleteCallback={props.paymentCompleteCallback}
-      closeWhenComplete={props.closeWhenComplete}
-      elementID={elementID}
-    />,
-    document.getElementById(elementID)
+    <div id={elementID}>Loading...</div>,
+    document.getElementById(elementID),
+    function () {
+
+      // then, we render the actual PayButton
+      ReactDOM.render(
+        <PayButton
+          buttonText={props.buttonText}
+          dialogTitle={props.dialogTitle}
+          amount={props.amount}
+          currency={props.currency}
+          merchantID={props.merchantID}
+          paymentID={props.paymentID}
+          callbackURL={props.callbackURL}
+          address={props.address}
+          gatewayServer={props.gatewayServer}
+          paymentCompleteAudio={props.paymentCompleteAudio}
+          paymentCompleteCallback={props.paymentCompleteCallback}
+          closeWhenComplete={props.closeWhenComplete}
+          elementID={elementID}
+        />,
+        document.getElementById(elementID)
+      )
+    }
   )
 }
 
