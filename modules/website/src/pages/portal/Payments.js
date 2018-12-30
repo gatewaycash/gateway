@@ -80,7 +80,7 @@ class PaymentsPage extends Component {
   render() {
     return (
       <div className="container">
-        <NavigationMenu page="View Payments" />
+        <NavigationMenu page="Your Payments" />
         <Paper className="paper">
           <h2>Payments</h2>
           <p>
