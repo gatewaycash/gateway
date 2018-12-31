@@ -84,7 +84,7 @@ export default () => {
         onChange={(e) => setPasswordConfirm(e.target.value)}
         placeholder="Retype password"
         type="password"
-      />
+      />fffff
       <br />
       <br />
       <Button
@@ -103,8 +103,9 @@ export default () => {
     <p>
       In order to start accepting Bitcoin Cash, you must first create a
       Bitcoin Cash wallet. We recommend using
-      the <a href="https://wallet.bitcoin.com" target="_blank">bitcoin.com
-      wallet</a>, a tried-and-true wallet trusted by the community.
+      the <a href="https://wallet.bitcoin.com" target="_blank"
+      rel="noopener noreferrer">bitcoin.com wallet</a>, a tried-and-true wallet
+      trusted by the community.
     </p>
     </Paper>
   )
