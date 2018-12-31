@@ -2,25 +2,26 @@
 import Button from '@material-ui/core/Button'
 import Paper from '@material-ui/core/Paper'
 import NavigationMenu from './NavigationMenu'
-require('dotenv').config()
+import { payments } from './../../API'
 
 class PaymentsPage extends Component {
   state = {
     showUnpaid: false,
-    payments: 'loading...',
+    showKeys: false,
+    payments: 'loading...'
   }
 
   constructor(props) {
     super(props)
-    var xhr = new XMLHttpRequest()
-    xhr.open('GET', process.env.REACT_APP_GATEWAY_BACKEND + '/getpayments')
-    xhr.onload = () => {
-      if (xhr.readyState === 4) {
-        var response = xhr.responseText.toString().trim()
-        this.setState({ payments: response })
+
+    payments().then((response) => {
+      if (response.status === 'success') {
+        this.setState({
+          payments: response.payments
+        })
       }
-    }
-    xhr.send()
+    })
+
   }
 
   toggleView = () => {
@@ -87,11 +88,11 @@ class PaymentsPage extends Component {
             Below is a list of payments made to your merchant account. They are
             sorted by date, the most recent payments appearing at the top.
           </p>
-          {/* TODO: use jsx <div
+          {<div
             dangerouslySetInnerHTML={{
-              __html: this.parsePayments(this.state.payments),
+              __html: this.parsePayments(this.state.payments)
             }}
-          /> */}
+          />}
           <center>
             <Button color="primary" onClick={this.toggleView}>
               {this.state.showUnpaid

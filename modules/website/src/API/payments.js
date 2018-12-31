@@ -1,6 +1,6 @@
 import { get, generateError } from './utils'
 
-export default async () => {
+export default async (keys = false, unpaid = false) => {
   if (!sessionStorage.gatewayAPIKey) {
     return generateError(
       'Not Logged In',
@@ -8,13 +8,12 @@ export default async () => {
     )
   }
   let response = await get(
-    '/username',
-    { APIKey: sessionStorage.gatewayAPIKey }
+    '/payments',
+    {
+      APIKey: sessionStorage.gatewayAPIKey,
+      includeKeys: keys,
+      includeUnpaid: unpaid
+    }
   )
-
-  // override default if no username is given
-  if (!response.username) {
-    response.username = 'No username set'
-  }
   return response
 }

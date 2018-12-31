@@ -1,9 +1,10 @@
 import React from 'react'
 import Paper from '@material-ui/core/Paper'
 import PayButton from '@gatewaycash/paybutton'
+import 'style/containers.css'
 
 export default () => (
-  <Paper className="paper">
+  <Paper className="paper container">
     <h2>Support the Project</h2>
     <p>
       If you like this project and want to see it get even better for both
