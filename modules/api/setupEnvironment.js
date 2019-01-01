@@ -8,11 +8,10 @@ const mysql = require('mysql')
 const promisify = require('util').promisify
 
 const collectInformation = async () => {
-
   // create a new readline query stream
   const rl = readline.createInterface({
     input: process.stdin,
-    output: process.stdout
+    output: process.stdout,
   })
 
   // promisify the readline callback
@@ -25,7 +24,7 @@ const collectInformation = async () => {
 
   // get the hostname
   let hostname = await question(
-    '\nSQL database hostname (ENTER for 127.0.0.1): '
+    '\nSQL database hostname (ENTER for 127.0.0.1): ',
   )
   hostname = hostname === '' ? '127.0.0.1' : hostname
 
@@ -41,23 +40,28 @@ const collectInformation = async () => {
   let db = await question('SQL database name (ENTER for gateway): ')
   db = db === '' ? 'gateway' : db
 
+  let dbPort = await question('SQL port (ENTER for 3306): ')
+  dbPort = dbPort || '3306'
+
   // grab the port to host the API on
   let listen = await question('Web server port (ENTER for 8080): ')
   listen = listen === '' ? '8080' : listen
 
   // close the readline stream
   rl.close()
-  testDatabaseConnection(hostname, user, pass, db, listen)
+  testDatabaseConnection(hostname, user, pass, db, dbPort, listen)
 }
 
-const testDatabaseConnection = async (host, user, pass, db, listen) => {
+const testDatabaseConnection = async (host, user, pass, db, dbPort, listen) => {
+  console.log(host, user, pass, db, listen)
   console.log('Testing MySQL credentials...')
   const conn = mysql.createConnection({
     host: host,
+    port: dbPort,
     user: user,
     password: pass,
     database: db,
-    multipleStatements: true
+    multipleStatements: true,
   })
   conn.connect((err) => {
     if (err) {
@@ -73,11 +77,24 @@ const testDatabaseConnection = async (host, user, pass, db, listen) => {
     console.log('Saving your new configuration...')
     fs.writeFile(
       '.env',
-      'WEB_PORT=' + listen + '\n' +
-      'SQL_DATABASE_HOST=' + host + '\n' +
-      'SQL_DATABASE_USER=' + user + '\n' +
-      'SQL_DATABASE_PASSWORD=' + pass + '\n' +
-      'SQL_DATABASE_DB_NAME=' + db + '\n',
+      'WEB_PORT=' +
+        listen +
+        '\n' +
+        'SQL_DATABASE_HOST=' +
+        host +
+        '\n' +
+        'SQL_DATABASE_USER=' +
+        user +
+        '\n' +
+        'SQL_DATABASE_PASSWORD=' +
+        pass +
+        '\n' +
+        'SQL_DATABASE_DB_NAME=' +
+        db +
+        '\n' +
+        'SQL_DATABASE_DB_PORT=' +
+        dbPort +
+        '\n',
       (err) => {
         if (err) {
           console.log('Could not save configuration to modules/api/.env!')
@@ -86,7 +103,7 @@ const testDatabaseConnection = async (host, user, pass, db, listen) => {
           console.log('New API configuration saved in modules/api/.env!')
           setupDatabase(conn)
         }
-      }
+      },
     )
   })
 }
@@ -94,7 +111,7 @@ const testDatabaseConnection = async (host, user, pass, db, listen) => {
 const setupDatabase = async (conn) => {
   const rl = readline.createInterface({
     input: process.stdin,
-    output: process.stdout
+    output: process.stdout,
   })
 
   // promisify the readline callback
@@ -112,12 +129,7 @@ const setupDatabase = async (conn) => {
   console.log('starting development.\n')
   let setup = await question('Set up a new test database? [Y/N]: ')
 
-  if (
-    setup === 'N' ||
-    setup === 'n' ||
-    setup === 'no' ||
-    setup === 'NO'
-  ) {
+  if (setup === 'N' || setup === 'n' || setup === 'no' || setup === 'NO') {
     rl.close()
     conn.end()
     console.log('Thank you for helping build Gateway.')
