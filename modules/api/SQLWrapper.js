@@ -13,6 +13,7 @@ const conn = mysql.createConnection({
   user: process.env.SQL_DATABASE_USER,
   password: process.env.SQL_DATABASE_PASSWORD,
   database: process.env.SQL_DATABASE_DB_NAME,
+  port: process.env.SQL_DATABASE_DB_PORT,
 })
 
 // promisify the query method
