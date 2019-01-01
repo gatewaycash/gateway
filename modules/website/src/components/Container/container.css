@@ -1,0 +1,39 @@
+.container {
+  width: 100%;
+  margin: 0px;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  padding: 0px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.paper {
+  width: 95%;
+  margin-left: 2.5%;
+  margin-right: 2.5%;
+}
+
+.content {
+  padding: 2em;
+  padding-top: 0.5em;
+  padding-bottom: 1em;
+}
+
+@media only screen and ( min-width: 60em ){
+  .container {
+    width: 50%;
+  }
+}
+
+@media only screen and ( min-width: 80em ){
+  .container {
+    width: 33.3%;
+  }
+}
+
+@media only screen and ( min-width: 100em ){
+  .container {
+    width: 33.3%;
+  }
+}

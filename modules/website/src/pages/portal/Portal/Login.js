@@ -1,8 +1,9 @@
 import React from 'react'
 import { navigate } from '@reach/router'
-import { Paper, Button, TextField } from '@material-ui/core'
-import { login } from './../../../API'
-import './../../../style/containers.css'
+import { Button, TextField } from '@material-ui/core'
+import { login } from 'API'
+import Container from 'components/Container'
+import Text from 'components/Text'
 
 export default () => {
   let [userID, setUserID] = React.useState('')
@@ -27,12 +28,12 @@ export default () => {
   }
 
   return (
-    <Paper className="paper container">
-    <center>
+    <Container centered>
       <h1>Log In</h1>
-      <p>
-        If you have a Gateway account, log in below with your address or username and your password:
-      </p>
+      <Text>
+        If you have a Gateway account, log in below using either your
+        Bitcoin&nbsp;Cash address or Gateway.cash username:
+      </Text>
       {
         loginError.error &&
         <div
@@ -80,7 +81,11 @@ export default () => {
       <Button onClick={() => navigate('/portal/forgot')}>
         Forgot?
       </Button>
-    </center>
-    </Paper>
+      <Text>
+        If you have forgotten your Gateway.cash username and your merchant
+        account's payout address or if you can't remember your password, send
+        an email to passwordreset@gateway.cash and we will attempt to help you.
+      </Text>
+    </Container>
   )
 }

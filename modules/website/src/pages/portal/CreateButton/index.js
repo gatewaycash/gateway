@@ -3,12 +3,13 @@ import NavigationMenu from '../NavigationMenu'
 //import PreviewButton from './PreviewButton'
 import PaymentIDInfo from './PaymentIDInfo'
 import ClientCodeExample from './ClientCodeExample'
-//import SupportProject from './SupportProject'
+import SupportProject from './SupportProject'
 import { merchantid } from 'API'
 import Footer from 'components/Footer'
+import Text from 'components/Text'
+import Container from 'components/Container'
 import 'style/containers.css'
 import {
-  Paper,
   FormControlLabel,
   TextField,
   Switch,
@@ -48,14 +49,14 @@ class CreateButtonPage extends Component {
     return (
       <>
         <NavigationMenu page="Create a Button" />
-        <Paper className="paper container">
+        <Container>
           <h2>Customize Your Button</h2>
-          <p>
+          <Text>
             Use the settings below to change various aspects of your payment
             button. Once you're satisfied with the result, scroll down and copy
             the generated code onto any website where you'd like to accept
             payments.
-          </p>
+          </Text>
           <TextField
             style={{
               width: '100%'
@@ -121,7 +122,6 @@ class CreateButtonPage extends Component {
           )}
           {this.state.advanced ? (
             <div>
-              <br />
               <TextField
                 style={{
                   width: '100%',
@@ -180,7 +180,7 @@ class CreateButtonPage extends Component {
               </center>
             </div>
           )}
-        </Paper>
+        </Container>
         <ClientCodeExample
           merchantID={this.state.merchantID}
           buttonText={this.state.buttonText}
@@ -191,6 +191,7 @@ class CreateButtonPage extends Component {
           callbackURL={this.state.callbackURL}
         />
         <PaymentIDInfo />
+        <SupportProject />
         <Footer />
       </>
     )

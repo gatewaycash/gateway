@@ -1,7 +1,15 @@
 import React from 'react'
 
 export default () => (
-  <div className="container">
+  <div
+    style={{
+      width: '100%',
+      display: 'block',
+      marginBottom: '1em',
+      paddingBottom: '1em',
+      marginTop: '1em'
+    }}
+  >
     <center>
       <span
         style={{

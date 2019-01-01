@@ -1,8 +1,9 @@
   import React, { Component } from 'react'
 import Button from '@material-ui/core/Button'
-import Paper from '@material-ui/core/Paper'
 import NavigationMenu from './NavigationMenu'
-import { payments } from './../../API'
+import { payments } from 'API'
+import Container from 'components/Container'
+import Text from 'components/Text'
 
 class PaymentsPage extends Component {
   state = {
@@ -80,14 +81,14 @@ class PaymentsPage extends Component {
 
   render() {
     return (
-      <div className="container">
+      <>
         <NavigationMenu page="Your Payments" />
-        <Paper className="paper">
+        <Container>
           <h2>Payments</h2>
-          <p>
+          <Text>
             Below is a list of payments made to your merchant account. They are
             sorted by date, the most recent payments appearing at the top.
-          </p>
+          </Text>
           {<div
             dangerouslySetInnerHTML={{
               __html: this.parsePayments(this.state.payments)
@@ -101,14 +102,14 @@ class PaymentsPage extends Component {
             </Button>
           </center>
           <h3>About Unpaid and Unprocessed Payments</h3>
-          <p>
+          <Text>
             Unpaid and unprocessed payments usually occur when a customer clicks
             on a payment button but then closes it without making a payment.
             Pending payments (payments that haven't yet been processed) will
             also fall into this category.
-          </p>
-        </Paper>
-      </div>
+          </Text>
+        </Container>
+      </>
     )
   }
 }

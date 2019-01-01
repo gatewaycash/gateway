@@ -1,15 +1,3 @@
-.container {
-  width: 90%;
-  margin-left: auto;
-  margin-right: auto;
-  font-family: helvetica;
-  margin-bottom: 1em;
-  margin-top: 1em;
-  align: left;
-  text-align: left;
-  word-wrap: break-word;
-}
-
 .sourceCode {
   background-color: #444444;
   color: white;
@@ -41,12 +29,6 @@
   margin-bottom: 0px;
   padding-top: 0px;
   padding-bottom: 0px;
-}
-
-.paper {
-  padding: 1em;
-  margin-top: 1em;
-  margin-bottom: 1em;
 }
 
 @media only screen and ( max-width: 60em ){

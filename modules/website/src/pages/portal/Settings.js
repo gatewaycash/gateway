@@ -1,107 +1,106 @@
 import React, { Component } from 'react'
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
-import Paper from '@material-ui/core/Paper'
+import Container from 'components/Container'
+import Footer from 'components/Footer'
+import Text from 'components/Text'
 import NavigationMenu from './NavigationMenu'
+import { getUsername } from 'API'
 
 class SettingsPage extends Component {
   state = {
-    username: 'loading...'
+    username: 'loading...',
+    newUsername: ''
   }
 
   constructor(props) {
     super(props)
-    var xhr = new XMLHttpRequest()
-    xhr.open('GET', process.env.REACT_APP_GATEWAY_BACKEND + '/getusername')
-    xhr.onload = () => {
-      if (xhr.readyState === 4) {
-        var name = xhr.responseText.toString().trim()
-        if (name === '') {
-          name = 'No username set'
-        }
-        this.setState({ username: name })
+    getUsername().then((response) => {
+      if (response.status === 'success') {
+        this.setState({
+          username: response.username,
+          newUsername: response.username
+        })
       }
-    }
-    xhr.send()
+    })
+    this.updateUsername.bind(this)
+  }
+
+  updateUsername = (e) => {
+    alert('Not Yet Impoemented (use api.gateway.cash for now)')
   }
 
   render() {
     return (
-      <div className="container">
-        <NavigationMenu page="Your Account" />
-        <div className="leftPanel">
-          <Paper className="paper">
-            <h2>Display Currency</h2>
-            <p>
-              Bitcoin Cash (BCH) units will always be displayed. In places like
-              the View Payments page, you can choose to have values converted
-              and displayed in other currencies as well. When viewing payments,
-              you will be shown the current monitary value as well as what the
-              value was at the time the payment was made.
-            </p>
-            <p>(unimplemented)</p>
-          </Paper>
-        </div>
-        <div class="rightPanel">
-          <Paper className="paper">
-            <h2>Username</h2>
-            <p>
-              Your username can be used as a more convenient way to log into
-              gateway.cash instead of using your address each time.
-            </p>
-            <h3>Your current username: {this.state.username}</h3>
-            <p>
-              When you reserve your username, there are some restrictions which
-              allow for an easier login experience for all merchants.
-            </p>
-            <p>
-              Your username must:
-              <ul>
-                <li>Be at least 10 characters long</li>
-                <li>Not begin with another username</li>
-                <li>
-                  Not contain special characters {'({[<\'"\\,!@#|$%^./"\'>]})'}
-                </li>
-                <li>Not contain spaces, tabs or return characters</li>
-                <li>Not be equal to another person's address</li>
-              </ul>
-            </p>
-            <h3>Change Username</h3>
-            <TextField
-              style={{
-                width: '100%',
-              }}
-              id="usernameChange"
-              label="Change Username"
-              maxLength={25}
-              value={this.state.usernameChangeText}
-            />
-            <br />
-            <br />
-            <center>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={this.handleUsernameChange}
-              >
-                Update Username (unimplemented)
-              </Button>
-            </center>
-          </Paper>
-        </div>
-        <div class="leftPanel">
-          <Paper className="paper">
-            <h2>Supporting the Project</h2>
-            <p>
-              If you'd like to support the project and help fund my college
-              education, you can choose to donate a portion of each payment made
-              to your merchant account. This will always be off by default, but
-              any support you're able to provide is much appreciated.
-            </p>
-            <p>(unimplemented)</p>
-          </Paper>
-        </div>
-      </div>
+      <>
+      <NavigationMenu page="Your Account" />
+        <Container>
+          <h2>Display Currency</h2>
+          <Text>
+            Bitcoin Cash (BCH) units will always be displayed. In places like
+            the View Payments page, you can choose to have values converted
+            and displayed in other currencies as well. When viewing payments,
+            you will be shown the current monitary value as well as what the
+            value was at the time the payment was made.
+          </Text>
+          <p>(unimplemented)</p>
+        </Container>
+        <Container>
+          <h2>{this.state.username.toUpperCase()}</h2>
+          <Text>
+            Your username can be used as a more convenient way to log into
+            gateway.cash instead of typing your address every time.
+          </Text>
+          <Text>
+            When you reserve your username, there are some restrictions which
+            allow for an easier login experience for all merchants.
+          </Text>
+          <Text>
+            Your username must:
+            <ul>
+              <li>Be between 5 and 24 characters long</li>
+              <li>
+                Not contain special characters such as {'({[<\'"\\,!@#|$%^./"\'>]})'}
+              </li>
+              <li>Not contain spaces, tabs or other odd characters</li>
+            </ul>
+          </Text>
+          <TextField
+            style={{
+              width: '100%',
+            }}
+            onChange={(e) => {
+              this.setState({
+                newUsername: e.target.value.toLowerCase().substr(0, 24)
+              })
+            }}
+            label="New Username"
+            value={this.state.newUsername}
+          />
+          <br />
+          <br />
+          <center>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={this.updateUsername}
+            >
+              Update Your Username
+            </Button>
+          </center>
+        </Container>
+        <Container>
+          <h2>Supporting the Project</h2>
+          <Text>
+            If you'd like to support the project, you can choose to donate a
+            portion of each payment made to your merchant account. This will
+            always be off by default, but any support you're able to provide is
+            much appreciated.
+          </Text>
+          <p>(This feature has yet to be built)</p>
+        </Container>
+        <Footer />
+      </>
     )
   }
 }

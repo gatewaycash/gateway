@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 import NavigationMenu from './NavigationMenu'
 import { navigate } from '@reach/router'
-import { Paper } from '@material-ui/core'
-import Footer from './../../components/Footer'
+import Footer from 'components/Footer'
+import Container from 'components/Container'
+import Text from 'components/Text'
 import {merchantid, getUsername, getAddress, totalsales } from './../../API'
 
 export default class Dashboard extends Component {
@@ -47,18 +48,18 @@ export default class Dashboard extends Component {
     return (
       <>
         <NavigationMenu page="Dashboard" />
-        <Paper className="paper container">
+        <Container>
           <h1>{this.state.username.toUpperCase()}</h1>
-          <p>Your address: {this.state.address}</p>
-          <p>Total sales: {(this.state.totalSales / 100000000)} BCH</p>
-          <p>Your Merchant ID: {this.state.merchantID}</p>
+          <Text>Your address: {this.state.address}</Text>
+          <Text>Total sales: {(this.state.totalSales / 100000000)} BCH</Text>
+          <Text>Your Merchant ID: {this.state.merchantID}</Text>
           <h2>Using Your New Account</h2>
-          <p>
+          <Text>
             Check out the <a href="/docs">PayButton docs</a> to see all the ways
             you can use your new merchant ID. Use the <b>Create&nbsp;Button</b> tab to generate customizable payment buttons for your websites,
             apps and services.
-          </p>
-        </Paper>
+          </Text>
+        </Container>
         <Footer />
       </>
     )

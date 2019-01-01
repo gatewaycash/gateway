@@ -1,8 +1,9 @@
 import React from 'react'
 import { navigate } from '@reach/router'
-import { Paper, Button, TextField } from '@material-ui/core'
-import { register } from './../../../API'
-import './../../../style/containers.css'
+import { Button, TextField } from '@material-ui/core'
+import { register } from 'API'
+import Container from 'components/Container'
+import Text from 'components/Text'
 
 export default () => {
   let [address, setAddress] = React.useState('')
@@ -29,14 +30,14 @@ export default () => {
   }
 
   return (
-    <Paper className="paper container">
-    <center>
+    <>
+    <Container centered>
       <h1>Register for Free</h1>
-      <p>
+      <Text>
         Sign up for a Gateway merchant account to instantly start creating
         payment buttons and tracking invoices across your websites and apps.
         All you need is a Bitcoin Cash address, a username and a password:
-      </p>
+      </Text>
       {
         registerError.error &&
         <div
@@ -84,7 +85,7 @@ export default () => {
         onChange={(e) => setPasswordConfirm(e.target.value)}
         placeholder="Retype password"
         type="password"
-      />fffff
+      />
       <br />
       <br />
       <Button
@@ -97,16 +98,7 @@ export default () => {
       </form>
       <br />
       <Button>Advanced</Button>
-      <br />
-    </center>
-    <h3>Wondering how to get an address?</h3>
-    <p>
-      In order to start accepting Bitcoin Cash, you must first create a
-      Bitcoin Cash wallet. We recommend using
-      the <a href="https://wallet.bitcoin.com" target="_blank"
-      rel="noopener noreferrer">bitcoin.com wallet</a>, a tried-and-true wallet
-      trusted by the community.
-    </p>
-    </Paper>
+    </Container>
+    </>
   )
 }
