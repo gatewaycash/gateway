@@ -84,11 +84,16 @@ class PaymentsPage extends Component {
       <>
         <NavigationMenu page="Your Payments" />
         <Container>
-          <h2>Payments</h2>
+          <h2>Your Payments</h2>
           <Text>
             Below is a list of payments made to your merchant account. They are
             sorted by date, the most recent payments appearing at the top.
           </Text>
+          <p>This page hasn't been built yet, please check back soon.</p>
+          <p>
+            To view your payments in the meantime, check your Bitcoin Cash
+            wallet. If you are a developer, query api.gateway.cash/payments.
+          </p>
           {<div
             dangerouslySetInnerHTML={{
               __html: this.parsePayments(this.state.payments)

@@ -16,7 +16,7 @@ export default () => (
           color: '#444444'
         }}
       >
-        Copyright &copy; 2018 Gateway
+        Copyright &copy; 2019 Gateway
       </span>
       <br />
       <br />

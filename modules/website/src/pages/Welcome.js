@@ -79,8 +79,9 @@ export default () => (
       <p>
         Billions of people across the earth don't have the financial tools they
         need to earn, save and build a life for themselves and their families.
-        By making connections and forging relationships with shopkeepers and
-        everyday people in third-workd countries.
+        By making connections with shopkeepers and forging relationships with
+        everyday people in third-world countries, we are learning their needs
+        and building those tools on top of Bitcoin Cash.
       </p>
     </Container>
     <Container>

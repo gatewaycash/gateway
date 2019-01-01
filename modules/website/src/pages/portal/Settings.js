@@ -40,10 +40,10 @@ class SettingsPage extends Component {
             Bitcoin Cash (BCH) units will always be displayed. In places like
             the View Payments page, you can choose to have values converted
             and displayed in other currencies as well. When viewing payments,
-            you will be shown the current monitary value as well as what the
-            value was at the time the payment was made.
+            you will be shown the current value as well as what the value was
+            at the time the payment was made.
           </Text>
-          <p>(unimplemented)</p>
+          <p>This feature hasn't been built yet, please check back soon.</p>
         </Container>
         <Container>
           <h2>{this.state.username.toUpperCase()}</h2>
@@ -65,6 +65,7 @@ class SettingsPage extends Component {
               <li>Not contain spaces, tabs or other odd characters</li>
             </ul>
           </Text>
+          <p>This feature hasn't been built yet, please check back soon.</p>
           <TextField
             style={{
               width: '100%',
@@ -97,7 +98,7 @@ class SettingsPage extends Component {
             always be off by default, but any support you're able to provide is
             much appreciated.
           </Text>
-          <p>(This feature has yet to be built)</p>
+          <p>This feature hasn't been built yet, please check back soon.</p>
         </Container>
         <Footer />
       </>
