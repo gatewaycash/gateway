@@ -35,7 +35,7 @@ The Gateway.cash payment button is far more than its name suggests. it provides 
 
 <aside class="notice">
 Be aware that this documentation is strictly for the payment button. For the
-Gateway API docs, go [here](https://api.gateway.cash/).
+Gateway backend API, you should reference the <a href="https://api.gateway.cash/" target="_blank">Gateway API Documentation</a>.
 </aside>
 
 <aside class="warning">
