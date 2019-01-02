@@ -1,42 +1,31 @@
 import React from 'react'
-
-import Button from '@material-ui/core/Button'
-import Paper from '@material-ui/core/Paper'
-
+import { Button } from '@material-ui/core'
 import { navigate } from '@reach/router'
-
-import Logo from './../components/Logo'
-import Footer from './../components/Footer'
-
-import './../style/containers.css'
+import { Logo, Container, Footer } from 'components'
 
 export default () => (
   <>
-    <div className="container">
-      <center>
-        <Logo size="10" />
-        <h1 className="mainHeading">
-          Simple Bitcoin Payments
-        </h1>
-        <Button
-          variant="contained"
-          color="primary"
-          size="large"
-          onClick={() => navigate('portal')}
-        >
-          GET STARTED
-        </Button>
-        <br />
-        <br />
-        <Button
-          href="https://www.youtube.com/watch?v=jduVN643Prc"
-          target="_blank"
-        >
-          What is Bitcoin Cash?
-        </Button>
-      </center>
-    </div>
-    <Paper className="container paper">
+    <center>
+      <Logo />
+      <h1>Bitcoin Made Simple</h1>
+      <Button
+        variant="contained"
+        color="primary"
+        size="large"
+        onClick={() => navigate('portal')}
+      >
+        GET STARTED
+      </Button>
+      <br />
+      <br />
+      <Button
+        href="https://www.youtube.com/watch?v=jduVN643Prc"
+        target="_blank"
+      >
+        What is Bitcoin Cash?
+      </Button>
+    </center>
+    <Container>
       <h2>Construction</h2>
       <p>
         Gateway is still being built. If you'd like to help, check out
@@ -47,12 +36,25 @@ export default () => (
       <p>
         If you're a developer, you can check out our API documentation. The production-ready API server is up and running, and our payment processing engines have started! See the API docs link at the bottom of this page for more information.
       </p>
+    </Container>
+    <Container>
       <h2>Making Bitcoin Easy</h2>
+      <img
+        src='https://is2-ssl.mzstatic.com/image/thumb/Purple128/v4/b6/75/fd/b675fd99-1c2f-4929-6053-349e941e62b0/source/512x512bb.jpg'
+        alt="Electron Cash Logo"
+        title="Electron Cash Logo"
+        style={{
+          width: '40%',
+          marginLeft: '30%'
+        }}
+      />
       <p>
         Gateway is making Bitcoin Cash (BCH) easy for merchants and website
         operators across the world. By standardizing the Bitcoin Cash payment
         experience, we can reduce friction and build on top of Bitcoin together.
       </p>
+    </Container>
+    <Container>
       <h2>What We Do</h2>
       <p>
         Gateway is a free and open-source software project which provides merchants and businesses with the tools they need to make accepting Bitcoin Cash simple and easy.
@@ -60,6 +62,27 @@ export default () => (
       <p>
         Our trademark PayButton is simplifying the payment experience for websites and apps across the ecosystem. Developers, community leaders and Bitcoin Cash ambassadors are constantly working to make the Gateway payment experience seamless and standard across all Bitcoin Cash applications.
       </p>
+    </Container>
+    <Container>
+      <h2>Doing it Together</h2>
+      <p>
+        Gateway is an open platform pioneering open standards for the future of
+        payments. We want to build a standard, unified and positive experience
+        for both customers and merchants who decide that Bitcoin Cash is the
+        way forward.
+      </p>
+    </Container>
+    <Container>
+      <h2>Doing it for Everyone</h2>
+      <p>
+        Billions of people across the earth don't have the financial tools they
+        need to earn, save and build a life for themselves and their families.
+        By making connections with shopkeepers and forging relationships with
+        everyday people in third-world countries, we are learning their needs
+        and building those tools on top of Bitcoin Cash.
+      </p>
+    </Container>
+    <Container>
       <h2>Useful Links</h2>
       <ul>
         <li><a
@@ -98,7 +121,7 @@ export default () => (
           Send us an email
         </a></li>
       </ul>
-    </Paper>
+    </Container>
     <Footer />
   </>
 )

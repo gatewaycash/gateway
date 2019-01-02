@@ -1,10 +1,18 @@
 import React, { Component } from 'react'
 import NavigationMenu from '../NavigationMenu'
-import PreviewButton from './PreviewButton'
-import CreateButtonForm from './CreateButtonForm'
+//import PreviewButton from './PreviewButton'
 import PaymentIDInfo from './PaymentIDInfo'
 import ClientCodeExample from './ClientCodeExample'
 import SupportProject from './SupportProject'
+import { merchantid } from 'API'
+import { Footer, Text, Container } from 'components'
+
+import {
+  FormControlLabel,
+  TextField,
+  Switch,
+  Button
+} from '@material-ui/core'
 
 class CreateButtonPage extends Component {
   state = {
@@ -13,7 +21,7 @@ class CreateButtonPage extends Component {
     buttonText: 'Donate',
     dialogTitle: 'Complete Your Payment',
     currency: 'BCH',
-    amount: '0.01',
+    amount: '0',
     advanced: false,
     anyAmount: true,
     callbackURL: 'None',
@@ -22,88 +30,168 @@ class CreateButtonPage extends Component {
   constructor(props) {
     super(props)
 
-    // get the merchant ID
-    let xhr = new XMLHttpRequest()
-    xhr.open('GET', process.env.REACT_APP_GATEWAY_BACKEND + '/getmerchantid')
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
-    xhr.onload = () => {
-      if (xhr.readyState === 4) {
-        let response = xhr.responseText.toString().trim()
-        if (response.length === 16 && response.indexOf(' ') === -1) {
-          this.setState({ merchantID: response })
-        } else {
-          alert('Error: \n\n' + response)
-        }
+    merchantid().then((response) => {
+      if (response.status === 'success') {
+        this.setState({
+          merchantID: response.merchantID
+        })
       }
-    }
-    xhr.send()
+    })
   }
 
   toggleAdvanced = () => {
     this.setState({ advanced: this.state.advanced ? false : true })
   }
 
-  handleChange = () => {
-    var buttonText = document.getElementById('buttonTextField').value.toString()
-    buttonText = buttonText.substr(0, 25)
-    this.setState({
-      buttonText: buttonText,
-      anyAmount: document.getElementById('allowanyfield').checked,
-    })
-    if (this.state.advanced) {
-      var dialogTitle = document.getElementById('dialogTitleField').value
-      dialogTitle = dialogTitle.toString().substr(0, 40)
-      var paymentID = document.getElementById('paymentIDField').value
-      paymentID = paymentID.toString().substr(0, 32)
-      var callbackURL = document.getElementById('callbackURLField').value
-      callbackURL = callbackURL.toString().substr(0, 128)
-      this.setState({
-        dialogTitle: dialogTitle,
-        paymentID: paymentID,
-        callbackURL: callbackURL,
-      })
-    }
-    if (this.state.anyAmount === false) {
-      var currency = document.getElementById('currencyField').value
-      currency = currency
-        .toString()
-        .substr(0, 3)
-        .toUpperCase()
-      var amount = Math.abs(document.getElementById('amountField').value)
-      amount = amount.toString()
-      while (amount.startsWith('0')) {
-        amount = amount.substr(1)
-      }
-      if (amount.startsWith('.')) {
-        amount = '0' + amount
-      }
-      this.setState({
-        amount: amount,
-        currency: currency,
-      })
-    }
-  }
-
   render() {
     return (
-      <div className="container">
+      <>
         <NavigationMenu page="Create a Button" />
-        <div className="leftPanel">
-          <CreateButtonForm />
-        </div>
-        <div className="rightPanel">
-          <ClientCodeExample />
-          <PreviewButton />
-        </div>
-        <div className="leftPanel">
-          <div>
-            <PaymentIDInfo />
-          </div>
-        </div>
-        <div className="rightPanel">
-          <SupportProject />
-        </div>
-      </div>
+        <Container>
+          <h2>Customize Your Button</h2>
+          <Text>
+            Use the settings below to change various aspects of your payment
+            button. Once you're satisfied with the result, scroll down and copy
+            the generated code onto any website where you'd like to accept
+            payments.
+          </Text>
+          <TextField
+            style={{
+              width: '100%'
+            }}
+            onChange={(e) => {
+              this.setState ({
+                buttonText: e.target.value.substr(0, 25)
+              })
+            }}
+            label="Button Text"
+            helperText="Give your payment button a label"
+            value={this.state.buttonText}
+          />
+          <br />
+          <br />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={this.state.anyAmount}
+                onChange={(e) => this.setState({anyAmount: e.target.checked})}
+                color="primary"
+              />
+            }
+            label="Allow any amount"
+          />
+          {!this.state.anyAmount && (
+            <div
+              style={{
+                display: 'block'
+              }}
+            >
+              <TextField
+                style={{
+                  width: '60%',
+                  float: 'left',
+                }}
+                onChange={(e) => this.setState({amount: e.target.value})}
+                label="Payment Amount"
+                helperText={"Amount (" + this.state.currency + ")"}
+                type="number"
+                value={this.state.amount}
+              />
+              <TextField
+                style={{
+                  width: '30%',
+                  float: 'right',
+                }}
+                onChange={(e) => {
+                  this.setState({
+                    currency: e.target.value.toUpperCase().substr(0, 3)
+                  })
+                }}
+                label="Currency"
+                helperText="BCH, USD, EUR..."
+                maxLength={3}
+                value={this.state.currency}
+              />
+              <br />
+              <br />
+              <br />
+              <br />
+            </div>
+          )}
+          {this.state.advanced ? (
+            <div>
+              <TextField
+                style={{
+                  width: '100%',
+                }}
+                onChange={(e) => {
+                  this.setState({
+                    dialogTitle: e.target.value.substr(0, 50)
+                  })
+                }}
+                label="Dialog Title"
+                helperText="Title for payment dialog box"
+                maxLength={25}
+                value={this.state.dialogTitle}
+              />
+              <br />
+              <br />
+              <TextField
+                style={{
+                  width: '100%',
+                }}
+                onChange={(e) => {
+                  this.setState({
+                    paymentID: e.target.value.substr(0, 32)
+                  })
+                }}
+                label="Payment ID"
+                helperText="Unique ID for payments sent to this button (see below)"
+                maxLength={32}
+                value={this.state.paymentID}
+              />
+              <br />
+              <br />
+              <TextField
+                style={{
+                  width: '100%',
+                }}
+                onChange={(e) => this.setState({callbackURL: e.target.value})}
+                label="Callback URL"
+                helperText="We'll notify this URL when a payment is made (see below)"
+                maxLength={64}
+                value={this.state.callbackURL}
+              />
+              <br />
+              <br />
+            </div>
+          ) : (
+            <div>
+              <p>
+                If you're looking for more advanced functionality, you can
+                further customize your button with some additional tweaks.
+              </p>
+              <center>
+                <Button color="primary" onClick={this.toggleAdvanced}>
+                  Advanced Options
+                </Button>
+              </center>
+            </div>
+          )}
+        </Container>
+        <ClientCodeExample
+          merchantID={this.state.merchantID}
+          buttonText={this.state.buttonText}
+          amount={this.state.amount}
+          currency={this.state.currency}
+          dialogTitle={this.state.dialogTitle}
+          paymentID={this.state.paymentID}
+          callbackURL={this.state.callbackURL}
+        />
+        <PaymentIDInfo />
+        <SupportProject />
+        <Footer />
+      </>
     )
   }
 }

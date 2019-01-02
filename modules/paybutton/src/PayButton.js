@@ -18,23 +18,17 @@ import io from 'socket.io-client'
  * @param  {string} error - The error to display
  */
 let showError = (error) => {
+  let errorText = "An error might be causing problems with "
+  errorText += 'your payment. For help, please contact the '
+  errorText += 'merchant, or send an email to support@gateway.cash.\n\n'
+  errorText += 'If you are the merchant or a developer, you should reference '
+  errorText += 'the Gateway Payment Button documentation for help:\n\n'
+  errorText += 'https://gateway.cash/docs\n\n'
   if (typeof error !== 'object') {
-    let errorText = "An error might be causing problems with "
-    errorText += 'your payment. For help, please contact the '
-    errorText += 'merchant, or send an email to support@gateway.cash.\n\n'
-    errorText += 'If you are the merchant or a developer, you should reference '
-    errorText += 'the Gateway Payment Button documentation for help:\n\n'
-    errorText += 'https://gateway.cash/docs\n\n'
     errorText += 'The error was:\n\n' + error
     console.error('GATEWAY: Error:\n\n', errorText)
     return errorText
   } else {
-    let errorText = "An error might be causing problems with "
-    errorText += 'your payment. For help, please contact the '
-    errorText += 'merchant, or send an email to support@gateway.cash.\n\n'
-    errorText += 'If you are the merchant or a developer, you should reference '
-    errorText += 'the Gateway Payment Button documentation for help:\n\n'
-    errorText += 'https://gateway.cash/docs\n\n'
     errorText += 'The error was:\n\n' + error.error + '\n\n' + error.description
     console.error('GATEWAY: Error:\n\n', errorText)
     return errorText
@@ -88,7 +82,10 @@ let parseProps = (data) => {
   let currency = data.currency ? data.currency : 'BCH'
   let supportedCurrencies = ['BCH', 'USD', 'EUR', 'CNY', 'JPY']
   if (!supportedCurrencies.some((x) => currency)) {
-    return showError('The currency you provided is not supported!')
+    return showError(
+      'The currency you provided is not supported! Supported currencies:',
+      supportedCurrencies
+    )
   }
 
   // Set the callback URL. Default is an empty string
@@ -138,13 +135,13 @@ let parseProps = (data) => {
   // check the merchant ID for sanity, if one was provided
   let merchantID = data.merchantID ? data.merchantID : ''
   if (merchantID !== '' && merchantID.length !== 16) {
-    return showError('Merchant ID was not 16 characters!')
+    return showError('Your Merchant ID needs to be 16 characters!')
   }
 
   // fail if neither a merchant ID nor an address were provided
   if (!merchantID && !address) {
     return showError(
-      'Either an address or a merchantID is required! (XPUB, BIP47 coming soon)'
+      'Either an address or a Merchant ID is required! (Merchant XPUB and BIP47 are coming soon)'
     )
   }
 
@@ -155,7 +152,7 @@ let parseProps = (data) => {
 
   // get the value for the payment complete callback function
   let paymentCompleteCallback = data.paymentCompleteCallback ?
-    data.paymentCompleteCallback: 'console.log("GATEWAY: Payment complete!\\n\\nTXID: "+window.gatewayPaymentTXID)'
+    data.paymentCompleteCallback : 'console.log("GATEWAY: Payment complete!\\n\\nTXID: "+window.gatewayPaymentTXID)'
 
   // ensure the callback is in the correct format
   if (paymentCompleteCallback.endsWith(';')) {

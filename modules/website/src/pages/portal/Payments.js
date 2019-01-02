@@ -1,26 +1,27 @@
   import React, { Component } from 'react'
-import Button from '@material-ui/core/Button'
-import Paper from '@material-ui/core/Paper'
+import { Button } from '@material-ui/core'
 import NavigationMenu from './NavigationMenu'
-require('dotenv').config()
+import { payments } from 'API'
+import { Container, Text } from 'components'
 
 class PaymentsPage extends Component {
   state = {
     showUnpaid: false,
-    payments: 'loading...',
+    showKeys: false,
+    payments: 'loading...'
   }
 
   constructor(props) {
     super(props)
-    var xhr = new XMLHttpRequest()
-    xhr.open('GET', process.env.REACT_APP_GATEWAY_BACKEND + '/getpayments')
-    xhr.onload = () => {
-      if (xhr.readyState === 4) {
-        var response = xhr.responseText.toString().trim()
-        this.setState({ payments: response })
+
+    payments().then((response) => {
+      if (response.status === 'success') {
+        this.setState({
+          payments: response.payments
+        })
       }
-    }
-    xhr.send()
+    })
+
   }
 
   toggleView = () => {
@@ -79,19 +80,24 @@ class PaymentsPage extends Component {
 
   render() {
     return (
-      <div className="container">
-        <NavigationMenu page="View Payments" />
-        <Paper className="paper">
-          <h2>Payments</h2>
-          <p>
+      <>
+        <NavigationMenu page="Your Payments" />
+        <Container>
+          <h2>Your Payments</h2>
+          <Text>
             Below is a list of payments made to your merchant account. They are
             sorted by date, the most recent payments appearing at the top.
+          </Text>
+          <p>This page hasn't been built yet, please check back soon.</p>
+          <p>
+            To view your payments in the meantime, check your Bitcoin Cash
+            wallet. If you are a developer, query api.gateway.cash/payments.
           </p>
-          {/* TODO: use jsx <div
+          {<div
             dangerouslySetInnerHTML={{
-              __html: this.parsePayments(this.state.payments),
+              __html: this.parsePayments(this.state.payments)
             }}
-          /> */}
+          />}
           <center>
             <Button color="primary" onClick={this.toggleView}>
               {this.state.showUnpaid
@@ -100,14 +106,14 @@ class PaymentsPage extends Component {
             </Button>
           </center>
           <h3>About Unpaid and Unprocessed Payments</h3>
-          <p>
+          <Text>
             Unpaid and unprocessed payments usually occur when a customer clicks
             on a payment button but then closes it without making a payment.
             Pending payments (payments that haven't yet been processed) will
             also fall into this category.
-          </p>
-        </Paper>
-      </div>
+          </Text>
+        </Container>
+      </>
     )
   }
 }

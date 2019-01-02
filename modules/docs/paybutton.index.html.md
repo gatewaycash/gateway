@@ -33,8 +33,16 @@ The Gateway.cash payment button is far more than its name suggests. it provides 
   closeWhenComplete="true"></div>
 </center>
 
+<aside class="notice">
 Be aware that this documentation is strictly for the payment button. For the
-Gateway API docs, go [https://api.gateway.cash/](here).
+Gateway backend API, you should reference the <a href="https://api.gateway.cash/" target="_blank">Gateway API Documentation</a>.
+</aside>
+
+<aside class="warning">
+These docs are a work in progress and are not yet complete. If you have
+questions, please join the ambassador.cash Discord server and ask your
+questions in the #gatewaycash channel.
+</aside>
 
 # Including the PayButton on Your Site
 

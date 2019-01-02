@@ -1,0 +1,13 @@
+.sourceCode {
+  display: block;
+  background-color: #444444;
+  color: white;
+  border: none;
+  outline: none;
+  font-family: monospace;
+  text-align: left;
+  padding: 0.5em;
+  word-wrap: break-word;
+  overflow-y: scroll;
+  box-shadow: 0.2em 0.2em 0.4em #99c;
+}

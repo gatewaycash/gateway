@@ -12,6 +12,7 @@ import {
   CreateButton,
   Settings,
   Payments,
+  Dashboard,
   Portal
 } from './pages/portal'
 
@@ -20,6 +21,7 @@ export default () => (
   <Router>
     <Welcome key="Welcome" path="/" />
     <Portal key="Portal" path="portal" />
+    <Dashboard key="Dashboard" path="portal/dashboard" />
     <CreateButton key="CreateButton" path="portal/create" />
     <Settings key="Settings" path="portal/settings" />
     <Payments key="Payments" path="portal/payments" />
