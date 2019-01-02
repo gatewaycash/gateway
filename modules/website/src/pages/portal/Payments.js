@@ -1,9 +1,8 @@
   import React, { Component } from 'react'
-import Button from '@material-ui/core/Button'
+import { Button } from '@material-ui/core'
 import NavigationMenu from './NavigationMenu'
 import { payments } from 'API'
-import Container from 'components/Container'
-import Text from 'components/Text'
+import { Container, Text } from 'components'
 
 class PaymentsPage extends Component {
   state = {

@@ -1,7 +1,5 @@
 import React from 'react'
-import Container from 'components/Container'
-import Text from 'components/Text'
-import 'style/containers.css'
+import { Container, Text } from 'components'
 
 export default ({
   merchantID,

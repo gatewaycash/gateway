@@ -1,10 +1,8 @@
 import React, { Component } from 'react'
 import NavigationMenu from './NavigationMenu'
 import { navigate } from '@reach/router'
-import Footer from 'components/Footer'
-import Container from 'components/Container'
-import Text from 'components/Text'
-import {merchantid, getUsername, getAddress, totalsales } from './../../API'
+import { Footer, Container, Text } from 'components'
+import {merchantid, getUsername, getAddress, totalsales } from 'API'
 
 export default class Dashboard extends Component {
 

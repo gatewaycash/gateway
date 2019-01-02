@@ -1,5 +1,5 @@
 import React from 'react'
-import Paper from '@material-ui/core/Paper'
+import { Text, Container } from 'components'
 import PayButton from '@gatewaycash/paybutton'
 
 export default ({
@@ -11,12 +11,12 @@ export default ({
   dialogTitle,
   paymentID,
 }) => (
-  <Paper className="paper">
+  <Container>
     <h2>Button Preview</h2>
-    <p>
+    <Text>
       This is what your finished button will look like and how it will behave.
       Payments made to the button on this page will be sent to your address.
-    </p>
+    </Text>
     <center>
       <PayButton
         merchantID={merchantID}
@@ -24,9 +24,8 @@ export default ({
         currency={currency}
         dialogTitle={dialogTitle}
         paymentID={paymentID}
-      >
-        {buttonText}
-      </PayButton>
+        buttonText={buttonText}
+      />
     </center>
-  </Paper>
+  </Container>
 )

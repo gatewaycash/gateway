@@ -1,6 +1,6 @@
 import React from 'react'
 import { Paper } from '@material-ui/core'
-import './container.css'
+import './style.css'
 
 export default ({ children, centered = false }) => (
   <div

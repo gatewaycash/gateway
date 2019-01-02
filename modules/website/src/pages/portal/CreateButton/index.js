@@ -5,10 +5,8 @@ import PaymentIDInfo from './PaymentIDInfo'
 import ClientCodeExample from './ClientCodeExample'
 import SupportProject from './SupportProject'
 import { merchantid } from 'API'
-import Footer from 'components/Footer'
-import Text from 'components/Text'
-import Container from 'components/Container'
-import 'style/containers.css'
+import { Footer, Text, Container } from 'components'
+
 import {
   FormControlLabel,
   TextField,

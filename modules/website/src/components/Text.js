@@ -1,11 +1,11 @@
 import React from 'react'
 
-export default ({ children }) => (
+export default ({ children, centered = false }) => (
   <p
     style={{
       display: 'block',
       width: '100%',
-      textAlign: 'left'
+      textAlign: centered ? 'center' : 'left'
     }}
   >
     {children}

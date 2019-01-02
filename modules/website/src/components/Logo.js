@@ -1,5 +1,5 @@
 import React from 'react'
-import logo from './../res/logo.svg'
+import logo from 'res/logo.svg'
 
 export default ({ size = 10, centered = false }) => (
   <a href="/">

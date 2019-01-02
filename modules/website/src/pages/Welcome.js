@@ -1,9 +1,7 @@
 import React from 'react'
-import Button from '@material-ui/core/Button'
+import { Button } from '@material-ui/core'
 import { navigate } from '@reach/router'
-import Logo from 'components/Logo'
-import Footer from 'components/Footer'
-import Container from 'components/Container'
+import { Logo, Container, Footer } from 'components'
 
 export default () => (
   <>

@@ -1,9 +1,6 @@
 import React, { Component } from 'react'
-import Button from '@material-ui/core/Button'
-import TextField from '@material-ui/core/TextField'
-import Container from 'components/Container'
-import Footer from 'components/Footer'
-import Text from 'components/Text'
+import { Button, TextField } from '@material-ui/core'
+import { Container, Footer, Text } from 'components'
 import NavigationMenu from './NavigationMenu'
 import { getUsername } from 'API'
 

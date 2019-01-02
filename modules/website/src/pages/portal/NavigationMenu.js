@@ -1,6 +1,6 @@
 import React from 'react'
 import { navigate } from '@reach/router'
-import Button from '@material-ui/core/Button'
+import { Button } from '@material-ui/core'
 
 export default ({ page }) => (
   <center>

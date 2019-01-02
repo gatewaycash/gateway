@@ -2,6 +2,16 @@ import React from 'react'
 import Container from 'components/Container'
 import Text from 'components/Text'
 
+/*
+
+  TODO:
+  This is broken and a hack is used to make it work.
+  We need to find out why the React component is failing.
+  We need to remove the <script> tag from the modules/website/public/index.html
+  file so that we don't rely on compiled code.
+
+*/
+
 export default () => {
   setTimeout(() => {
     window.PayButton && window.PayButton.render(
