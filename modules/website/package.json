@@ -15,7 +15,8 @@
     "start": "NODE_PATH=src react-scripts start",
     "build": "NODE_PATH=src react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "setup": "node setupWebsite.js"
   },
   "eslintConfig": {
     "extends": "react-app"
