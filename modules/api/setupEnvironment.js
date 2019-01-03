@@ -8,11 +8,10 @@ const mysql = require('mysql')
 const promisify = require('util').promisify
 
 const collectInformation = async () => {
-
   // create a new readline query stream
   const rl = readline.createInterface({
     input: process.stdin,
-    output: process.stdout
+    output: process.stdout,
   })
 
   // promisify the readline callback
@@ -25,7 +24,7 @@ const collectInformation = async () => {
 
   // get the hostname
   let hostname = await question(
-    '\nSQL database hostname (ENTER for 127.0.0.1): '
+    '\nSQL database hostname (ENTER for 127.0.0.1): ',
   )
   hostname = hostname || '127.0.0.1'
 
@@ -47,6 +46,9 @@ const collectInformation = async () => {
   let db = await question('SQL database name (ENTER for gateway): ')
   db = db || 'gateway'
 
+  let dbPort = await question('SQL port (ENTER for 3306): ')
+  dbPort = dbPort || '3306'
+
   // grab the port to host the API on
   let listen = await question('Web server port (ENTER for 8080): ')
   listen = listen || '8080'
@@ -64,7 +66,7 @@ const testDatabaseConnection = async (host, port, user, pass, db, listen) => {
     user: user,
     password: pass,
     database: db,
-    multipleStatements: true
+    multipleStatements: true,
   })
   conn.connect((err) => {
     if (err) {
@@ -94,7 +96,7 @@ const testDatabaseConnection = async (host, port, user, pass, db, listen) => {
           console.log('New API configuration saved in modules/api/.env')
           setupDatabase(conn)
         }
-      }
+      },
     )
   })
 }
@@ -102,7 +104,7 @@ const testDatabaseConnection = async (host, port, user, pass, db, listen) => {
 const setupDatabase = async (conn) => {
   const rl = readline.createInterface({
     input: process.stdin,
-    output: process.stdout
+    output: process.stdout,
   })
 
   // promisify the readline callback
@@ -130,12 +132,7 @@ database you want to keep, answer NO.
     'ERASE, set up and format the database for testing? [Y/N]: '
   )
 
-  if (
-    setup === 'N' ||
-    setup === 'n' ||
-    setup === 'no' ||
-    setup === 'NO'
-  ) {
+  if (setup === 'N' || setup === 'n' || setup === 'no' || setup === 'NO') {
     rl.close()
     conn.end()
     console.log('Thank you for helping build Gateway.')
