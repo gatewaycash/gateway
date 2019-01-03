@@ -4,7 +4,6 @@
  * @file Defines a GET endpoint for /login
  */
 const url = require('url')
-const bchaddr = require('bchaddrjs')
 const sha256 = require('sha256')
 const mysql = require('../../SQLWrapper')
 

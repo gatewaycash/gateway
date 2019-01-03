@@ -69,7 +69,7 @@ let addPending = async (payment) => {
   console.log('Broken payment added to pending payments queue')
 }
 
-searchDatabase = async () => {
+let searchDatabase = async () => {
   console.log('Searching database for broken payments...')
   let sql = `select *
     from payments

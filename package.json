@@ -34,7 +34,7 @@
     "dev": "./scripts/dev.sh",
     "setup": "./scripts/setup.sh",
     "cli": "node modules/utils/APIInterface.js",
-    "lint": "./scripts/lint.sh"
+    "lint": "eslint --fix ."
   },
   "author": "The Gateway Project Developers <hello@gateway.cash>",
   "license": "AGPL-3.0",

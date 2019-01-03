@@ -19,7 +19,7 @@ window.PayButton.render = function(elementID, props) {
   )
 }
 
-const bootstrapPayButtons = (_) => {
+const bootstrapPayButtons = () => {
   // find all elements with class "payButton"
   var buttons = document.getElementsByClassName('payButton')
   console.log(

@@ -56,7 +56,7 @@ module.exports = async function (req, res) {
   sql += 'transferTXID, paymentID, created, paymentKey from payments '
   sql += 'where merchantID = ? '
   // require a transferTXID unless includeUnpaid is true
-  if (query.includeUnpaid && includeUnpaid !== 'YES') {
+  if (query.includeUnpaid && query.includeUnpaid !== 'YES') {
     sql += 'and transferTXID is not null '
   }
   sql += 'order by created desc'

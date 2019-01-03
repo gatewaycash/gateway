@@ -4,6 +4,7 @@
  * @file Defines a POST endpoint for /address
  */
 const mysql = require('../../SQLWrapper')
+const bchaddr = require('bchaddrjs')
 
 module.exports = async function (req, res) {
   console.log('POST /address requested')

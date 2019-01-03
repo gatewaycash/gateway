@@ -7,7 +7,6 @@ const bch = require('bitcore-lib-cash')
 const bchaddr = require('bchaddrjs')
 const mysql = require('../SQLWrapper')
 const axios = require('axios')
-const sha256 = require('sha256')
 
 const BLOCK_EXPLORER_BASE = 'https://bch.coin.space/api'
 

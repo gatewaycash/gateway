@@ -1,5 +1,5 @@
 import React from 'react'
-import Done from '@material-ui/icons/Done'
+import { Done } from '@material-ui/icons'
 
 export default () => (
   <center>

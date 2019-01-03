@@ -77,7 +77,7 @@ let parseProps = (data) => {
   // Parse the currency. Default is to use BCH
   let currency = data.currency ? data.currency : 'BCH'
   let supportedCurrencies = ['BCH', 'USD', 'EUR', 'CNY', 'JPY']
-  if (!supportedCurrencies.some((x) => currency)) {
+  if (!supportedCurrencies.some(() => currency)) {
     return showError(
       'The currency you provided is not supported! Supported currencies:',
       supportedCurrencies,
@@ -298,7 +298,7 @@ export default (props) => {
         } catch (e) {
           alert(
             showError(
-              "We're having some trouble contacting the Gateway server!",
+              'We\'re having some trouble contacting the Gateway server!',
             ),
           )
           return

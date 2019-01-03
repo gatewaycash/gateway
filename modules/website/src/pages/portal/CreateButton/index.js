@@ -93,7 +93,7 @@ class CreateButtonPage extends Component {
                 }}
                 onChange={(e) => this.setState({amount: e.target.value})}
                 label="Payment Amount"
-                helperText={"Amount (" + this.state.currency + ")"}
+                helperText={'Amount (' + this.state.currency + ')'}
                 type="number"
                 value={this.state.amount}
               />
