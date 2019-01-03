@@ -46,9 +46,6 @@ const collectInformation = async () => {
   let db = await question('SQL database name (ENTER for gateway): ')
   db = db || 'gateway'
 
-  let dbPort = await question('SQL port (ENTER for 3306): ')
-  dbPort = dbPort || '3306'
-
   // grab the port to host the API on
   let listen = await question('Web server port (ENTER for 8080): ')
   listen = listen || '8080'
