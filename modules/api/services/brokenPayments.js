@@ -42,12 +42,28 @@ let checkFunds = async (payment) => {
   }
 }
 
+// adds a payment to the pending payments queue unless it is already there
 let addPending = async (payment) => {
+
+  // generate a random filler TXID
   // TODO discover the real TXID
   let txid = 'broken-transaction-txid-unknown-' + sha256(
     require('crypto').randomBytes(32)
   ).substr(0, 32)
-  console.log('Add pending', txid)
+
+  // search for the paymentAddress in pending
+  let result = await mysql.query(
+    'select address from pending where address like ? limit 1',
+    [payment.paymentAddress]
+  )
+  if (result.length !== 0) {
+    console.log(
+      'Broken payment already pending:', payment.paymentAddress
+    )
+    return
+  }
+
+  // insert into the database
   var sql = 'insert into pending (txid, address) values (?, ?)'
   await mysql.query(sql, [txid, payment.paymentAddress])
   console.log('Broken payment added to pending payments queue')
