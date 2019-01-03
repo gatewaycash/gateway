@@ -7,7 +7,7 @@ const mysql = require('../../SQLWrapper')
 const bchaddr = require('bchaddrjs')
 const sha256 = require('sha256')
 
-module.exports = async function (req, res) {
+module.exports = async function(req, res) {
   console.log('POST /register requested')
 
   // An object to hold the response
@@ -17,7 +17,8 @@ module.exports = async function (req, res) {
   if (!req.body.address) {
     response.status = 'error'
     response.error = 'No Address'
-    response.description = 'No address was provided as a POST parameter. Please ensure that you have included a Bitcoin Cash (BCH) address as a POST parameter to the registration request.'
+    response.description =
+      'No address was provided as a POST parameter. Please ensure that you have included a Bitcoin Cash (BCH) address as a POST parameter to the registration request.'
     res.end(JSON.stringify(response))
     return
   }
@@ -33,7 +34,8 @@ module.exports = async function (req, res) {
   if (address === 'invalid') {
     response.status = 'error'
     response.error = 'Invalid Address'
-    response.description = 'It looks like you provided an invalid Bitcoin Cash address. Make sure you\'re using the new-style CashAddress format (e.g. bitcoincash:q.....), and not a legacy-style Bitcoin address (starting with a 1 or a 3). Also ensure that you\'re using a Bitcoin Cash address and not a Bitcoin Core address.'
+    response.description =
+      "It looks like you provided an invalid Bitcoin Cash address. Make sure you're using the new-style CashAddress format (e.g. bitcoincash:q.....), and not a legacy-style Bitcoin address (starting with a 1 or a 3). Also ensure that you're using a Bitcoin Cash address and not a Bitcoin Core address."
     res.end(JSON.stringify(response))
     return
   }
@@ -42,7 +44,8 @@ module.exports = async function (req, res) {
   if (!req.body.password) {
     response.status = 'error'
     response.error = 'No Password'
-    response.description = 'Your account registration request needs to include a password.'
+    response.description =
+      'Your account registration request needs to include a password.'
     res.end(JSON.stringify(response))
     return
   }
@@ -51,7 +54,8 @@ module.exports = async function (req, res) {
   if (req.body.password.toString().length < 12) {
     response.status = 'error'
     response.error = 'Password Too Short'
-    response.description = 'The security of your account is important. For this reason, your password is required to be at least 12 characters in length.'
+    response.description =
+      'The security of your account is important. For this reason, your password is required to be at least 12 characters in length.'
     res.end(JSON.stringify(response))
     return
   }
@@ -64,7 +68,8 @@ module.exports = async function (req, res) {
   ) {
     response.status = 'error'
     response.error = 'Password Cannot Contain Odd Characters'
-    response.description = 'The security of your account is important. For this reason, your password may not contain spaces, tabs, return characters or other non-standard characters.'
+    response.description =
+      'The security of your account is important. For this reason, your password may not contain spaces, tabs, return characters or other non-standard characters.'
     res.end(JSON.stringify(response))
     return
   }
@@ -80,7 +85,8 @@ module.exports = async function (req, res) {
   if (result.length !== 0) {
     response.status = 'error'
     response.error = 'Address Already In Use'
-    response.description = 'It looks like that address is already being used by another user! If this is your address, send an email to support@gateway.cash and we\'ll help you get access to this merchant account.'
+    response.description =
+      "It looks like that address is already being used by another user! If this is your address, send an email to support@gateway.cash and we'll help you get access to this merchant account."
     res.end(JSON.stringify(response))
     return
   }
@@ -90,11 +96,8 @@ module.exports = async function (req, res) {
     provided
    */
   if (!req.body.username) {
-
     // create the new user account
-    const merchantID = sha256(
-      require('crypto').randomBytes(32)
-    ).substr(0, 16)
+    const merchantID = sha256(require('crypto').randomBytes(32)).substr(0, 16)
     const passwordSalt = sha256(require('crypto').randomBytes(32))
     const APIKey = sha256(require('crypto').randomBytes(32))
     const passwordHash = sha256(req.body.password + passwordSalt)
@@ -102,10 +105,13 @@ module.exports = async function (req, res) {
       (payoutAddress, merchantID, password, salt, APIKey)
       values
       (?, ?, ?, ?, ?)`
-    await mysql.query(
-      sql,
-      [req.body.address, merchantID, passwordHash, passwordSalt, APIKey]
-    )
+    await mysql.query(sql, [
+      req.body.address,
+      merchantID,
+      passwordHash,
+      passwordSalt,
+      APIKey,
+    ])
 
     // send the API key to the user
     response.status = 'success'
@@ -189,9 +195,7 @@ module.exports = async function (req, res) {
   }
 
   // create the new record with a username
-  const merchantID = sha256(
-    require('crypto').randomBytes(32)
-  ).substr(0, 16)
+  const merchantID = sha256(require('crypto').randomBytes(32)).substr(0, 16)
   const passwordSalt = sha256(require('crypto').randomBytes(32))
   const APIKey = sha256(require('crypto').randomBytes(32))
   const passwordHash = sha256(req.body.password + passwordSalt)
@@ -203,17 +207,14 @@ module.exports = async function (req, res) {
       APIKey,
       username
     ) values (?, ?, ?, ?, ?, ?)`
-  await mysql.query(
-    sql,
-    [
-      req.body.address,
-      merchantID,
-      passwordHash,
-      passwordSalt,
-      APIKey,
-      req.body.username.toLowerCase()
-    ]
-  )
+  await mysql.query(sql, [
+    req.body.address,
+    merchantID,
+    passwordHash,
+    passwordSalt,
+    APIKey,
+    req.body.username.toLowerCase(),
+  ])
 
   // send the API key to the user
   response.status = 'success'

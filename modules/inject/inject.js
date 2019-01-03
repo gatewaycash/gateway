@@ -4,46 +4,29 @@ import PayButton from './../paybutton/src/PayButton.js'
 
 // create a local .render() function accessible from the window object
 window.PayButton = {}
-window.PayButton.render = function (elementID, props) {
-
+window.PayButton.render = function(elementID, props) {
   // first, we clear anything that might be in the element
   ReactDOM.render(
     <div id={elementID}>Loading...</div>,
     document.getElementById(elementID),
-    function () {
-
+    function() {
       // then, we render the actual PayButton
       ReactDOM.render(
-        <PayButton
-          buttonText={props.buttonText}
-          dialogTitle={props.dialogTitle}
-          amount={props.amount}
-          currency={props.currency}
-          merchantID={props.merchantID}
-          paymentID={props.paymentID}
-          callbackURL={props.callbackURL}
-          address={props.address}
-          gatewayServer={props.gatewayServer}
-          paymentCompleteAudio={props.paymentCompleteAudio}
-          paymentCompleteCallback={props.paymentCompleteCallback}
-          closeWhenComplete={props.closeWhenComplete}
-          elementID={elementID}
-        />,
-        document.getElementById(elementID)
+        <PayButton {...props} elementID={elementID} />,
+        document.getElementById(elementID),
       )
-    }
+    },
   )
 }
 
-// on page load, search for and render all payment buttons
-window.onload = function() {
+const bootstrapPayButtons = (_) => {
   // find all elements with class "payButton"
   var buttons = document.getElementsByClassName('payButton')
   console.log(
     'Gateway: Found',
     buttons.length,
     buttons.length === 1 ? 'PayButton' : 'PayButtons',
-    'on this page.'
+    'on this page.',
   )
 
   // for each of those elements, render the button
@@ -56,23 +39,24 @@ window.onload = function() {
     button.setAttribute('id', buttonID)
 
     // send all attributes to the render function
-    window.PayButton.render(
-      buttonID,
-      {
-        buttonText: button.getAttribute('buttonText'),
-        dialogTitle: button.getAttribute('dialogTitle'),
-        amount: button.getAttribute('amount'),
-        currency: button.getAttribute('currency'),
-        merchantID: button.getAttribute('merchantID'),
-        paymentID: button.getAttribute('paymentID'),
-        callbackURL: button.getAttribute('callbackURL'),
-        address: button.getAttribute('address'),
-        gatewayServer: button.getAttribute('gatewayServer'),
-        paymentCompleteAudio: button.getAttribute('paymentCompleteAudio'),
-        paymentCompleteCallback: button.getAttribute('paymentCompleteCallback'),
-        closeWhenComplete: button.getAttribute('closeWhenComplete'),
-        elementID: buttonID
-      }
-    )
+    window.PayButton.render(buttonID, {
+      buttonText: button.getAttribute('buttonText'),
+      dialogTitle: button.getAttribute('dialogTitle'),
+      amount: button.getAttribute('amount'),
+      currency: button.getAttribute('currency'),
+      merchantID: button.getAttribute('merchantID'),
+      paymentID: button.getAttribute('paymentID'),
+      callbackURL: button.getAttribute('callbackURL'),
+      address: button.getAttribute('address'),
+      gatewayServer: button.getAttribute('gatewayServer'),
+      paymentCompleteAudio: button.getAttribute('paymentCompleteAudio'),
+      paymentCompleteCallback: button.getAttribute('paymentCompleteCallback'),
+      closeWhenComplete: button.getAttribute('closeWhenComplete'),
+      elementID: buttonID,
+      hideWalletButton: button.getAttribute('hidewalletbutton'),
+    })
   }
 }
+
+// on page load, search for and render all payment buttons
+window.addEventListener('load', bootstrapPayButtons)
