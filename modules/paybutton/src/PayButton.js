@@ -46,27 +46,23 @@ let parseProps = (data) => {
   let validProtocols = ['http://', 'https://']
 
   // find the API basepoint URL
-  let APIURL = data.gatewayServer ?
-    data.gatewayServer :
-    'https://api.gateway.cash'
+  let APIURL = data.gatewayServer || 'https://api.gateway.cash'
 
   // check the provided API basepoint URL for sanity
   if (!validProtocols.some((x) => APIURL.startsWith(x))) {
     return showError(
-      'API basepoint URL does not start with http:// or https://'
+      'API basepoint URL does not start with http:// or https://',
     )
   }
 
   // find the block explorer websocket URL
-  var blockExplorerURL = data.blockExplorer ?
-    data.blockExplorer :
-    'wss://bch.coin.space'
+  var blockExplorerURL = data.blockExplorer
+    ? data.blockExplorer
+    : 'wss://bch.coin.space'
 
   // check the provided API basepoint URL for sanity
   if (!['ws://', 'wss://'].some((x) => blockExplorerURL.startsWith(x))) {
-    return showError(
-      'Block explorer URL does not start with ws:// or wss://'
-    )
+    return showError('Block explorer URL does not start with ws:// or wss://')
   }
 
   // Parse the amount. When 0, any amount may be paid
@@ -84,7 +80,7 @@ let parseProps = (data) => {
   if (!supportedCurrencies.some((x) => currency)) {
     return showError(
       'The currency you provided is not supported! Supported currencies:',
-      supportedCurrencies
+      supportedCurrencies,
     )
   }
 
@@ -111,14 +107,12 @@ let parseProps = (data) => {
   }
 
   // set a default value for button text if not provided
-  let buttonText = data.buttonText ?
-    data.buttonText :
-    'PAY WITH BITCOIN CASH'
+  let buttonText = data.buttonText ? data.buttonText : 'PAY WITH BITCOIN CASH'
 
   // set a default value for the dialog title if not provided
-  let dialogTitle = data.dialogTitle ?
-    data.dialogTitle :
-    'Complete Your Payment'
+  let dialogTitle = data.dialogTitle
+    ? data.dialogTitle
+    : 'Complete Your Payment'
 
   // check the direct deposit address for validity, if provided
   let address = ''
@@ -141,24 +135,25 @@ let parseProps = (data) => {
   // fail if neither a merchant ID nor an address were provided
   if (!merchantID && !address) {
     return showError(
-      'Either an address or a Merchant ID is required! (Merchant XPUB and BIP47 are coming soon)'
+      'Either an address or a Merchant ID is required! (Merchant XPUB and BIP47 are coming soon)',
     )
   }
 
   // set the value for the audio file to play when a payment succeeds
-  let paymentCompleteAudio = data.paymentCompleteAudio ?
-    data.paymentCompleteAudio :
-    'https://gateway.cash/audio/ding.mp3'
+  let paymentCompleteAudio = data.paymentCompleteAudio
+    ? data.paymentCompleteAudio
+    : 'https://gateway.cash/audio/ding.mp3'
 
   // get the value for the payment complete callback function
-  let paymentCompleteCallback = data.paymentCompleteCallback ?
-    data.paymentCompleteCallback : 'console.log("GATEWAY: Payment complete!\\n\\nTXID: "+window.gatewayPaymentTXID)'
+  let paymentCompleteCallback = data.paymentCompleteCallback
+    ? data.paymentCompleteCallback
+    : 'console.log("GATEWAY: Payment complete!\\n\\nTXID: "+window.gatewayPaymentTXID)'
 
   // ensure the callback is in the correct format
   if (paymentCompleteCallback.endsWith(';')) {
     paymentCompleteCallback = paymentCompleteCallback.substr(
       0,
-      paymentCompleteCallback.length - 1
+      paymentCompleteCallback.length - 1,
     )
   }
   if (!paymentCompleteCallback.endsWith(')')) {
@@ -167,18 +162,20 @@ let parseProps = (data) => {
   paymentCompleteCallback += ';'
 
   // set the value for whether to close the dialog when the payment succeeds
-  let closeWhenComplete = data.closeWhenComplete ?
-    data.closeWhenComplete :
-    false
+  let closeWhenComplete = data.closeWhenComplete
+    ? data.closeWhenComplete
+    : false
 
   // set the toggle for payment audio
-  let enablePaymentAudio = data.enablePaymentAudio ?
-    data.enablePaymentAudio :
-    true
+  let enablePaymentAudio = data.enablePaymentAudio
+    ? data.enablePaymentAudio
+    : true
 
-  let elementID = data.elementID ?
-    data.elementID :
-    'pay-' + Math.floor(Math.random() * 100000)
+  let elementID = data.elementID
+    ? data.elementID
+    : 'pay-' + Math.floor(Math.random() * 100000)
+
+  let hideWalletButton = data.hideWalletButton === 'yes'
 
   // return the parsed data
   let parsedData = {
@@ -196,7 +193,8 @@ let parseProps = (data) => {
     paymentCompleteCallback: paymentCompleteCallback,
     closeWhenComplete: closeWhenComplete,
     enablePaymentAudio: enablePaymentAudio,
-    elementID: elementID
+    elementID: elementID,
+    hideWalletButton: hideWalletButton,
   }
   return parsedData
 }
@@ -210,7 +208,9 @@ export default (props) => {
     return (
       <div style={{ display: 'inline-block', padding: '0.25em' }}>
         <Button
-          onClick={ () => { alert(parsedData) } }
+          onClick={() => {
+            alert(parsedData)
+          }}
           variant="contained"
           color="secondary"
         >
@@ -235,32 +235,30 @@ export default (props) => {
   let [callbackURL, setCallbackURL] = React.useState(parsedData.callbackURL)
   let [APIURL, setAPIURL] = React.useState(parsedData.APIURL)
   let [blockExplorerURL, setBlockExplorerURL] = React.useState(
-    parsedData.blockExplorerURL
+    parsedData.blockExplorerURL,
   )
   let [paymentCompleteAudio, setPaymentCompleteAudio] = React.useState(
-    parsedData.paymentCompleteAudio
+    parsedData.paymentCompleteAudio,
   )
   let [paymentCompleteCallback, setPaymentCompleteCallback] = React.useState(
-    parsedData.paymentCompleteCallback
+    parsedData.paymentCompleteCallback,
   )
   let [closeWhenComplete, setCloseWhenComplete] = React.useState(
-    parsedData.closeWhenComplete
+    parsedData.closeWhenComplete,
   )
   let [enablePaymentAudio, setEnablePaymentAudio] = React.useState(
-    parsedData.enablePaymentAudio
+    parsedData.enablePaymentAudio,
   )
   let [paymentAudio, setPaymentAudio] = React.useState(
-    new Audio(paymentCompleteAudio)
+    new Audio(paymentCompleteAudio),
   )
   let [sock, setSock] = React.useState(false)
   let [elementID, setElementID] = React.useState(parsedData.elementID)
 
   // When the payment button is clicked, generate a new invoice
   let handleClick = async () => {
-
     // create a ninvoice only when a payment has not yet been sent
     if (!paymentComplete) {
-
       // set the amount multiplier based on the currency
       let amountMultiplier = 1.0
       if (currency !== 'BCH') {
@@ -273,7 +271,7 @@ export default (props) => {
           'GATEWAY: Current',
           'BCH/' + currency,
           'exchange rate:',
-          exchangeRate
+          exchangeRate,
         )
         amountMultiplier = 1 / exchangeRate
       }
@@ -288,7 +286,7 @@ export default (props) => {
           let invoiceResult = await axios.post(APIURL + '/pay', {
             merchantID: merchantID,
             paymentID: paymentID,
-            callbackURL: callbackURL
+            callbackURL: callbackURL,
           })
           if (invoiceResult.data.status === 'error') {
             alert(showError(invoiceResult.data))
@@ -298,13 +296,15 @@ export default (props) => {
             paymentAddress = invoiceResult.data.paymentAddress
           }
         } catch (e) {
-          alert(showError(
-            'We\'re having some trouble contacting the Gateway server!'
-          ))
+          alert(
+            showError(
+              "We're having some trouble contacting the Gateway server!",
+            ),
+          )
           return
         }
 
-      // if a direct deposit address was given, use it for payment address
+        // if a direct deposit address was given, use it for payment address
       } else {
         setPaymentAddress(address)
         paymentAddress = address
@@ -324,15 +324,11 @@ export default (props) => {
       })
       sock.on('disconnect', () => {
         console.log('GATEWAY: Disconnected from block explorer')
-        console.log(
-          'GATEWAY: This does not mean that your payment failed',
-        )
+        console.log('GATEWAY: This does not mean that your payment failed')
       })
       sock.on('error', () => {
         console.log('GATEWAY: Disconnected from block explorer')
-        console.log(
-          'GATEWAY: This does not mean that your payment failed',
-        )
+        console.log('GATEWAY: This does not mean that your payment failed')
       })
       sock.on('tx', handlePayment)
     }
@@ -357,7 +353,6 @@ export default (props) => {
     }
 
     if (valid) {
-
       // send payment to Gateway server if it was not direct deposit
       if (!address) {
         await sendPaymentToServer(data.txid)
@@ -379,7 +374,6 @@ export default (props) => {
       // call the local website callback, if requested
       if (paymentCompleteCallback && paymentCompleteCallback.length > 0) {
         if (typeof window === 'object') {
-
           // set the TXID global variable
           window.gatewayPaymentTXID = data.txid
           window.gatewayPaymentAddress = paymentAddress
@@ -405,19 +399,20 @@ export default (props) => {
   // when we find a matching payment, send it to the server to mark invoice paid
   let sendPaymentToServer = async (txid) => {
     try {
-      let paymentResponse = await axios.post(APIURL + '/paid',
-        {
-          paymentAddress: paymentAddress,
-          paymentTXID: txid
-        }
-      )
+      let paymentResponse = await axios.post(APIURL + '/paid', {
+        paymentAddress: paymentAddress,
+        paymentTXID: txid,
+      })
       if (paymentResponse.data.status === 'error') {
         showError(paymentResponse.data)
       }
     } catch (e) {
-      alert(showError(
-        'If you sent the funds, your payment has been received. However, Gateway is having trouble getting a receipt for your transaction. If you are concerned this could be a problem, please include this TXID in a support message to Gateway or to your merchant:\n\n' + txid
-      ))
+      alert(
+        showError(
+          'If you sent the funds, your payment has been received. However, Gateway is having trouble getting a receipt for your transaction. If you are concerned this could be a problem, please include this TXID in a support message to Gateway or to your merchant:\n\n' +
+            txid,
+        ),
+      )
     }
   }
 
@@ -426,7 +421,7 @@ export default (props) => {
     <div
       style={{
         display: 'inline-block',
-        padding: '0.25em'
+        padding: '0.25em',
       }}
       id={elementID}
     >
@@ -442,25 +437,18 @@ export default (props) => {
         open={dialogOpen}
         keepMounted
         onClose={handleClose}
-        title={
-          paymentComplete ?
-            'Thank you!' :
-            dialogTitle
-        }
+        title={paymentComplete ? 'Thank you!' : dialogTitle}
       >
-        {
-          paymentComplete ? (
-            <PaymentComplete />
-          ) : (
-            <PaymentProgress
-              amountBCH={amountBCH}
-              paymentAddress={paymentAddress}
-            />
-          )
-        }
+        {paymentComplete ? (
+          <PaymentComplete />
+        ) : (
+          <PaymentProgress
+            amountBCH={amountBCH}
+            paymentAddress={paymentAddress}
+            hideWalletButton={parsedData.hideWalletButton}
+          />
+        )}
       </Dialog>
     </div>
   )
-
-
 }

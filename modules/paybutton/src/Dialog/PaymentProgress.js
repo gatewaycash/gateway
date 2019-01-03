@@ -1,7 +1,7 @@
 import React from 'react'
 import Button from '@material-ui/core/Button'
 
-export default ({ amountBCH, paymentAddress }) => (
+export default ({ amountBCH, paymentAddress, hideWalletButton }) => (
   <center>
     <p
       style={{
@@ -10,18 +10,18 @@ export default ({ amountBCH, paymentAddress }) => (
         marginTop: '-1.5em',
       }}
     >
-      Send {amountBCH == 0 ? 'some' : amountBCH} Bitcoin&nbsp;Cash (BCH) to
-      this address to complete your payment
+      Send {amountBCH == 0 ? 'some' : amountBCH} Bitcoin&nbsp;Cash (BCH) to this
+      address to complete your payment
     </p>
     <img
       src={
-        amountBCH > 0 ? (
-          'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' +
-          paymentAddress + '?amount=' + amountBCH
-        ) : (
-          'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' +
-          paymentAddress
-        )
+        amountBCH > 0
+          ? 'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' +
+            paymentAddress +
+            '?amount=' +
+            amountBCH
+          : 'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' +
+            paymentAddress
       }
       alt="Payment QR code"
       style={{
@@ -43,16 +43,18 @@ export default ({ amountBCH, paymentAddress }) => (
     >
       {paymentAddress}
     </p>
-    <Button
-      variant="contained"
-      color="primary"
-      href={amountBCH > 0 ? (
-        paymentAddress + '?amount=' + amountBCH
-      ) : (
-        paymentAddress
-      )
-      }>
-      OPEN WALLET
-    </Button>
+    {hideWalletButton || (
+      <Button
+        variant="contained"
+        color="primary"
+        href={
+          amountBCH > 0
+            ? paymentAddress + '?amount=' + amountBCH
+            : paymentAddress
+        }
+      >
+        OPEN WALLET
+      </Button>
+    )}
   </center>
 )
