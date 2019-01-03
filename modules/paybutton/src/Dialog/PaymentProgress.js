@@ -51,7 +51,7 @@ export default ({ amountBCH, paymentAddress }) => (
       ) : (
         paymentAddress
       )
-    }>
+      }>
       OPEN WALLET
     </Button>
   </center>

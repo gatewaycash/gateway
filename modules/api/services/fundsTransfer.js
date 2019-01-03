@@ -109,11 +109,11 @@ let transferFunds = async (payment) => {
   // the inputs for this transaction are the UTXOs from the payment address
   for(var i = 0, l = paymentUTXOs.length; i < l; i++) {
     transferTransaction.from({
-      "txid": paymentUTXOs[i].txid,
-      "vout": paymentUTXOs[i].vout,
-      "address": bchaddr.toCashAddress(paymentUTXOs[i].address),
-      "scriptPubKey": paymentUTXOs[i].scriptPubKey,
-      "amount": paymentUTXOs[i].amount
+      'txid': paymentUTXOs[i].txid,
+      'vout': paymentUTXOs[i].vout,
+      'address': bchaddr.toCashAddress(paymentUTXOs[i].address),
+      'scriptPubKey': paymentUTXOs[i].scriptPubKey,
+      'amount': paymentUTXOs[i].amount
     })
     totalTransferred += (paymentUTXOs[i].amount * 100000000)
   }

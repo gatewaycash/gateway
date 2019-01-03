@@ -20,10 +20,10 @@ export default {
       exclude: '../../node_modules/**',
       babelrc: false,
       presets: [
-        ["@babel/env", {
+        ['@babel/env', {
           modules: false
         }],
-        "@babel/preset-react"
+        '@babel/preset-react'
       ]
     }),
     resolve({

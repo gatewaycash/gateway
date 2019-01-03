@@ -18,7 +18,7 @@ import io from 'socket.io-client'
  * @param  {string} error - The error to display
  */
 let showError = (error) => {
-  let errorText = "An error might be causing problems with "
+  let errorText = 'An error might be causing problems with '
   errorText += 'your payment. For help, please contact the '
   errorText += 'merchant, or send an email to support@gateway.cash.\n\n'
   errorText += 'If you are the merchant or a developer, you should reference '

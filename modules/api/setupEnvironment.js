@@ -168,7 +168,7 @@ database you want to keep, answer NO.
 
 // print some informational text
 console.log(
-`The Gateway API server uses a MySQL database to store and manage user
+  `The Gateway API server uses a MySQL database to store and manage user
 accounts, payments and other data. To set up the API server (required for both
 development and production deployments), follow these steps prior to continuing:
 

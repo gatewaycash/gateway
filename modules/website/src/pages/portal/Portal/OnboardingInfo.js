@@ -16,7 +16,7 @@ export default () => (
       In order to start accepting Bitcoin Cash, you must first create a
       Bitcoin Cash wallet. We recommend using
       the <a href="https://wallet.bitcoin.com" target="_blank"
-      rel="noopener noreferrer">bitcoin.com wallet</a>, a tried-and-true wallet
+        rel="noopener noreferrer">bitcoin.com wallet</a>, a tried-and-true wallet
       trusted by the community.
     </Text>
     <Text>

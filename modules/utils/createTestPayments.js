@@ -60,11 +60,11 @@ let runTest = async () => {
     // generate a random payment ID
     let paymentID = sha256(require('crypto').randomBytes(32)).substr(0, 20)
     let paymentAddress = await axios.post(url + '/pay',
-    {
-      merchantID: merchantID,
-      paymentID: paymentID,
-      callbackURL: callbackURL
-    })
+      {
+        merchantID: merchantID,
+        paymentID: paymentID,
+        callbackURL: callbackURL
+      })
     console.log(paymentAddress)
     console.log('Received payment address', paymentAddress)
     if (!broken) {
@@ -72,10 +72,10 @@ let runTest = async () => {
       // generate a random payment TXID
       let paymentTXID = sha256(require('cryotp').randomBytes(32))
       await axios.post(url + '/paid',
-      {
-        paymentAddress: paymentAddress,
-        paymentTXID: paymentTXID
-      })
+        {
+          paymentAddress: paymentAddress,
+          paymentTXID: paymentTXID
+        })
       console.log('Sent receipt with TXID', paymentTXID)
     } else {
       console.log('leaving the payment as broken and moving on')

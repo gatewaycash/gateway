@@ -38,7 +38,7 @@ module.exports = async function (req, res) {
   if (!req.body.username) {
     response.status = 'error'
     response.error = 'No Username Provided'
-    response.description = `Please provide a new username!`
+    response.description = 'Please provide a new username!'
     res.end(JSON.stringify(response))
     return
   }
@@ -47,7 +47,7 @@ module.exports = async function (req, res) {
   if (req.body.username.length < 5) {
     response.status = 'error'
     response.error = 'Username Too Short'
-    response.description = `Username must be at least 5 characters!`
+    response.description = 'Username must be at least 5 characters!'
     res.end(JSON.stringify(response))
     return
   }
@@ -56,7 +56,7 @@ module.exports = async function (req, res) {
   if (req.body.username.length > 24) {
     response.status = 'error'
     response.error = 'Username Too Long'
-    response.description = `Username can be at most 24 characters!`
+    response.description = 'Username can be at most 24 characters!'
     res.end(JSON.stringify(response))
     return
   }
@@ -90,7 +90,7 @@ module.exports = async function (req, res) {
   ) {
     response.status = 'error'
     response.error = 'No Special Characters'
-    response.description = `Usernames cannot contain special characters!`
+    response.description = 'Usernames cannot contain special characters!'
     res.end(JSON.stringify(response))
     return
   }
