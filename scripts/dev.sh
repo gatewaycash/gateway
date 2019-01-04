@@ -6,4 +6,4 @@
 # synchronously.
 
 echo "Starting development environment..."
-concurrently "yarn site-dev" "yarn api-dev" "yarn paybutton-dev" "yarn inject-dev" "yarn paybutton-docs-build && yarn api-docs-build"
+concurrently "yarn site-dev" "yarn api-dev" "yarn inject-dev" "yarn paybutton-docs-build && yarn api-docs-build"

@@ -4,7 +4,7 @@
  * @file Defines a React component for the Gateway payment button
  */
 import React from 'react'
-import Button from '@material-ui/core/Button'
+import { Button } from '@material-ui/core'
 import Dialog from './Dialog'
 import PaymentComplete from './Dialog/PaymentComplete'
 import PaymentProgress from './Dialog/PaymentProgress'

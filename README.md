@@ -57,15 +57,15 @@ yarn setup
 
 # fire up your editor and start coding!
 yarn dev
-# or
-yarn api-dev
-# or
-yarn website-dev
-# ...
 ```
 
 More information specific to each module can be found in the README.md for
-that module.
+that module:
+
+- [PayButton](modules/paybutton/README.md)
+- [API](modules/api/README.md)
+- [Website](modules/website/README.md)
+- [The Documentation module](modules/docs/README.md)
 
 ### Issues and Pull Requests
 
