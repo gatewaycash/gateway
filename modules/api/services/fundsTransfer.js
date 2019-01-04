@@ -48,6 +48,7 @@ let checkFunds = async (payment) => {
       'Error checking or transferring funds for',
       payment.address
     )
+    console.log(e)
   }
 }
 
