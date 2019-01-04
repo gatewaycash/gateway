@@ -119,9 +119,8 @@ let transferFunds = async (payment) => {
   }
   console.log('Added UTXOs to the transfer transaction')
 
-  console.log(totalTransferred)
+  // round the totalTransferred to be Satoshis
   totalTransferred = totalTransferred.toFixed(0)
-  console.log(totalTransferred)
 
   // TODO: optional Gateway contributions
   // to bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng
@@ -179,15 +178,8 @@ let transferFunds = async (payment) => {
   sql = 'update users set totalSales = totalSales + ? where merchantID = ?'
   await mysql.query(sql, [totalTransferred, merchantID])
 
-  // verify the callback URL is sane. If not, we are done and we return.
-  if (
-    !callbackURL.startsWith('https://') &&
-    !callbackURL.startsWith('http://')
-  ) {
-    console.log(
-      'Unable to execute callback to URL:',
-      callbackRequest.callbackURL
-    )
+  // we are done if there is not a callbackUrL
+  if (!callbackURL) {
     return
   }
 
@@ -200,7 +192,19 @@ let transferFunds = async (payment) => {
     paymentID:       paymentID
   }
 
-  // execute the callback
+  // verify the callback URL is sane. If not, we are done and we return.
+  if (
+    !callbackURL.startsWith('https://') &&
+    !callbackURL.startsWith('http://')
+  ) {
+    console.log(
+      'Unable to execute callback to URL:',
+      callbackURL
+    )
+    return
+  }
+
+  // try to execute the callback
   try {
     await axios.post(callbackRequest.callbackURL, callbackRequest)
   } catch (e) {
