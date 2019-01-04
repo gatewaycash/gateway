@@ -1,6 +1,6 @@
 {
   "name": "@gatewaycash/paybutton",
-  "version": "0.3.2",
+  "version": "0.3.4",
   "main": "build/PayButton.js",
   "license": "AGPL-3.0",
   "repository": "git+https://github.com/gatewaycash/gateway.git",

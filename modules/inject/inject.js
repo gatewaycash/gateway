@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import PayButton from './../paybutton/src/PayButton.js'
+import PayButton from '@gatewaycash/paybutton'
 
 // create a local .render() function accessible from the window object
 window.PayButton = {}
@@ -13,14 +13,16 @@ window.PayButton.render = function(elementID, props) {
       // then, we render the actual PayButton
       ReactDOM.render(
         <PayButton {...props} elementID={elementID} />,
-        document.getElementById(elementID),
+        document.getElementById(elementID)
       )
-    },
+    }
   )
 }
 
+// this function uses the above renderer to load all buttons where
+// class="payButton" automatically
 const bootstrapPayButtons = () => {
-  // find all elements with class "payButton"
+  // query the DOM and console-log however many buttons we found
   var buttons = document.getElementsByClassName('payButton')
   console.log(
     'Gateway: Found',
@@ -29,7 +31,7 @@ const bootstrapPayButtons = () => {
     'on this page.',
   )
 
-  // for each of those elements, render the button
+  // for each of those buttons, use the renderer to display the button
   for (var i = 0; i < buttons.length; i++) {
     var button = buttons.item(i)
 
@@ -38,25 +40,21 @@ const bootstrapPayButtons = () => {
     button.id = buttonID
     button.setAttribute('id', buttonID)
 
-    // send all attributes to the render function
-    window.PayButton.render(buttonID, {
-      buttonText: button.getAttribute('buttonText'),
-      dialogTitle: button.getAttribute('dialogTitle'),
-      amount: button.getAttribute('amount'),
-      currency: button.getAttribute('currency'),
-      merchantID: button.getAttribute('merchantID'),
-      paymentID: button.getAttribute('paymentID'),
-      callbackURL: button.getAttribute('callbackURL'),
-      address: button.getAttribute('address'),
-      gatewayServer: button.getAttribute('gatewayServer'),
-      paymentCompleteAudio: button.getAttribute('paymentCompleteAudio'),
-      paymentCompleteCallback: button.getAttribute('paymentCompleteCallback'),
-      closeWhenComplete: button.getAttribute('closeWhenComplete'),
-      elementID: buttonID,
-      hideWalletButton: button.getAttribute('hidewalletbutton'),
-    })
+    // store all element attributes in a JSON object
+    var props = {}
+    if(button.hasAttributes()) {
+      var attrs = button.attributes
+      for(var j = 0; j < attrs.length; j++) {
+        props[attrs[j].name] = attrs[j].value
+      }
+    }
+
+    console.log(props)
+
+    // render the button
+    window.PayButton.render(buttonID, props)
   }
 }
 
-// on page load, search for and render all payment buttons
+// on page load, call the automatic button loader defined above
 window.addEventListener('load', bootstrapPayButtons)

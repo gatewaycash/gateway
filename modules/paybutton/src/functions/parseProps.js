@@ -24,25 +24,52 @@ let formatCallback = (cb) => {
  * @return {object} - Parsed and validated data
  */
 export default ({
+  buttontext,
   buttonText = 'PAY WITH BITCOIN CASH',
   amount = 0,
   currency = 'BCH',
+  dialogtitle,
   dialogTitle = 'Complete Your Payment',
+  callbackurl,
   callbackURL,
+  paymentid,
   paymentID,
   address,
+  merchantid,
   merchantID,
+  paymentcompleteaudio,
   paymentCompleteAudio = 'https://gateway.cash/audio/ding.mp3',
+  paymentcompletecallback,
   paymentCompleteCallback = 'console.log("GATEWAY: Payment complete!\\n\\nTXID: "+window.gatewayPaymentTXID)',
+  closewhencomplete,
   closeWhenComplete = false,
+  enablepaymentaudio,
   enablePaymentAudio = true,
+  hidewalletbutton,
   hideWalletButton = false,
+  elementid,
   elementID = 'pay-' + Math.floor(Math.random() * 100000),
-
+  blockexplorer,
   blockExplorer = 'wss://bch.coin.space',
+  gatewayserver,
   gatewayServer = 'https://api.gateway.cash'
 }) => {
   let supportedCurrencies = ['BCH', 'USD', 'EUR', 'CNY', 'JPY']
+
+  // assign all lower-case prop names to their correct upper-case counterparts
+  buttonText = buttontext || buttonText
+  dialogTitle = dialogtitle || dialogTitle
+  callbackURL = callbackurl || callbackURL
+  paymentID = paymentid || paymentID
+  merchantID = merchantid || merchantID
+  paymentCompleteAudio = paymentcompleteaudio || paymentCompleteAudio
+  paymentCompleteCallback = paymentcompletecallback || paymentCompleteCallback
+  closeWhenComplete = closewhencomplete || closeWhenComplete
+  enablePaymentAudio = enablepaymentaudio || enablePaymentAudio
+  hideWalletButton = hidewalletbutton || hideWalletButton
+  elementID = elementid || elementID
+  blockExplorer = blockexplorer || blockExplorer
+  gatewayServer = gatewayserver || gatewayServer
 
   // APIURL sanity check
   if (!['http://', 'https://'].some((x) => gatewayServer.startsWith(x))) {
