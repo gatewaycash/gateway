@@ -8,8 +8,7 @@ export default {
   input: 'src/PayButton.js',
   output: {
     file: 'build/PayButton.js',
-    format: 'esm',
-    sourcemap: true
+    format: 'esm'
   },
   plugins: [
     resolve({

@@ -33,7 +33,8 @@ For development, use http://127.0.0.1:8080
 
   fs.writeFile(
     '.env',
-    'REACT_APP_GATEWAY_BACKEND=' + backend + '\n',
+    'REACT_APP_GATEWAY_BACKEND=' + backend + '\n'
+    'SKIP_PREFLIGHT_CHECK=true\n',
     (err) => {
       if (err) {
         console.log('Could not save configuration to modules/website/.env')
