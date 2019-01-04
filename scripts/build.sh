@@ -1,22 +1,15 @@
 #!/bin/bash
 
-# This parallelizes things as much as possible without breaking things.
-# TODO do not build the PayButton in the inject script
-
-# Two commands get run through "concurrently" which runs multiple commands at
-# once.
+# The "concurrently" command runs multiple things at once.
+# Each command is passed as a string to the concurrrently command.
 
 # The first command builds the paybutton docs and then the API docs, which can't
-# be built side-by-side and must come one after another.
+# be built side-by-side and must come one after the other.
 
-# The second command (run alongside the doc builds) is itself another call to
-# "concurrently".
+# The second command builds the PayButton
 
-# The second command:
-# - Builds the PayButton and the inject script at the same time
-# - Once those are both done it builds the website
-
-# Both the inject and PayButton need to be done before the website gets built.
+# The third command builds the injector and then the website, which can't be
+# built side-by-side and must come one after the other.
 
 echo "Starting the build..."
-concurrently "yarn paybutton-docs-build && yarn api-docs-build" "concurrently \"yarn paybutton-build\" \"yarn inject-build\" && yarn site-build"
+concurrently "yarn paybutton-docs-build && yarn api-docs-build" "yarn paybutton-build" "yarn inject-build && yarn site-build"

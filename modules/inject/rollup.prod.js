@@ -12,11 +12,12 @@ export default {
   output: {
     file: './../website/public/pay.js',
     format: 'iife',
-    sourcemap: false,
-    global: {}
+    sourcemap: false
   },
   plugins: [
-    commonjs({ include: '../../node_modules/**' }),
+    commonjs({
+      include: '../../node_modules/**'
+    }),
     babel({
       exclude: '../../node_modules/**',
       babelrc: false,
@@ -33,11 +34,11 @@ export default {
       preferBuiltins: false
     }),
     json(),
-    builtins(),
-    globals(),
+    //builtins(),
+    //globals(),
     replace({
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
-    uglify()
+    //uglify()
   ]
 }
