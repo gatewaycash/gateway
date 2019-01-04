@@ -5,12 +5,9 @@ import bchaddr from 'bchaddrjs'
  * Formats a string for use as an eval-based client callback
  * @param {String} cb - The callback to format
  */
-let formatCallback = (cb) => {
+let formatCallback = cb => {
   if (cb.endsWith(';')) {
-    cb = cb.substr(
-      0,
-      cb.length - 1,
-    )
+    cb = cb.substr(0, cb.length - 1)
   }
   if (!cb.endsWith(')')) {
     cb += '()'
@@ -47,6 +44,8 @@ export default ({
   enablePaymentAudio = true,
   hidewalletbutton,
   hideWalletButton = false,
+  hideAddressText,
+  hideaddresstext = false,
   elementid,
   elementID = 'pay-' + Math.floor(Math.random() * 100000),
   blockexplorer,
@@ -67,17 +66,18 @@ export default ({
   closeWhenComplete = closewhencomplete || closeWhenComplete
   enablePaymentAudio = enablepaymentaudio || enablePaymentAudio
   hideWalletButton = hidewalletbutton || hideWalletButton
+  hideAddressText = hideaddresstext || hideAddressText
   elementID = elementid || elementID
   blockExplorer = blockexplorer || blockExplorer
   gatewayServer = gatewayserver || gatewayServer
 
   // APIURL sanity check
-  if (!['http://', 'https://'].some((x) => gatewayServer.startsWith(x))) {
+  if (!['http://', 'https://'].some(x => gatewayServer.startsWith(x))) {
     return showError('gatewayServer must start with http:// or https://')
   }
 
   // check the provided API basepoint URL for sanity
-  if (!['ws://', 'wss://'].some((x) => blockExplorer.startsWith(x))) {
+  if (!['ws://', 'wss://'].some(x => blockExplorer.startsWith(x))) {
     return showError('blockExplorer must start with ws:// or wss://')
   }
 
@@ -90,7 +90,7 @@ export default ({
   }
 
   // Parse the currency. Default is to use BCH
-  if (!supportedCurrencies.some((x) => currency === x)) {
+  if (!supportedCurrencies.some(x => currency === x)) {
     return showError('Currency must be one of', supportedCurrencies)
   }
 
@@ -102,7 +102,7 @@ export default ({
   // check the protocol of the callback URL for sanity
   if (
     callbackURL &&
-    !['http://', 'https://'].some((x) => callbackURL.startsWith(x))
+    !['http://', 'https://'].some(x => callbackURL.startsWith(x))
   ) {
     return showError('Callback URL does not start with http:// or https://')
   }
@@ -134,6 +134,11 @@ export default ({
   // format the client-side callback
   paymentCompleteCallback = formatCallback(paymentCompleteCallback)
 
+  let paymentProgressProps = {
+    hideWalletButton,
+    hideAddressText
+  }
+
   // return the parsed data
   let parsedData = {
     buttonText: buttonText,
@@ -151,7 +156,7 @@ export default ({
     closeWhenComplete: closeWhenComplete,
     enablePaymentAudio: enablePaymentAudio,
     elementID: elementID,
-    hideWalletButton: hideWalletButton,
+    paymentProgressProps
   }
   return parsedData
 }

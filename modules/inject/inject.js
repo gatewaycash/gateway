@@ -28,7 +28,7 @@ const bootstrapPayButtons = () => {
     'Gateway: Found',
     buttons.length,
     buttons.length === 1 ? 'PayButton' : 'PayButtons',
-    'on this page.',
+    'on this page.'
   )
 
   // for each of those buttons, use the renderer to display the button
@@ -47,6 +47,12 @@ const bootstrapPayButtons = () => {
       for(var j = 0; j < attrs.length; j++) {
         props[attrs[j].name] = attrs[j].value
       }
+    }
+    props.paymentProgressProps = {
+      amount: button.getAttribute('amount'),
+      address: button.getAttribute('address'),
+      hideWalletButton: button.getAttribute('hidewalletbutton'),
+      hideAddressText: button.getAttribute('hideAddressText')
     }
 
     console.log(props)
