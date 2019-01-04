@@ -119,6 +119,10 @@ let transferFunds = async (payment) => {
   }
   console.log('Added UTXOs to the transfer transaction')
 
+  console.log(totalTransferred)
+  totalTransferred = totalTransferred.toFixed(0)
+  console.log(totalTransferred)
+
   // TODO: optional Gateway contributions
   // to bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng
   transferTransaction.to(
