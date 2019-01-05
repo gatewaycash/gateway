@@ -1,9 +1,8 @@
 import React from 'react'
 import { navigate } from '@reach/router'
-import Footer from './../../../components/Footer'
+import { Footer, Logo } from 'components'
 import Login from './Login'
 import Register from './Register'
-import Logo from 'components/Logo'
 import OnboardingInfo from './OnboardingInfo'
 
 export default () => {

@@ -55,6 +55,8 @@ let bootstrapPayButtons = () => {
         props[attrs[j].name] = attrs[j].value
       }
     }
+
+    // pass attributes for paymentProgressProps
     props.paymentProgressProps = {
       amount: button.getAttribute('amount'),
       address: button.getAttribute('address'),

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import NavigationMenu from '../NavigationMenu'
-//import PreviewButton from './PreviewButton'
+import PreviewButton from './PreviewButton'
 import PaymentIDInfo from './PaymentIDInfo'
 import ClientCodeExample from './ClientCodeExample'
 import SupportProject from './SupportProject'
@@ -24,7 +24,7 @@ class CreateButtonPage extends Component {
     amount: '0',
     advanced: false,
     anyAmount: true,
-    callbackURL: 'None',
+    callbackURL: undefined,
   }
 
   constructor(props) {
@@ -179,15 +179,8 @@ class CreateButtonPage extends Component {
             </div>
           )}
         </Container>
-        <ClientCodeExample
-          merchantID={this.state.merchantID}
-          buttonText={this.state.buttonText}
-          amount={this.state.amount}
-          currency={this.state.currency}
-          dialogTitle={this.state.dialogTitle}
-          paymentID={this.state.paymentID}
-          callbackURL={this.state.callbackURL}
-        />
+        <ClientCodeExample {...this.state} />
+        <PreviewButton {...this.state} />
         <PaymentIDInfo />
         <SupportProject />
         <Footer />

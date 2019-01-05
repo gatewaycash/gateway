@@ -1,14 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { navigate } from '@reach/router'
 import { Button, TextField } from '@material-ui/core'
 import { login } from 'API'
-import Container from 'components/Container'
-import Text from 'components/Text'
+import { Container, Text } from 'components'
 
 export default () => {
-  let [userID, setUserID] = React.useState('')
-  let [password, setPassword] = React.useState('')
-  let [loginError, setLoginError] = React.useState({})
+  let [userID, setUserID] = useState('')
+  let [password, setPassword] = useState('')
+  let [loginError, setLoginError] = useState({})
 
   // a function for handling the login form submission
   let handleSubmit = async (e) => {

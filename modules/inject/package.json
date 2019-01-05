@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@gatewaycash/paybutton": "^0.3.5",
-    "react": "^16.7.0-alpha.2",
-    "react-dom": "^16.7.0-alpha.2"
+    "react": "16.7.0-alpha.2",
+    "react-dom": "16.7.0-alpha.2"
   }
 }

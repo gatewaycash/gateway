@@ -3,7 +3,7 @@
  * @author The Gateway Project Developers <hello@gateway.cash>
  * @file Defines a React component for the Gateway payment button
  */
-import React from 'react'
+import React, { useState } from 'react'
 import { Button } from '@material-ui/core'
 import Dialog from './Dialog'
 import PaymentComplete from './Dialog/PaymentComplete'
@@ -23,9 +23,7 @@ let PayButton = props => {
     return (
       <div style={{ display: 'inline-block', padding: '0.25em' }}>
         <Button
-          onClick={() => {
-            alert(props)
-          }}
+          onClick={() => alert(props)}
           variant="contained"
           color="secondary"
         >
@@ -36,11 +34,11 @@ let PayButton = props => {
   }
 
   // set the default state
-  let [dialogOpen, setDialogOpen] = React.useState(false)
-  let [paymentComplete, setPaymentComplete] = React.useState(false)
-  let [amountBCH, setAmountBCH] = React.useState(0)
-  let [paymentAddress, setPaymentAddress] = React.useState('loading...')
-  let [sock, setSock] = React.useState(false)
+  let [dialogOpen, setDialogOpen] = useState(false)
+  let [paymentComplete, setPaymentComplete] = useState(false)
+  let [amountBCH, setAmountBCH] = useState(0)
+  let [paymentAddress, setPaymentAddress] = useState('loading...')
+  let [sock, setSock] = useState(false)
   let paymentCompleteAudio = new Audio(props.paymentCompleteAudio)
 
   // When the payment button is clicked, generate a new invoice
