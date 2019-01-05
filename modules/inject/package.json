@@ -9,6 +9,15 @@
   "bugs": {
     "url": "https://github.com/gatewaycash/gateway/issues"
   },
+  "dependencies": {
+    "@gatewaycash/paybutton": "^0.3.7",
+    "react": "16.7.0-alpha.2",
+    "react-dom": "16.7.0-alpha.2"
+  },
+  "scripts": {
+    "build": "rollup --config rollup.prod.js --environment INCLUDE_DEPS,BUILD:production",
+    "dev": "rollup --config rollup.dev.js --watch --environment INCLUDE_DEPS,BUILD:development"
+  },
   "devDependencies": {
     "@babel/core": "^7.1.6",
     "@babel/preset-env": "^7.1.6",
@@ -22,14 +31,5 @@
     "rollup-plugin-json": "^3.1.0",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-globals": "^1.4.0"
-  },
-  "scripts": {
-    "build": "rollup --config rollup.prod.js --environment INCLUDE_DEPS,BUILD:production",
-    "dev": "rollup --config rollup.dev.js --watch --environment INCLUDE_DEPS,BUILD:development"
-  },
-  "dependencies": {
-    "@gatewaycash/paybutton": "^0.3.5",
-    "react": "16.7.0-alpha.2",
-    "react-dom": "16.7.0-alpha.2"
   }
 }
