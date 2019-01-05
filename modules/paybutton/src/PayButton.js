@@ -15,7 +15,7 @@ import showError from './functions/showError'
 import parseProps from './functions/parseProps'
 import PropTypes from 'prop-types'
 
-let PayButton = (props) => {
+let PayButton = props => {
   props = parseProps(props)
 
   // detect errors from parseProps
@@ -59,7 +59,7 @@ let PayButton = (props) => {
           'GATEWAY: Current',
           'BCH/' + props.currency,
           'exchange rate:',
-          exchangeRate,
+          exchangeRate
         )
         amountMultiplier = 1 / exchangeRate
       }
@@ -85,7 +85,7 @@ let PayButton = (props) => {
           let invoiceResult = await axios.post(props.gatewayServer + '/pay', {
             merchantID: props.merchantID,
             paymentID: props.paymentID,
-            callbackURL: props.callbackURL,
+            callbackURL: props.callbackURL
           })
           if (invoiceResult.data.status === 'error') {
             alert(showError(invoiceResult.data))
@@ -97,8 +97,8 @@ let PayButton = (props) => {
         } catch (e) {
           alert(
             showError(
-              'We\'re having some trouble contacting the Gateway server!',
-            ),
+              'We\'re having some trouble contacting the Gateway server!'
+            )
           )
           return
         }
@@ -135,7 +135,7 @@ let PayButton = (props) => {
   }
 
   // checks payment destinations to see if they concern this transaction
-  let handlePayment = async (data) => {
+  let handlePayment = async data => {
     let valid = false
     for (var i = 0, l = data.vout.length; !valid && i < l; i++) {
       let obj = Object.getOwnPropertyNames(data.vout[i])
@@ -196,11 +196,11 @@ let PayButton = (props) => {
   }
 
   // when we find a matching payment, send it to the server to mark invoice paid
-  let sendPaymentToServer = async (txid) => {
+  let sendPaymentToServer = async txid => {
     try {
       let paymentResponse = await axios.post(props.gatewayServer + '/paid', {
         paymentAddress: paymentAddress,
-        paymentTXID: txid,
+        paymentTXID: txid
       })
       if (paymentResponse.data.status === 'error') {
         showError(paymentResponse.data)
@@ -209,7 +209,7 @@ let PayButton = (props) => {
       alert(
         showError(
           'If you sent the funds, your payment has been received. However, Gateway is having trouble getting a receipt for your transaction. If you are concerned this could be a problem, please include this TXID in a support message to Gateway or to your merchant:\n\n' +
-            txid,
+            txid
         )
       )
     }
@@ -220,7 +220,7 @@ let PayButton = (props) => {
     <div
       style={{
         display: 'inline-block',
-        padding: '0.25em',
+        padding: '0.25em'
       }}
       id={props.elementID}
     >
@@ -244,7 +244,7 @@ let PayButton = (props) => {
           <PaymentProgress
             amountBCH={amountBCH}
             paymentAddress={paymentAddress}
-            hideWalletButton={props.hideWalletButton}
+            {...props.paymentProgressProps}
           />
         )}
       </Dialog>
