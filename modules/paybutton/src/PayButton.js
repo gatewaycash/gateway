@@ -3,8 +3,8 @@
  * @author The Gateway Project Developers <hello@gateway.cash>
  * @file Defines a React component for the Gateway payment button
  */
-import React from 'react'
-import Button from '@material-ui/core/Button'
+import React, { useState } from 'react'
+import { Button } from '@material-ui/core'
 import Dialog from './Dialog'
 import PaymentComplete from './Dialog/PaymentComplete'
 import PaymentProgress from './Dialog/PaymentProgress'
@@ -23,9 +23,7 @@ let PayButton = props => {
     return (
       <div style={{ display: 'inline-block', padding: '0.25em' }}>
         <Button
-          onClick={() => {
-            alert(props)
-          }}
+          onClick={() => alert(props)}
           variant="contained"
           color="secondary"
         >
@@ -36,105 +34,106 @@ let PayButton = props => {
   }
 
   // set the default state
-  let [dialogOpen, setDialogOpen] = React.useState(false)
-  let [paymentComplete, setPaymentComplete] = React.useState(false)
-  let [amountBCH, setAmountBCH] = React.useState(0)
-  let [paymentAddress, setPaymentAddress] = React.useState('loading...')
-  let [sock, setSock] = React.useState(false)
+  let [dialogOpen, setDialogOpen] = useState(false)
+  let [paymentComplete, setPaymentComplete] = useState(false)
+  let [amountBCH, setAmountBCH] = useState(0)
+  let [paymentAddress, setPaymentAddress] = useState('loading...')
+  let [sock, setSock] = useState(false)
   let paymentCompleteAudio = new Audio(props.paymentCompleteAudio)
 
   // When the payment button is clicked, generate a new invoice
   let handleClick = async () => {
-    // create a ninvoice only when a payment has not yet been sent
-    if (!paymentComplete) {
-      // set the amount multiplier based on the currency
-      let amountMultiplier = 1.0
-      if (props.currency !== 'BCH') {
-        let marketDataURL =
-          'https://apiv2.bitcoinaverage.com/indices/global/ticker/BCH' +
-          props.currency
-        let marketData = await axios.get(marketDataURL)
-        let exchangeRate = marketData.data.averages.day
-        console.log(
-          'GATEWAY: Current',
-          'BCH/' + props.currency,
-          'exchange rate:',
-          exchangeRate
-        )
-        amountMultiplier = 1 / exchangeRate
-      }
 
-      // multiply amount of fiat by amount multiplier to get amount of BCH
-      let calculatedAmount = (props.amount * amountMultiplier)
-        .toFixed(8)
-        .toString()
+    // if the payment was already completed then open the dialog and we are done
+    if (paymentComplete) {
+      setDialogOpen(true)
+      return
+    }
 
-      // shave off all the exra zeros from the end
-      while (calculatedAmount.endsWith('0')) {
-        calculatedAmount = calculatedAmount.substr(
-          0,
-          calculatedAmount.length - 1
-        )
-      }
-      setAmountBCH(calculatedAmount)
-      amountBCH = calculatedAmount
+    // calculate the amount of the invoice in BCH based on display currency
+    // TODO: externalize this into a function in its own file
+    let amountMultiplier = 1.0
+    if (props.currency !== 'BCH') {
+      let marketDataURL =
+        'https://apiv2.bitcoinaverage.com/indices/global/ticker/BCH' +
+        props.currency
+      let marketData = await axios.get(marketDataURL)
+      let exchangeRate = marketData.data.averages.day
+      console.log(
+        'GATEWAY: Current',
+        'BCH/' + props.currency,
+        'exchange rate:',
+        exchangeRate
+      )
+      amountMultiplier = 1 / exchangeRate
+    }
+    let calculatedAmount = (props.amount * amountMultiplier)
+      .toFixed(8)
+      .toString()
+    // shave off all the exra zeros from the end
+    while (calculatedAmount.endsWith('0')) {
+      calculatedAmount = calculatedAmount.substr(
+        0,
+        calculatedAmount.length - 1
+      )
+    }
+    setAmountBCH(calculatedAmount)
+    amountBCH = calculatedAmount
 
-      // if no address was given, and a merchantID was given, use the merchantID
-      if (!props.address && props.merchantID) {
-        try {
-          let invoiceResult = await axios.post(props.gatewayServer + '/pay', {
-            merchantID: props.merchantID,
-            paymentID: props.paymentID,
-            callbackURL: props.callbackURL
-          })
-          if (invoiceResult.data.status === 'error') {
-            alert(showError(invoiceResult.data))
-            return
-          } else {
-            setPaymentAddress(invoiceResult.data.paymentAddress)
-            paymentAddress = invoiceResult.data.paymentAddress
-          }
-        } catch (e) {
-          alert(
-            showError(
-              'We\'re having some trouble contacting the Gateway server!'
-            )
-          )
+    // if no address was given, and a merchantID was given, use the merchantID
+    if (!props.address && props.merchantID) {
+      try {
+        let invoiceResult = await axios.post(props.gatewayServer + '/pay', {
+          merchantID: props.merchantID,
+          paymentID: props.paymentID,
+          callbackURL: props.callbackURL
+        })
+        if (invoiceResult.data.status === 'error') {
+          alert(showError(invoiceResult.data))
           return
         }
-
-        // if a direct deposit address was given, use it for payment address
-      } else {
-        setPaymentAddress(props.address)
-        paymentAddress = props.address
+        setPaymentAddress(invoiceResult.data.paymentAddress)
+        paymentAddress = invoiceResult.data.paymentAddress
+      } catch (e) {
+        alert(
+          showError('We\'re having some trouble contacting the Gateway server!')
+        )
+        return
       }
 
-      // verify payment address was set either way
-      if (!paymentAddress || paymentAddress === 'loading...') {
-        alert(showError('We did not find a payment address!'))
-      }
-
-      // connect to the webSocket
-      sock = io(props.blockExplorer)
-      setSock(sock)
-      sock.on('connect', () => {
-        sock.emit('subscribe', 'inv')
-        console.log('GATEWAY: Connected to block explorer!')
-      })
-      sock.on('disconnect', () => {
-        console.log('GATEWAY: Disconnected from block explorer')
-        console.log('GATEWAY: This does not mean that your payment failed')
-      })
-      sock.on('error', () => {
-        console.log('GATEWAY: Disconnected from block explorer')
-        console.log('GATEWAY: This does not mean that your payment failed')
-      })
-      sock.on('tx', handlePayment)
+    // if a direct deposit address was given, use it for payment address
+    } else {
+      setPaymentAddress(props.address)
+      paymentAddress = props.address
     }
+
+    // verify payment address was set either way
+    if (!paymentAddress || paymentAddress === 'loading...') {
+      alert(showError('We did not find a payment address!'))
+    }
+
+    // connect to the webSocket
+    // TODO: externalize to function in ownfile
+    sock = io(props.blockExplorer)
+    setSock(sock)
+    sock.on('connect', () => {
+      sock.emit('subscribe', 'inv')
+      console.log('GATEWAY: Connected to block explorer!')
+    })
+    sock.on('disconnect', () => {
+      console.log('GATEWAY: Disconnected from block explorer')
+      console.log('GATEWAY: This does not mean that your payment failed')
+    })
+    sock.on('error', () => {
+      console.log('GATEWAY: Disconnected from block explorer')
+      console.log('GATEWAY: This does not mean that your payment failed')
+    })
+    sock.on('tx', handlePayment)
     setDialogOpen(true)
   }
 
   // checks payment destinations to see if they concern this transaction
+  // TODO: externalize to function in own file
   let handlePayment = async data => {
     let valid = false
     for (var i = 0, l = data.vout.length; !valid && i < l; i++) {
@@ -190,6 +189,7 @@ let PayButton = props => {
   }
 
   // when the dialog box is closed, close the WebSocket
+  // TODO componentWillUnmount and all that stuff
   let handleClose = () => {
     sock.close()
     setDialogOpen(false)

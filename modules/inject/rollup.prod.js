@@ -12,21 +12,24 @@ export default {
   output: {
     file: './../website/public/pay.js',
     format: 'iife',
-    sourcemap: false
   },
   plugins: [
-    commonjs({
-      include: '../../node_modules/**'
-    }),
     babel({
-      exclude: '../../node_modules/**',
+      exclude: [
+        '../../node_modules/**',
+        '*.json'
+      ],
       babelrc: false,
       presets: [
         ['@babel/env', {
-          modules: false
+          'modules': false,
+          'targets': '> 0.25%, not dead'
         }],
         '@babel/preset-react'
       ]
+    }),
+    commonjs({
+      //include: '../../node_modules/**'
     }),
     resolve({
       browser: true,
@@ -34,11 +37,11 @@ export default {
       preferBuiltins: false
     }),
     json(),
-    //builtins(),
-    //globals(),
+    builtins(),
+    globals(),
     replace({
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
-    //uglify()
+    uglify()
   ]
 }

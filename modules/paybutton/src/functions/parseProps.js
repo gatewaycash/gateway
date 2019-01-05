@@ -5,6 +5,7 @@ import bchaddr from 'bchaddrjs'
  * Formats a string for use as an eval-based client callback
  * @param {String} cb - The callback to format
  */
+// TODO externalize to own file
 let formatCallback = cb => {
   if (cb.endsWith(';')) {
     cb = cb.substr(0, cb.length - 1)
