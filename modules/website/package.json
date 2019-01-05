@@ -8,8 +8,8 @@
     "@reach/router": "^1.2.1",
     "bchaddrjs": "^0.2.2",
     "prop-types": "^15.6.2",
-    "react": "^16.7.0-alpha.2",
-    "react-dom": "^16.7.0-alpha.2",
+    "react": "16.7.0-alpha.2",
+    "react-dom": "16.7.0-alpha.2",
     "react-scripts": "2.1.1"
   },
   "scripts": {

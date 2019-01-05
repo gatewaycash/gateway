@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button } from '@material-ui/core'
+import Button from '@material-ui/core/Button'
 
 export default ({ amountBCH, paymentAddress, hideWalletButton }) => (
   <center>
@@ -7,7 +7,7 @@ export default ({ amountBCH, paymentAddress, hideWalletButton }) => (
       style={{
         marginLeft: '0.5em',
         marginRight: '0.5em',
-        marginTop: '-1.5em',
+        marginTop: '-1.5em'
       }}
     >
       Send {amountBCH == 0 ? 'some' : amountBCH} Bitcoin&nbsp;Cash (BCH) to this
@@ -29,7 +29,7 @@ export default ({ amountBCH, paymentAddress, hideWalletButton }) => (
         margin: 'auto',
         marginTop: '-1em',
         marginBottom: '-1.5em',
-        align: 'center',
+        align: 'center'
       }}
     />
     <p
@@ -38,7 +38,7 @@ export default ({ amountBCH, paymentAddress, hideWalletButton }) => (
         fontFamily: 'monospace',
         fontSize: '0.8em',
         lineHeight: '100%',
-        wordWrap: 'break-word',
+        wordWrap: 'break-word'
       }}
     >
       {paymentAddress}
