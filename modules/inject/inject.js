@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import PayButton from '@gatewaycash/paybutton'
+import PayButton from '../paybutton/src/PayButton'
 
 // fail when there is no window object
 if (typeof window !== 'object') {
@@ -49,9 +49,9 @@ let bootstrapPayButtons = () => {
 
     // store all element attributes in a JSON object
     let props = {}
-    if(button.hasAttributes()) {
+    if (button.hasAttributes()) {
       let attrs = button.attributes
-      for(let j = 0; j < attrs.length; j++) {
+      for (let j = 0; j < attrs.length; j++) {
         props[attrs[j].name] = attrs[j].value
       }
     }

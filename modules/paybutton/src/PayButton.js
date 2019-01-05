@@ -4,7 +4,7 @@
  * @file Defines a React component for the Gateway payment button
  */
 import React from 'react'
-import { Button } from '@material-ui/core'
+import Button from '@material-ui/core/Button'
 import Dialog from './Dialog'
 import PaymentComplete from './Dialog/PaymentComplete'
 import PaymentProgress from './Dialog/PaymentProgress'
@@ -254,7 +254,7 @@ let PayButton = props => {
 
 PayButton.propTypes = {
   buttonText: PropTypes.string,
-  amount: PropTypes.number,
+  amount: PropTypes.any,
   currency: PropTypes.string,
   dialogTitle: PropTypes.string,
   merchantID: PropTypes.string,

@@ -134,6 +134,9 @@ export default ({
   // format the client-side callback
   paymentCompleteCallback = formatCallback(paymentCompleteCallback)
 
+  hideWalletButton = hideWalletButton === 'yes'
+  hideAddressText = hideAddressText === 'yes'
+
   let paymentProgressProps = {
     hideWalletButton,
     hideAddressText
@@ -149,7 +152,7 @@ export default ({
     paymentID: paymentID,
     callbackURL: callbackURL,
     address: address,
-    AgatewayServer: gatewayServer,
+    gatewayServer: gatewayServer,
     blockExplorer: blockExplorer,
     paymentCompleteAudio: paymentCompleteAudio,
     paymentCompleteCallback: paymentCompleteCallback,
