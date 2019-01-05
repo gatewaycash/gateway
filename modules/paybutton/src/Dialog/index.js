@@ -1,5 +1,7 @@
 import React from 'react'
-import { Dialog, DialogContent, DialogTitle } from '@material-ui/core'
+import Dialog from '@material-ui/core/Dialog'
+import DialogTitle from '@material-ui/core/DialogTitle'
+import DialogContent from '@material-ui/core/DialogContent'
 
 export default ({ open, title, onClose, children }) => (
   <Dialog
@@ -13,8 +15,6 @@ export default ({ open, title, onClose, children }) => (
     <DialogTitle>
       <center>{title}</center>
     </DialogTitle>
-    <DialogContent>
-      {children}
-    </DialogContent>
+    <DialogContent>{children}</DialogContent>
   </Dialog>
 )

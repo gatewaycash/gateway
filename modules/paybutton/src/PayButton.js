@@ -254,7 +254,7 @@ let PayButton = props => {
 
 PayButton.propTypes = {
   buttonText: PropTypes.string,
-  amount: PropTypes.number,
+  amount: PropTypes.any,
   currency: PropTypes.string,
   dialogTitle: PropTypes.string,
   merchantID: PropTypes.string,

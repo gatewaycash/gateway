@@ -19,24 +19,24 @@ export default {
   ],
   plugins: [
     resolve({
-      preferBuiltins: false,
+      preferBuiltins: false
     }),
     babel({
-      exclude: [
-        '../../node_modules/**',
-        '*.json'
-      ],
+      exclude: ['../../node_modules/**', '*.json'],
       presets: [
-        ['@babel/env', {
-          'modules': false,
-          'targets': '> 0.25%, not dead'
-        }],
-        '@babel/preset-react',
+        [
+          '@babel/env',
+          {
+            modules: false,
+            targets: '> 0.25%, not dead'
+          }
+        ],
+        '@babel/preset-react'
       ],
       babelrc: false
     }),
     replace({
-      'process.env.NODE_ENV': JSON.stringify( 'production' )
+      'process.env.NODE_ENV': JSON.stringify('production')
     })
   ]
 }
