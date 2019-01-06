@@ -34,8 +34,8 @@ export default {
       preferBuiltins: false
     }),
     json(),
-    //builtins(),
-    //globals(),
+    builtins(),
+    globals(),
     replace({
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
