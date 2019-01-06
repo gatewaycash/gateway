@@ -58,43 +58,43 @@ export default () => {
       <form
         onSubmit={handleSubmit}
       >
-      <TextField
-        value={address}
-        onChange={(e) => setAddress(e.target.value)}
-        placeholder="Bitcoin Cash address"
-      />
-      <br/>
-      <br/>
-      <TextField
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        placeholder="Your new ussrname"
-      />
-      <br />
-      <br />
-      <TextField
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Password"
-        type="password"
-      />
-      <br />
-      <br />
-      <TextField
-        value={passwordConfirm}
-        onChange={(e) => setPasswordConfirm(e.target.value)}
-        placeholder="Retype password"
-        type="password"
-      />
-      <br />
-      <br />
-      <Button
-        variant="contained"
-        color="primary"
-        type="submit"
-      >
+        <TextField
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          placeholder="Bitcoin Cash address"
+        />
+        <br/>
+        <br/>
+        <TextField
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Your new ussrname"
+        />
+        <br />
+        <br />
+        <TextField
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+          type="password"
+        />
+        <br />
+        <br />
+        <TextField
+          value={passwordConfirm}
+          onChange={(e) => setPasswordConfirm(e.target.value)}
+          placeholder="Retype password"
+          type="password"
+        />
+        <br />
+        <br />
+        <Button
+          variant="contained"
+          color="primary"
+          type="submit"
+        >
         Register
-      </Button>
+        </Button>
       </form>
       <br />
       <Button>Advanced</Button>

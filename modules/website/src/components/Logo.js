@@ -1,7 +1,8 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import logo from 'res/logo.svg'
 
-export default ({ size = 10, centered = false }) => (
+const Logo = ({ size = 10, centered = false }) => (
   <a href="/">
     <img
       style={{
@@ -17,3 +18,10 @@ export default ({ size = 10, centered = false }) => (
     />
   </a>
 )
+
+Logo.propTypes = {
+  size: PropTypes.integer,
+  centered: PropTypes.boolean
+}
+
+export default Logo

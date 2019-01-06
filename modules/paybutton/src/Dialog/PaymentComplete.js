@@ -6,13 +6,13 @@ export default () => (
     <Done
       style={{
         width: '10em',
-        height: '10em',
+        height: '10em'
       }}
     />
     <p
       style={{
         marginLeft: '1em',
-        marginRight: '1em',
+        marginRight: '1em'
       }}
     >
       Your payment has been received.

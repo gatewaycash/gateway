@@ -34,7 +34,8 @@ create table if not exists payments (
 CREATE table if not exists pending (
   created timestamp default current_timestamp,
   address varchar(60),
-  txid varchar(64)
+  txid varchar(64),
+  attempts int(3) default 0
 );
 
 -- create a test user

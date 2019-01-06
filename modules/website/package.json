@@ -3,19 +3,21 @@
   "version": "0.1.0",
   "homepage": "https://gateway.cash/",
   "dependencies": {
-    "@gatewaycash/paybutton": "^0.3.2",
+    "@gatewaycash/paybutton": "^0.3.8",
     "@material-ui/core": "^3.5.1",
     "@reach/router": "^1.2.1",
     "bchaddrjs": "^0.2.2",
-    "react": "^16.7.0-alpha.2",
-    "react-dom": "^16.7.0-alpha.2",
+    "prop-types": "^15.6.2",
+    "react": "16.7.0-alpha.2",
+    "react-dom": "16.7.0-alpha.2",
     "react-scripts": "2.1.1"
   },
   "scripts": {
     "start": "NODE_PATH=src react-scripts start",
     "build": "NODE_PATH=src react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "setup": "node setupWebsite.js"
   },
   "eslintConfig": {
     "extends": "react-app"

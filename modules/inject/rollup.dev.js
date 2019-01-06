@@ -15,27 +15,40 @@ export default {
     global: {}
   },
   plugins: [
+    resolve({
+      jsnext: true,
+      main: true,
+      browser: true,
+      preferBuiltins: true
+    }),
     commonjs({ include: '../../node_modules/**' }),
     babel({
       exclude: '../../node_modules/**',
       babelrc: false,
       presets: [
-        ["@babel/env", {
-          modules: false
-        }],
-        "@babel/preset-react"
+        [
+          '@babel/env',
+          {
+            modules: false,
+            targets: {
+              chrome: '58',
+              ie: '11'
+            },
+            useBuiltIns: 'usage'
+          }
+        ],
+        '@babel/preset-react'
+      ],
+      plugins: [
+        '@babel/transform-regenerator',
+        '@babel/plugin-external-helpers'
       ]
-    }),
-    resolve({
-      browser: true,
-      jsnext: true,
-      preferBuiltins: true
     }),
     json(),
     builtins(),
     globals(),
     replace({
-      'process.env.NODE_ENV': JSON.stringify( 'development' )
+      'process.env.NODE_ENV': JSON.stringify('development')
     })
   ]
 }

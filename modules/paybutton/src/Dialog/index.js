@@ -1,9 +1,9 @@
 import React from 'react'
 import Dialog from '@material-ui/core/Dialog'
-import DialogContent from '@material-ui/core/DialogActions'
 import DialogTitle from '@material-ui/core/DialogTitle'
+import DialogContent from '@material-ui/core/DialogContent'
 
-export default ({ open, title, onClose, children, ...props }) => (
+export default ({ open, title, onClose, children }) => (
   <Dialog
     open={open}
     keepMounted
@@ -15,8 +15,6 @@ export default ({ open, title, onClose, children, ...props }) => (
     <DialogTitle>
       <center>{title}</center>
     </DialogTitle>
-    <DialogContent>
-      {children}
-    </DialogContent>
+    <DialogContent>{children}</DialogContent>
   </Dialog>
 )

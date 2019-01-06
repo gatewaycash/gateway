@@ -1,22 +1,26 @@
 {
   "name": "@gatewaycash/inject",
+  "description": "Gateway.cash PayButton injector",
   "version": "0.1.0",
   "main": "inject.js",
   "license": "AGPL-3.0",
   "repository": "git+https://github.com/gatewaycash/gateway.git",
   "author": "The Gateway Project Developers <hello@gateway.cash>",
   "bugs": {
-    "url": "https://github.com/gatewaycash/paybutton/issues"
+    "url": "https://github.com/gatewaycash/gateway/issues"
   },
   "devDependencies": {
     "@babel/core": "^7.1.6",
+    "@babel/plugin-external-helpers": "^7.2.0",
+    "@babel/plugin-transform-regenerator": "^7.0.0",
     "@babel/preset-env": "^7.1.6",
     "@babel/preset-react": "^7.0.0",
-    "react": "^16.7.0-alpha.2",
-    "react-dom": "^16.7.0-alpha.2",
     "rollup": "^0.67.3",
     "rollup-plugin-babel": "^4.0.3",
     "rollup-plugin-commonjs": "^9.2.0",
+    "rollup-plugin-json": "^3.1.0",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-globals": "^1.4.0",
     "rollup-plugin-node-resolve": "^3.4.0",
     "rollup-plugin-replace": "^2.1.0",
     "rollup-plugin-uglify": "^6.0.0"
@@ -25,11 +29,8 @@
     "build": "rollup --config rollup.prod.js --environment INCLUDE_DEPS,BUILD:production",
     "dev": "rollup --config rollup.dev.js --watch --environment INCLUDE_DEPS,BUILD:development"
   },
-  "description": "Gateway.cash Payment Button injector",
-  "browserslist": "> 0.25%, not dead",
   "dependencies": {
-    "rollup-plugin-json": "^3.1.0",
-    "rollup-plugin-node-builtins": "^2.1.2",
-    "rollup-plugin-node-globals": "^1.4.0"
+    "react": "^16.7.0-alpha.2",
+    "react-dom": "^16.7.0-alpha.2"
   }
 }

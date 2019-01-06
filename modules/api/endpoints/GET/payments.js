@@ -6,7 +6,7 @@
 const mysql = require('../../SQLWrapper')
 const url = require('url')
 
-module.exports = async function (req, res) {
+module.exports = async (req, res) => {
   console.log('GET /payments requested')
 
   // parse the provided data
@@ -55,21 +55,12 @@ module.exports = async function (req, res) {
   sql = 'select paymentAddress, paidAmount, paymentTXID, '
   sql += 'transferTXID, paymentID, created, paymentKey from payments '
   sql += 'where merchantID = ? '
-  // require a transferTXID unless includeUnpaid is true
-  if (query.includeUnpaid && includeUnpaid !== 'YES') {
+  // require a transferTXID unless includeUnpaid is "YES"
+  if (query.includeUnpaid && query.includeUnpaid === 'YES') {
     sql += 'and transferTXID is not null '
   }
   sql += 'order by created desc'
   result = await mysql.query(sql, [merchantID])
-
-  // fail if there are no results
-  if (result.length < 1) {
-    response.status = 'error'
-    response.error = 'No Results'
-    response.description = 'No payments have been completed to this merchant yet. Make a test payment with /pay and see what happens!'
-    res.end(JSON.stringify(response))
-    return
-  }
 
   // send the payments to the user
   response.status = 'success'

@@ -1,0 +1,13 @@
+{
+  "name": "@gatewaycash/docs",
+  "version": "0.1.0",
+  "description": "Gateway.cash Documentation",
+  "author": "The Gateway Project Developers <hello@gateway.cash>",
+  "license": "AGPL-3.0",
+  "private": true,
+  "scripts": {
+    "api": "cp -f docs/api.html.md source/index.html.md && bundle install && bundle exec middleman build --clean && mkdir -p ../api/public && cp -r build/* ../api/public/ && rm -f source/index.html.md",
+    "paybutton": "cp -f docs/paybutton.html.md source/index.html.md && bundle install && bundle exec middleman build --clean && mkdir -p ../website/public/docs && cp -r build/* ../website/public/docs && rm -f source/index.html.md"
+  },
+  "repository": "https://github.com/gatewaycash/gateway.git"
+}

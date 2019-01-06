@@ -7,7 +7,6 @@ const bch = require('bitcore-lib-cash')
 const bchaddr = require('bchaddrjs')
 const mysql = require('../SQLWrapper')
 const axios = require('axios')
-const sha256 = require('sha256')
 
 const BLOCK_EXPLORER_BASE = 'https://bch.coin.space/api'
 
@@ -49,6 +48,7 @@ let checkFunds = async (payment) => {
       'Error checking or transferring funds for',
       payment.address
     )
+    console.log(e)
   }
 }
 
@@ -109,15 +109,18 @@ let transferFunds = async (payment) => {
   // the inputs for this transaction are the UTXOs from the payment address
   for(var i = 0, l = paymentUTXOs.length; i < l; i++) {
     transferTransaction.from({
-      "txid": paymentUTXOs[i].txid,
-      "vout": paymentUTXOs[i].vout,
-      "address": bchaddr.toCashAddress(paymentUTXOs[i].address),
-      "scriptPubKey": paymentUTXOs[i].scriptPubKey,
-      "amount": paymentUTXOs[i].amount
+      'txid': paymentUTXOs[i].txid,
+      'vout': paymentUTXOs[i].vout,
+      'address': bchaddr.toCashAddress(paymentUTXOs[i].address),
+      'scriptPubKey': paymentUTXOs[i].scriptPubKey,
+      'amount': paymentUTXOs[i].amount
     })
     totalTransferred += (paymentUTXOs[i].amount * 100000000)
   }
   console.log('Added UTXOs to the transfer transaction')
+
+  // round the totalTransferred to be Satoshis
+  totalTransferred = totalTransferred.toFixed(0)
 
   // TODO: optional Gateway contributions
   // to bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng
@@ -175,15 +178,8 @@ let transferFunds = async (payment) => {
   sql = 'update users set totalSales = totalSales + ? where merchantID = ?'
   await mysql.query(sql, [totalTransferred, merchantID])
 
-  // verify the callback URL is sane. If not, we are done and we return.
-  if (
-    !callbackURL.startsWith('https://') &&
-    !callbackURL.startsWith('http://')
-  ) {
-    console.log(
-      'Unable to execute callback to URL:',
-      callbackRequest.callbackURL
-    )
+  // we are done if there is not a callbackUrL
+  if (!callbackURL) {
     return
   }
 
@@ -196,7 +192,19 @@ let transferFunds = async (payment) => {
     paymentID:       paymentID
   }
 
-  // execute the callback
+  // verify the callback URL is sane. If not, we are done and we return.
+  if (
+    !callbackURL.startsWith('https://') &&
+    !callbackURL.startsWith('http://')
+  ) {
+    console.log(
+      'Unable to execute callback to URL:',
+      callbackURL
+    )
+    return
+  }
+
+  // try to execute the callback
   try {
     await axios.post(callbackRequest.callbackURL, callbackRequest)
   } catch (e) {

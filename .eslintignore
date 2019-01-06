@@ -42,4 +42,4 @@ modules/website/public/pay.js.map
 # ignore compiled documentation
 modules/website/public/docs/
 modules/api/public/
-modules/docs/source/index.html.md
+modules/docs

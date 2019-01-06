@@ -11,13 +11,9 @@
     "axios": "^0.18.0",
     "bitcore-lib-cash": "^0.19.0",
     "dotenv": "^6.1.0",
-    "express-session": "^1.15.6",
     "node-mysql": "^0.4.2",
     "nodemon": "^1.18.7",
     "pm2": "^3.2.2",
-    "session-file-store": "^1.2.0",
-    "sha256": "^0.2.0",
-    "sqlite3": "^4.0.4",
-    "sync-request": "^6.0.0"
+    "sha256": "^0.2.0"
   }
 }

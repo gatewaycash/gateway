@@ -1,4 +1,4 @@
-  import React, { Component } from 'react'
+import React, { Component } from 'react'
 import { Button } from '@material-ui/core'
 import NavigationMenu from './NavigationMenu'
 import { payments } from 'API'
@@ -55,7 +55,7 @@ class PaymentsPage extends Component {
 
         // TODO: this is very not good. change to jsx
         for (var i = 0; i < payments.length; i++) {
-          html += `<div class="payment">`
+          html += '<div class="payment">'
           html += '<b>Created:</b> ' + payments[i].created + '<br/>'
           html += '<b>Payment ID:</b> ' + payments[i].paymentID + '<br/>'
           html += '<b>Address:</b> <a href="https://explorer.bitcoin.com/'
@@ -69,7 +69,7 @@ class PaymentsPage extends Component {
           html += '<b>Transfer TXID:</b> <a href="https://explorer.bitcoin.com/'
           html += 'bch/tx/' + payments[i].transferTXID + '" target="_blank">'
           html += payments[i].transferTXID + '</a><br/>'
-          html += `</div>`
+          html += '</div>'
         }
         return payments.length > 0 ? html : 'No payments yet'
       } catch (e) {

@@ -4,6 +4,7 @@
  * @file Defines a POST endpoint for /address
  */
 const mysql = require('../../SQLWrapper')
+const bchaddr = require('bchaddrjs')
 
 module.exports = async function (req, res) {
   console.log('POST /address requested')
@@ -38,7 +39,7 @@ module.exports = async function (req, res) {
   if (!req.body.newAddress) {
     response.status = 'error'
     response.error = 'No Address Provided'
-    response.description = `Please provide a new Bitcoin Cash payout address!`
+    response.description = 'Please provide a new Bitcoin Cash payout address!'
     res.end(JSON.stringify(response))
     return
   }

@@ -16,14 +16,14 @@ export default ({
       Add this line of HTML once on each page you want to accept payments on:
     </Text>
     <SourceCode>
-      {`<script src="https://gateway.cash/pay.js"></script>`}
+      {'<script src="https://gateway.cash/pay.js"></script>'}
     </SourceCode>
     <Text>
       Add this code wherever you want to place a payment button. You can put
       as many buttons on the same page as you'd like:
     </Text>
     <SourceCode>
-    {/*
+      {/*
       Try to un-spaghettify this, but good luck making it display right again :p
     */}
       {`<div
@@ -33,7 +33,7 @@ export default ({
   amount="${amount}"` : ''}${currency !== 'BCH' ? `
   currency="${currency}"` : ''}${dialogTitle !== 'Complete Your Payment' ? `
   dialogTitle="${dialogTitle}"` : ''}${paymentID !== 'donation' ? `
-  paymentID="${paymentID}"` : ''}${callbackURL !== 'None' ? `
+  paymentID="${paymentID}"` : ''}${(callbackURL && callbackURL !== '') ? `
   callbackURL="${callbackURL}"` : ''}
 ></div>`}
     </SourceCode>

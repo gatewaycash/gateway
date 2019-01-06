@@ -54,28 +54,28 @@ export default () => {
       <form
         onSubmit={handleSubmit}
       >
-      <TextField
-        value={userID}
-        onChange={(e) => setUserID(e.target.value)}
-        placeholder="Address or username"
-      />
-      <br/>
-      <br/>
-      <TextField
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Password"
-        type="password"
-      />
-      <br/>
-      <br/>
-      <Button
-        variant="contained"
-        color="primary"
-        type="submit"
-      >
+        <TextField
+          value={userID}
+          onChange={(e) => setUserID(e.target.value)}
+          placeholder="Address or username"
+        />
+        <br/>
+        <br/>
+        <TextField
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+          type="password"
+        />
+        <br/>
+        <br/>
+        <Button
+          variant="contained"
+          color="primary"
+          type="submit"
+        >
         log in
-      </Button>
+        </Button>
       </form>
       <br />
       <Button onClick={() => navigate('/portal/forgot')}>

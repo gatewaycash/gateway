@@ -35,7 +35,7 @@ module.exports = async function(req, res) {
     response.status = 'error'
     response.error = 'Invalid Address'
     response.description =
-      "It looks like you provided an invalid Bitcoin Cash address. Make sure you're using the new-style CashAddress format (e.g. bitcoincash:q.....), and not a legacy-style Bitcoin address (starting with a 1 or a 3). Also ensure that you're using a Bitcoin Cash address and not a Bitcoin Core address."
+      'It looks like you provided an invalid Bitcoin Cash address. Make sure you\'re using the new-style CashAddress format (e.g. bitcoincash:q.....), and not a legacy-style Bitcoin address (starting with a 1 or a 3). Also ensure that you\'re using a Bitcoin Cash address and not a Bitcoin Core address.'
     res.end(JSON.stringify(response))
     return
   }
@@ -86,7 +86,7 @@ module.exports = async function(req, res) {
     response.status = 'error'
     response.error = 'Address Already In Use'
     response.description =
-      "It looks like that address is already being used by another user! If this is your address, send an email to support@gateway.cash and we'll help you get access to this merchant account."
+      'It looks like that address is already being used by another user! If this is your address, send an email to support@gateway.cash and we\'ll help you get access to this merchant account.'
     res.end(JSON.stringify(response))
     return
   }

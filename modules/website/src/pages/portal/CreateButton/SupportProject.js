@@ -21,7 +21,7 @@ export default () => {
         buttonText: 'Support Gateway.cash'
       }
     )},
-    1000
+  1000
   )
   return (
     <Container>
