@@ -12,7 +12,12 @@ export default ({ open, title, onClose, children }) => (
       fontFamily: 'helvetica'
     }}
   >
-    <DialogTitle>
+    <DialogTitle
+      style={{
+        marginTop: '-0.7em',
+        marginBottom: '-2em'
+      }}
+    >
       <center>{title}</center>
     </DialogTitle>
     <DialogContent>{children}</DialogContent>
