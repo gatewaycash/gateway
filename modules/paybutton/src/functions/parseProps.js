@@ -39,11 +39,13 @@ export default ({
   paymentcompletecallback,
   paymentCompleteCallback = 'console.log("GATEWAY: Payment complete!\\n\\nTXID: "+window.gatewayPaymentTXID)',
   closewhencomplete,
-  closeWhenComplete = false,
+  closeWhenComplete = 'no',
   enablepaymentaudio,
-  enablePaymentAudio = true,
+  enablePaymentAudio = 'yes',
   hidewalletbutton,
-  hideWalletButton = false,
+  hideWalletButton = 'no',
+  hideaddresstext,
+  hideAddressText = 'no',
   elementid,
   elementID = 'pay-' + Math.floor(Math.random() * 100000),
   blockexplorer,
@@ -67,6 +69,7 @@ export default ({
   elementID = elementid || elementID
   blockExplorer = blockexplorer || blockExplorer
   gatewayServer = gatewayserver || gatewayServer
+  hideAddressText = hideaddresstext || hideAddressText
 
   // APIURL sanity check
   if (!['http://', 'https://'].some(x => gatewayServer.startsWith(x))) {
@@ -131,6 +134,12 @@ export default ({
   // format the client-side callback
   paymentCompleteCallback = formatCallback(paymentCompleteCallback)
 
+  // parse hideWalletButton
+  hideWalletButton = hideWalletButton === 'yes'
+
+  // parse hideAddressText
+  hideAddressText = hideAddressText === 'yes'
+
   // return the parsed data
   let parsedData = {
     buttonText: buttonText,
@@ -148,7 +157,8 @@ export default ({
     closeWhenComplete: closeWhenComplete,
     enablePaymentAudio: enablePaymentAudio,
     elementID: elementID,
-    hideWalletButton: hideWalletButton
+    hideWalletButton: hideWalletButton,
+    hideAddressText: hideAddressText
   }
   return parsedData
 }

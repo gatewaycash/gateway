@@ -1,7 +1,13 @@
 import React from 'react'
 import Button from '@material-ui/core/Button'
+import PropTypes from 'prop-types'
 
-export default ({ amountBCH, paymentAddress, hideWalletButton }) => (
+let PaymentProgress = ({
+  amountBCH,
+  paymentAddress,
+  hideWalletButton,
+  hideAddressText
+}) => (
   <center>
     <p
       style={{
@@ -32,17 +38,19 @@ export default ({ amountBCH, paymentAddress, hideWalletButton }) => (
         align: 'center'
       }}
     />
-    <p
-      style={{
-        width: '17em',
-        fontFamily: 'monospace',
-        fontSize: '0.8em',
-        lineHeight: '100%',
-        wordWrap: 'break-word'
-      }}
-    >
-      {paymentAddress}
-    </p>
+    {hideAddressText || (
+      <p
+        style={{
+          width: '17em',
+          fontFamily: 'monospace',
+          fontSize: '0.8em',
+          lineHeight: '100%',
+          wordWrap: 'break-word'
+        }}
+      >
+        {paymentAddress}
+      </p>
+    )}
     {hideWalletButton || (
       <Button
         variant="contained"
@@ -58,3 +66,12 @@ export default ({ amountBCH, paymentAddress, hideWalletButton }) => (
     )}
   </center>
 )
+
+PaymentProgress.propTypes = {
+  amountBCH: PropTypes.any.isRequired,
+  paymentAddress: PropTypes.string.isRequired,
+  hideWalletButton: PropTypes.bool.isRequired,
+  hideAddressText: PropTypes.bool.isRequired
+}
+
+export default PaymentProgress
