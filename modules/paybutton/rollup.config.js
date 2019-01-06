@@ -13,7 +13,12 @@ export default {
     'axios',
     'socket.io-client',
     '@material-ui/core',
+    '@material-ui/core/Button',
+    '@material-ui/core/Dialog',
+    '@material-ui/core/DialogTitle',
+    '@material-ui/core/DialogContent',
     '@material-ui/icons',
+    '@material-ui/icons/Done',
     'prop-types',
     'bchaddrjs'
   ],
