@@ -2,15 +2,7 @@ import React from 'react'
 import { Text, Container } from 'components'
 import PayButton from '@gatewaycash/paybutton'
 
-export default ({
-  merchantID,
-  buttonText,
-  anyAmount,
-  amount,
-  currency,
-  dialogTitle,
-  paymentID,
-}) => (
+export default props => (
   <Container>
     <h2>Button Preview</h2>
     <Text>
@@ -18,14 +10,7 @@ export default ({
       Payments made to the button on this page will be sent to your address.
     </Text>
     <center>
-      <PayButton
-        merchantID={merchantID}
-        amount={anyAmount ? '0' : amount}
-        currency={currency}
-        dialogTitle={dialogTitle}
-        paymentID={paymentID}
-        buttonText={buttonText}
-      />
+      <PayButton {...props} />
     </center>
   </Container>
 )

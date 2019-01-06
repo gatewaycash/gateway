@@ -33,7 +33,7 @@ export default ({
   amount="${amount}"` : ''}${currency !== 'BCH' ? `
   currency="${currency}"` : ''}${dialogTitle !== 'Complete Your Payment' ? `
   dialogTitle="${dialogTitle}"` : ''}${paymentID !== 'donation' ? `
-  paymentID="${paymentID}"` : ''}${callbackURL !== 'None' ? `
+  paymentID="${paymentID}"` : ''}${(callbackURL && callbackURL !== '') ? `
   callbackURL="${callbackURL}"` : ''}
 ></div>`}
     </SourceCode>
