@@ -1,5 +1,5 @@
 ---
-title: API Reference
+title: Gateway API
 
 toc_footers:
   - <span>Copyright &copy 2018 Gateway</span>
@@ -8,7 +8,7 @@ toc_footers:
 search: true
 ---
 
-# Introduction
+# Gateway.cash API
 
 > Hello there! This panel provides useful descriptions, annotations and
 > examples demonstrating the features of the API. It generally shows up on the
@@ -20,15 +20,17 @@ Welcome to the Gateway.cash API! You can use our API to create and manage
 merchant accounts, make and receive Bitcoin Cash payments, keep track of invoices and more!
 
 <aside class="notice">
-This documentation is for the Gateway.cash back-end server API. If you are only
-trying to use the Gateway payment button, you may be looking for the
-<a href="https://gateway.cash/docs">Gateway Payment Button Documentation</a>.
+This documentation is for the Gateway.cash back-end server API. If you want to
+use the Gateway.cash PayButton on your site, head over to
+<a href="https://gateway.cash">gateway.cash</a> and set up an account. If
+you're looking for ways you can customize the behavior of PayButton, check out
+the <a href="https://gateway.cash/docs">PayButton Docs</a>.
 </aside>
 
 ## Overview
 
-> All code for these demonstrations is written in JavaScript (specifically)
-> ES2017. If you haven't heard of it, you should definitely check it out. It's
+> All code for these demonstrations is written in JavaScript (specifically
+> ES2017). If you haven't heard of it, you should definitely check it out. It's
 > pretty darn cool!
 
 The API is served over HTTP or HTTPS with your current URL as a basepoint.
@@ -70,48 +72,17 @@ documented here.
 > and substitute those values for your actual data before trying to use the API.
 
 An API key is required in all but a few special cases when working with the
-API. You don't need a key to create or pay invoices, but to be able to manage
-merchant accounts, you will need to generate an API key.
+Gateway API. You don't need a key to create or pay invoices, but to be able to
+manage merchant accounts, you will need to generate an API key.
 
 Merchant accounts can be generated using the `POST /register` endpoint. The API
 key for your account can be retrieved with `GET /login`, and a new key can be
-generated with `GET /newapikey`.
+generated with `GET /newapikey`. Creating a new key makes your old one unusable.
 
-# Payment Processing
-
-All payments received by the Gateway service are forwarded to the merchant's
-payout address as soon as we receive them. Generally, this will happen within 60
-seconds of the payment being sent.
-
-<aside class="notice">
-The Gateway payment processing daemon now runs every 30 seconds! This means a
-faster merchant and customer experience as well as lower latency for Gateway
-payments.
+<aside class="success">
+<b>ProTip:</b> If you've already made a merchant account on gateway.cash, you
+can get your API key by using the GET /login endpoint.
 </aside>
-
-## Broken Payments
-
-When a customer pays an invoice but neglects to call the `POST /paid` endpoint
-and mark it as paid, the payment will still eventually arrive at the merchant's
-address.
-
-The Gateway Broken Payments Service runs every 12 hours and checks the balances
-of all addresses over which Gateway has custody. Any invoices who's payment
-addresses have a balance are immediately moved to the pending payments queue
-at which point the payment is processed as normal.
-
-<aside class="notice">
-You may notice payments with TXIDs such as "broken-payment-txid-unknown-xxxxx".
-These payments were made to invoice addresses without the customer's browser
-calling the POST /paid endpoint after paying.
-</aside>
-
-## Extended Public Keys (XPUB)
-
-There are plans to support the use of merchant extended public keys for invoice
-address derivation in the future. When this is implemented, payments are never
-held in the custody of Gateway and Gateway only provides invoice tracking for
-these orders.
 
 # POST Endpoints
 
@@ -318,6 +289,46 @@ in any other format, it will be translated prior to being stored in the
 database. If we can't understand your address, we can't pay you!
 </aside>
 
+## POST /password
+
+> Change the account password:
+
+```js
+let result = await axios.post(
+  'https://api.gateway.cash/password',
+  {
+    APIKey: 'YOUR_API_KEY',
+    newPassword: 'B@nk3rSh!llzSkillz#!/bin/sh'
+  }
+)
+```
+
+> Your password will not be sent back for confirmation, so store it safely!
+> It's generally a good idea to encrypt credentials when plausible. Passwords
+> are always hashed and salted prior to being stored.
+
+```json
+{
+  "status": "success"
+}
+```
+
+Allows a merchant to specify a new password for their account.
+
+### Parameters
+
+Required | Name | Description
+---------|------|------------
+YES | `APIKey` | The API key of the merchant who's password is to be updated
+YES | `newPassword` | The new password for the merchant account
+
+<aside class="notice">
+The API server does not evaluate the security or entropy of provided passwords.
+It is the responsibility of the end user and/or the front-end
+service provider to ensure that a secure password is provided. Passwords
+are always salted and hashed prior to being stored in the database.
+</aside>
+
 ## POST /username
 
 > Change the account username:
@@ -327,7 +338,7 @@ let result = await axios.post(
   'https://api.gateway.cash/username',
   {
     APIKey: 'YOUR_API_KEY',
-    newAddress: 'JohnGalt12'
+    newUsername: 'JohnGalt12'
   }
 )
 ```
@@ -349,7 +360,7 @@ Allows a merchant to specify a new username for their account.
 Required | Name | Description
 ---------|------|------------
 YES | `APIKey` | The API key of the merchant who's username is to be updated
-YES | `username` | The new username for the merchant account
+YES | `newUsername` | The new username for the merchant account
 
 <aside class="notice">
 Your username must be between 5 and 24 characters, must be unique, must not
@@ -683,6 +694,84 @@ YES | `APIKey` | The old merchant account API key
 When you change your API key, your old key immediately becomes invalid. You must
 use your new API key for subsequent requests.
 </aside>
+
+# Payment Processing
+
+Payment processing with Gateway is intuitive and simple. Merchants and
+developers put PayButtons on their websites and apps so that customers can
+generate invoices and make payments for services.
+
+Once the merchant sets up PayButton, the process starts with the customer; when
+they click the PayButton, an invoice gets generated and we await their payment.
+Once they pay, the receipt is stored with Gateway for the merchant.
+
+## More Details
+
+To make a payment, the customer's browser uses the `POST /pay` API call with
+any payment information given to them by the merchant website (`paymentID`,
+`callbackURL`, etc). Gateway creates an invoice and responds with an address
+(the `paymentAddress`) where the customer can complete their payment.
+
+Once the payment is complete, the customer's browser uses the `POST /paid`
+endpoint and sends the `paymentAddress` with the `paymentTXID` back to Gateway.
+
+At this point, the customer is done and can move on with their day. Gateway adds the payment to the list of pending payments. Pending payments are processed every 30 seconds by the `fundsTransferService`.
+
+<aside class="notice">
+The Gateway payment processing daemon now runs every 30 seconds! This means a
+faster merchant and customer experience as well as lower latency for Gateway
+payments.
+</aside>
+
+## Funds Transfer Service
+
+The Gateway `fundsTransferService` manages payments sent using the Gateway API. It checks the pending payments list (stored in the `pending` table of the Gateway database) every 30 seconds for new payments.
+
+For each payment in the pending payments list, `fundsTransferService` will do the following:
+
+- Check the `paymentAddress` of the payment for a balance. If there is no
+  balance `fundsTransferService` moves to the next payment.
+- Retrieve information from the database about the merchant and payment.
+- Get the UTXOs associated with `paymentAddress` from a block explorer.
+- Create a transaction sending the `paymentUTXOs` from `paymentAddress` to the
+  merchant's `payoutAddress`.
+- Broadcast the transaction to the Bitcoin Cash (BCH) network.
+- Delete the payment from the pending payments list.
+- Add the `paidAmount`, `paymentTXID` and `transferTXID` to the payments table.
+- Increment `totalSales` for the merchant.
+- If a `callbackURL` was provided at the time of the invoice being created,
+  execute the callback as documented in the <b>Callback URLs</b> section.
+
+<aside class="notice">
+When a merchant uses extended public keys (XPUB) for their payments, Gateway
+uses an XPUB-derived merchant address and does not forward the payment.
+Merchants always control their keys and do not pay associated transaction fees.
+The customer experience is identical.
+</aside>
+
+## Broken Payments
+
+When a customer pays an invoice but neglects to call the `POST /paid` endpoint
+and mark it as paid, the payment will still eventually arrive at the merchant's
+address.
+
+The Gateway Broken Payments Service runs every 12 hours and checks the balances
+of all addresses over which Gateway has custody. Any invoices who's payment
+addresses have a balance are immediately moved to the pending payments list
+at which point the payment is processed as normal.
+
+<aside class="notice">
+You may notice payments with TXIDs like "broken-payment-txid-unknown-xxxxx".
+These payments were made to invoice addresses without the customer's browser
+calling the POST /paid endpoint after paying. Gateway intends to eventually
+discover the TXIDs for these broken payments.
+</aside>
+
+## Extended Public Keys (XPUB)
+
+There are plans to support the use of merchant extended public keys for invoice
+address derivation in the future. When this is implemented, payments are never
+held in the custody of Gateway and Gateway will only provide invoice tracking and address derivation.
 
 # Callback URLs
 
