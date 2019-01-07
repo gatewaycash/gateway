@@ -8,8 +8,9 @@
 
 # The second command builds the PayButton
 
-# The third command builds the injector and then the website, which can't be
-# built side-by-side and must come one after the other.
+# The third command builds the injector
+
+# After all of the commands, finish, the site is built
 
 echo "Starting the build..."
-concurrently "yarn paybutton-build" "concurrently \\\"yarn paybutton-docs-build && yarn api-docs-build\\\" \\\"yarn inject-build\\\" && yarn site-build"
+concurrently "yarn paybutton-docs-build && yarn api-docs-build" "yarn paybutton-build" "yarn inject-build" && yarn site-build
