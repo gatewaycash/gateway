@@ -12,4 +12,4 @@
 # built side-by-side and must come one after the other.
 
 echo "Starting the build..."
-concurrently "yarn paybutton-docs-build && yarn api-docs-build" "yarn paybutton-build" "yarn inject-build && yarn site-build"
+concurrently "yarn paybutton-build" "concurrently \\\"yarn paybutton-docs-build && yarn api-docs-build\\\" \\\"yarn inject-build\\\" && yarn site-build"
