@@ -35,7 +35,9 @@ example, you can use the button below to contribute to the Gateway project:
   merchantID="ef0fcea08bfa9cb0"
   buttonText="Donate to Gateway.cash"
   dialogTitle="Make a Donation"
-  closeWhenComplete="true"></div>
+  paymentCompleteAudio="https://gateway.cash/audio/ca-ching.wav"
+  closeWhenComplete="true"
+  paymentCompleteCallback="alert('Thank you for your donation.')"></div>
 </center>
 
 <aside class="notice">
@@ -98,7 +100,7 @@ started is by simply adding the `<script>` tag to their HTML.
 > To use PayButton, include this script tag once on each page where you'd like
 to use PayButton:
 
-```html
+```
 <script src="https://gateway.cash/pay.js"></script>
 <div
   class="payButton"
@@ -125,7 +127,7 @@ You can add as many PayButtons to a page as you wish.
 
 > From your React application, import PayButton like so:
 
-```javascript
+```
 import PayButton from '@gatewaycash/paybutton'
 
 export default () => (
@@ -147,7 +149,7 @@ React-based PayButtons.
 
 ## Render Function
 
-```js
+```
 window.PayButton.render(
   'example',
   {
@@ -159,7 +161,7 @@ window.PayButton.render(
 )
 ```
 
-```json
+```
 {
   "merchantID": "MERCHANT_ID",
   "amount": "4.99",
@@ -194,7 +196,10 @@ source.
 
 # Basic Usage
 
-This section will cover the basics and let you get started experimenting with PayButton in a snap. We'll cover all the ways you can get paid, how to set an amount and basic payment tracking.
+This section will cover the basics and let you get started experimenting with
+PayButton. We'll cover all the ways you can get paid, how to set an amount and
+basic payment tracking. A brief read-through of this section should get most
+merchants up and running in no time!
 
 ## Payment Methods
 
@@ -272,22 +277,208 @@ gateway.cash</a> and make note of your merchant ID.
 
 > These examples demonstrate the use of "amount" and "currency":
 
-Great! Now you have a PayButton on your site where people can pay you! But how
-much? Introducing `amount` and `currency`.
+```html
+<div
+  class="payButton"
+  merchantID="YOUR_MERCHANT_ID"
+  amount="0.01"
+></div>
+```
+
+```html
+<div
+  class="payButton"
+  address="BITCOIN_CASH_ADDRESS"
+  amount="4.99"
+  currency="EUR"
+></div>
+```
+
+```html
+<div
+  class="payButton"
+  merchantID="YOUR_MERCHANT_ID"
+  amount="20"
+  currency="USD"
+></div>
+```
+
+```javascript
+<PayButton
+  merchantID="YOUR_MERCHANT_ID"
+  amount="0.01"
+/>
+```
+
+```javascript
+<PayButton
+  address="BITCOIN_CASH_ADDRESS"
+  amount="4.99"
+  currency="EUR"
+/>
+```
+
+```javascript
+<PayButton
+  merchantID="YOUR_MERCHANT_ID"
+  amount="20"
+  currency="USD"
+/>
+```
+
+```json
+{
+  "merchantID": "YOUR_MERCHANT_ID",
+  "amount": "0.01"
+}
+```
+
+```json
+{
+  "address": "BITCOIN_CASH_ADDRESS",
+  "amount": "4.99",
+  "currency": "EUR"
+}
+```
+
+```json
+{
+  "merchantID": "YOUR_MERCHANT_ID",
+  "amount": "20",
+  "currency": "USD"
+}
+```
+
+> Available currencies:
+
+```js
+[ 'BCH', 'USD', 'EUR', 'CNY', 'JPY' ]
+```
+
+Now you have a PayButton on your site where people can send you money. Great!
+But how much should they send? Introducing `amount` and `currency`.
 
 ### Amount
 
 The `amount` prop sets the amount of money expected by the merchant for the
-payment. The value passed to `amount` is in units of `currency`, which is `BCH` by default.
+payment. The value passed to `amount` is in units of `currency`, which is `BCH`
+by default. Setting the amount to `0` or not including an amount prop allows
+any amount of BCH to be paid.
 
 ### Currency
 
 PayButton allows you to set prices in a large number of currencies other than
-Bitcoin Cash. When a currency is given, PayButton queries the current price of Bitcoin Cash in order to calculate the correct amount.
+Bitcoin Cash. When a currency is given, PayButton queries the current price of B
+itcoin Cash in order to calculate the correct amount.
+
+## Tracking Payments
+
+> Payment IDs help you keep track of which payments come from which buttons:
+
+```html
+<div
+  class="payButton"
+  merchantID="YOUR_MERCHANT_ID"
+  paymentID="tesla-donation"
+></div>
+```
+
+```html
+<div
+  class="payButton"
+  merchantID="YOUR_MERCHANT_ID"
+  paymentID="AMZ-054-46657897"
+  amount="5.99"
+  currency="USD"
+  buttonText="Place Order"
+></div>
+```
+
+```javascript
+<PayButton
+  merchantID="YOUR_MERCHANT_ID"
+  paymentID="tesla-donation"
+/>
+```
+
+```javascript
+<PayButton
+  merchantID="YOUR_MERCHANT_ID"
+  paymentID="AMZ-054-46657897"
+  amount="5.99"
+  currency="USD"
+  buttonText="Place Order"
+/>
+```
+
+```json
+{
+  "merchantID": "YOUR_MERCHANT_ID",
+  "paymentID": "tesla-donation"
+}
+```
+
+```json
+{
+  "merchantID": "YOUR_MERCHANT_ID",
+  "paymentID": "AMZ-054-46657897",
+  "amount": "5.99",
+  "currency": "USD",
+  "buttonText": "Place Order"
+}
+```
+
+We're getting closer! Now that you understand the different payment methods and
+can tell your customers how much to pay, let's learn how to keep track of all
+that dough!
+
+Thankfully, this isn't too hard either. To keep track of a payment, just use a
+`paymentID`. Think of payment IDs like unique tags that stick to your payment
+while it gets zapped across the Bitcoin Cash network.
+
+When you attach a `paymentID` prop to your PayButton, any payments made to that
+button will show up with that unique tag. You can check out all the payments
+made to your merchant account (including their `paymentID`s) by logging into
+<a href="https://gateway.cash">gateway.cash</a> and clicking <b>Payments</b>.
+
+<aside class="success">
+If you wanna get fancy, you can also grab all your payments with the
+<a href="https://api.gateway.cash/#get-payments">Gateway API</a>!
+</aside>
+
+### How is this useful?
+
+Glad you asked! It really depends on the specific application or use-case you
+want to accomplish with PayButton. I think a better question might be <b>How
+might this be useful for <i>your business</i>?</b> Here are some examples:
+
+- Imagine a website like Amazon that processes millions of orders every day.
+  Each order has an order number and payment needs to be received before the
+  order can ship. The website sets the `paymentID` for their PayButton equal to
+  the order number so they know who paid for what. Since they're so large, the
+  site queries the Gateway API directly (or maybe even runs their own Gateway
+  servers) rather than logging into Gateway.cash and scrolling for days.
+- A not-so-large website sells custom T-shirts and accepts payment with Bitcoin
+  Cash. They also set `paymentID` to the order number, but rather than going
+  through the hassle of setting up a Gateway server the merchant just logs in
+  to see their payments.
+- Elon Musk has three websites with PayButtons to accept Bitcoin Cash tips.
+  Rather than setting up separate merchant accounts for each site, he uses
+  `paymentID` prop values of `tesla`, `spacex` and `boring` respectively. Now,
+  when he logs into Gateway, he can tell which sites are generating the most
+  donation revenue. He also has the added benefit that all his tips end up in
+  the same `payoutAddress` so that he can buy flamethrowers without having to
+  move his coins around!
+
+<aside class="warning">
+If you use the address prop rather than merchantID, you cannot take advantage of
+payment tracking features or callbacks. Sign up for a merchant account to take
+advantage of these features!
+</aside>
 
 # Errors
 
-> Here are some examples of eronious payment buttons:
+> Here are some examples of erroneous payment buttons:
 
 ```html
 <div
@@ -328,7 +519,9 @@ Bitcoin Cash. When a currency is given, PayButton queries the current price of B
 ```
 
 As you create and test payment buttons, you may run across errors which can
-prevent the buttons from working properly. In some cases, these errors are detectable immediately when the page loads (`load-time`). Other times, an error may not be detected until after the button is clicked (`invoice creation time`).
+prevent the buttons from working properly. In some cases, these errors are
+detectable immediately when the page loads (`load-time`). Other times, an error
+may not be detected until after the button is clicked (`invoice creation time`).
 
 This is an example of what happens when a `load-time` error occurs:
 
@@ -357,13 +550,12 @@ Value | Description
 ------|------------
 `debug` | Show as much information as possible in console output
 `info` | Show general information about the payment and its progress
-`none` | Show no information in the console
+`none` | Show no information in the console (default)
 
 # Button Props
 
-Button properties are passed as HTML attributes or React `props`. Properties
-control the behavior and functionality of your payment button, allowing a wide
-array of customization.
+"Props", short for properties, are passed as HTML attributes or React `props`.
+Properties control the behavior and functionality of your payment button.
 
 ## buttonText
 
@@ -386,3 +578,7 @@ array of customization.
 ## closeWhenComplete
 
 ## paymentCompleteAudio
+
+# Callbacks
+
+Callbacks are a thing.
