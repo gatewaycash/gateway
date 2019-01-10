@@ -7,9 +7,27 @@
     <script src="pay.js"></script>
     <script>
       window.localCallback = function () {
-        alert('Thank you for your contribution. Your transaction ID:\n\n'
-          + window.gatewayPaymentTXID
-        )
+        document.getElementById('example1').innerHTML = window.gatewayPaymentTXID
+      }
+      window.createDynamicButton = function () {
+        try {
+          window.PayButton.render(
+            'example2',
+            {
+              merchantID: 'ef0fcea08bfa9cb0',
+              buttonText: 'Dynamic Button'
+            }
+          )
+        } catch (e) {
+          // empty
+        }
+      }
+      window.destroyDynamicButton = function () {
+        try {
+          document.getElementById('example2').innerHTML = ''
+        } catch (e) {
+          // empty
+        }
       }
     </script>
     <title>Gateway</title>
@@ -22,18 +40,15 @@
   <body>
     <h1>Gateway Payment Button Examples</h1>
     <p>
-      This page shows some of the many use-cases for the payment button.
-      Some of these are, unfortunately, not implemented yet.
-    </p>
-    <p>
-      These are all possible with strictly the HTML button inject script usable
-      on any website. If the user uses our React component, things like
-      dynamically-generated buttons become possible.
+      This page shows some of the many use-cases for the payment button. These
+      are all possible with strictly the HTML button inject script usable
+      on any website.
     </p>
     <p>
       All of the buttons on this page will allow you to contribute to the
-      Gateway project, except the one on the bottom, which won't generally work
-      unless you're running a local payment server.
+      Gateway project, except the one concerning <b>Local payment server</b>,
+      which won't generally work unless you're running a local payment server
+      for development.
     </p>
     <center>
     <h2>Basic donation button to static address</h2>
@@ -67,14 +82,6 @@
       currency="EUR"
     ></div>
 
-    <h2>Pay 5 Euros to a merchant who uses XPUB derivation</h2>
-    <div
-      class="payButton"
-      xpub="xpub66whatever"
-      amount="5.00"
-      currency="EUR"
-    ></div>
-
     <h2>Pay 0.1337 BCH to a merchant who uses BIP47 payment codes</h2>
     <div
       class="payButton"
@@ -84,18 +91,22 @@
 
     <h2>
       Donation button for a Gateway merchant ID, with custom payment audio,
-      that automatically closes when complete and has a client-side callbackURL
-      function
+      that automatically closes when complete and has a client-side callback
+      function, hidden wallet button and address text
     </h2>
     <div
       class="payButton"
       merchantID="ef0fcea08bfa9cb0"
-      paymentCompleteAudio="audio/ca-ching.wav"
-      closeWhenComplete="true"
+      paymentCompleteAudio="ca_ching"
+      closeWhenComplete="yes"
       paymentCompleteCallback="localCallback()"
       buttonText="Donate to Gateway"
       dialogTitle="Contribute to Gateway"
+      hideWalletButton="yes"
+      hideAddressText="yes"
     ></div>
+    <h2>Client callback result:</h2>
+    <div id="example1">Pay to above button to see resulting TXID</div>
 
     <h2>
       Payment button for a Gateway merchant ID, with
@@ -110,7 +121,9 @@
       gatewayServer="http://127.0.0.1:8080"
     ></div>
 
-    <div id="example1"></div>
+    <h2>Dynamic buttons</h2>
+    <button onclick="createDynamicButton()">Create</button>
+    <button onclick="destroyDynamicButton()">Destroy</button>
     <div id="example2"></div>
     </center>
   </body>

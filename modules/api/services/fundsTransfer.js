@@ -15,7 +15,16 @@ let checkFunds = async (payment) => {
   try {
     legacyAddress = bchaddr.toLegacyAddress(payment.address)
   } catch (e) {
-    console.log('Invalid address, aborting', payment.address)
+    // delete the payment with the erroneous paymentAddress
+    console.error('Untranslatable address', payment.address, 'removing')
+    await mysql.query(
+      'delete from payments where paymentAddress = ?',
+      [payment.address]
+    )
+    await mysql.query(
+      'delete from pending where address = ?',
+      [payment.address]
+    )
     return
   }
 
@@ -26,29 +35,22 @@ let checkFunds = async (payment) => {
     requestURL = BLOCK_EXPLORER_BASE + '/addr/' + legacyAddress
       + '/unconfirmedbalance'
     let unconfirmedBalance = await axios.get(requestURL)
-
     let balance = parseInt(unconfirmedBalance.data) +
       parseInt(confirmedBalance.data)
 
+    // Print balance and run transferFunds if balance is non-zero
+    console.log('Balance', legacyAddress, ( balance / 100000000 ), 'BCH')
     if (balance > 0) {
-      console.log(
-        'Non-zero balance for payment:\n',
-        'Address:',
-        payment.address,
-        '\nBalance:',
-        ( balance / 100000000 ),
-        'BCH'
-      )
-      await transferFunds(payment)
-    } else {
-      console.log('Balance', payment.address, balance)
+      try {
+        await transferFunds(payment)
+      } catch (e) {
+        console.error('Error transferring funds', legacyAddress)
+        console.error(e)
+      }
     }
   } catch (e) {
-    console.log(
-      'Error checking or transferring funds for',
-      payment.address
-    )
-    console.log(e)
+    console.error('Error getting balance', legacyAddress)
+    console.error(e)
   }
 }
 
@@ -62,7 +64,6 @@ let transferFunds = async (payment) => {
   sql = 'select payoutAddress from users where merchantID = ? limit 1'
   result = await mysql.query(sql, [merchantID])
   let merchantAddress = result[0].payoutAddress
-  console.log('Merchant address:', merchantAddress)
 
   // get the full payment information
   sql = `select
@@ -81,7 +82,6 @@ let transferFunds = async (payment) => {
     callbackURL,
     paymentID
   } = result
-  console.log('Got payment key, length', paymentKey.length)
 
   // set up some more variables to keep a handle on things
   let paymentAddress = payment.address
@@ -93,9 +93,9 @@ let transferFunds = async (payment) => {
     BLOCK_EXPLORER_BASE + '/addr/' + paymentAddressLegacy + '/utxo'
   )
   paymentUTXOs = paymentUTXOs.data
-  console.log('Got', paymentUTXOs.length, 'payment UTXOs')
+  console.log('Got', paymentAddressLegacy, paymentUTXOs.length, 'UTXOs')
   if (isNaN(paymentUTXOs.length) || paymentUTXOs.length <= 0) {
-    console.log('No UTXOs for payment')
+    console.error('No UTXOs, aborting.')
     return
   }
 
@@ -117,10 +117,10 @@ let transferFunds = async (payment) => {
     })
     totalTransferred += (paymentUTXOs[i].amount * 100000000)
   }
-  console.log('Added UTXOs to the transfer transaction')
 
   // round the totalTransferred to be Satoshis
   totalTransferred = totalTransferred.toFixed(0)
+  console.log('Added UTXOs, total', ( totalTransferred / 100000000 ), 'BCH')
 
   // TODO: optional Gateway contributions
   // to bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng
@@ -131,10 +131,13 @@ let transferFunds = async (payment) => {
   transferTransaction.fee(200)
   transferTransaction.sign(bch.PrivateKey.fromWIF(paymentKey))
   let rawTransferTransaction = transferTransaction.toString()
-  console.log('Raw transaction:\n\n', rawTransferTransaction)
+  console.log('Transfer Transaction:\n\n' + rawTransferTransaction + '\n')
 
-  // broadcast transaction to multiple places
-  // our current block explorer
+  /*
+    Broadcast transaction to multiple places
+  */
+
+  // Our current block explorer
   let transferTXID = await axios.post(
     BLOCK_EXPLORER_BASE + '/tx/send',
     {
@@ -142,8 +145,8 @@ let transferFunds = async (payment) => {
     }
   )
   transferTXID = transferTXID.data.txid
-  console.log('Broadcasted, TXID:', transferTXID)
-  // bitcoin.com block explorer
+
+  // Bitcoin.com block explorer
   await axios.post(
     'https://api.blockchair.com/bitcoin-cash/push/transaction',
     {
@@ -151,11 +154,11 @@ let transferFunds = async (payment) => {
     }
   )
 
-  // print the payment information
-  console.log('Transfer TXID:   ', transferTXID)
-  console.log('Payment Address: ', paymentAddress)
-  console.log('Payment TXID:    ', paymentTXID)
-  console.log('Amount Paid:     ', totalTransferred)
+  // Print the payment information
+  console.log('Transfer TXID:\n' + transferTXID + '\n')
+  console.log('Payment Address:\n' + paymentAddress + '\n')
+  console.log('Payment TXID:\n' + paymentTXID + '\n')
+  console.log('Amount Paid: ' + (totalTransferred / 100000000) + ' BCH' + '\n')
 
   // delete transaction from pending
   sql = 'delete from pending where txid = ?'
@@ -178,8 +181,14 @@ let transferFunds = async (payment) => {
   sql = 'update users set totalSales = totalSales + ? where merchantID = ?'
   await mysql.query(sql, [totalTransferred, merchantID])
 
-  // we are done if there is not a callbackUrL
-  if (!callbackURL) {
+  // we are done if there is not a callbackURL
+  if (
+    !callbackURL ||
+    callbackURL === '' ||
+    callbackURL === 'None' ||
+    callbackURL == 0
+  ) {
+    console.log('No callback URL provided')
     return
   }
 
@@ -208,7 +217,7 @@ let transferFunds = async (payment) => {
   try {
     await axios.post(callbackRequest.callbackURL, callbackRequest)
   } catch (e) {
-    console.log(
+    console.error(
       'Unable to execute callback to URL:',
       callbackRequest.callbackURL
     )
@@ -223,12 +232,7 @@ let transferFunds = async (payment) => {
 let searchDatabase = async () => {
   let sql = 'select * from pending'
   let result = await mysql.query(sql)
-  for(var i = 0; i < result.length; i++) {
-    console.log(
-      'Processing payment',
-      '\nTXID:',
-      result[i].txid
-    )
+  for(let i = 0; i < result.length; i++) {
     await checkFunds(result[i])
   }
 }

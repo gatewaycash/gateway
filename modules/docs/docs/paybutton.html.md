@@ -29,16 +29,17 @@ devices. The use-cases and possibilities for PayButton are almost endless. For
 example, you can use the button below to contribute to the Gateway project:
 
 <script src="https://gateway.cash/pay.js"></script>
+<aside>
 <center>
 <div
   class="payButton"
   merchantID="ef0fcea08bfa9cb0"
   buttonText="Donate to Gateway.cash"
   dialogTitle="Make a Donation"
-  paymentCompleteAudio="https://gateway.cash/audio/ca-ching.wav"
   closeWhenComplete="true"
   paymentCompleteCallback="alert('Thank you for your donation.')"></div>
 </center>
+</aside>
 
 <aside class="notice">
 These docs outline all the ways PayButton can be customized. If you're just
@@ -532,16 +533,20 @@ may not be detected until after the button is clicked (`invoice creation time`).
 
 This is an example of what happens when a `load-time` error occurs:
 
+<aside>
 <center>
 <div class="payButton" foo="bar"></div>
 </center>
+</aside>
 
 This is an example of what happens when an error occurs at `invoice creation
 time`:
 
+<aside>
 <center>
 <div class="payButton" merchantID="invalid0invalid1"></div>
 </center>
+</aside>
 
 ## Console Output
 
@@ -565,11 +570,58 @@ When your buttons aren't working, errors will always be shown in the console.
 
 # Button Props
 
-We've thrown aroundthe word "props" without formally introducing them, but if
-you're at all familiar with <a href="https://reactjs.org/">React</a>, you'll
-already get the idea. Props control the functionality and behavior of PayButton.
+We've thrown around the word "props" without formally introducing what it
+means, but if you're at all familiar with <a href="https://reactjs.org/">React
+</a>, you'll already get the idea. Props control the functionality and behavior
+of PayButton.
+
+<aside class="success">
+All of the below button examples allow you to contribute to the Gateway project!
+</aside>
 
 ## buttonText
+
+> Change the text on the PayButton with this prop:
+
+```html
+<div
+  class="payButton"
+  merchantID="YOUR_MERCHANT_ID"
+  buttonText="Give me free money!"
+></div>
+```
+
+```javascript
+<PayButton
+  merchantID="YOUR_MERCHANT_ID"
+  buttonText="Give me free money!"
+/>
+```
+
+```json
+{
+  "merchantID": "YOUR_MERCHANT_ID",
+  "buttonText": "Give me free money!"
+}
+```
+
+Use the `buttonText` prop to change the text displayed on the clickable
+PayButton. By default, `buttonText` is `PAY WITH BITCOIN CASH`. The button text
+will always be displayed in upper case.
+
+### Examples
+
+<aside>
+<center>
+<div
+  class="payButton"
+  merchantID="ef0fcea08bfa9cb0"></div>
+<div
+  class="payButton"
+  merchantID="ef0fcea08bfa9cb0"
+  buttonText="Custom button text"></div>
+</center>
+</aside>
 
 ## dialogTitle
 
@@ -590,6 +642,20 @@ already get the idea. Props control the functionality and behavior of PayButton.
 ## closeWhenComplete
 
 ## paymentCompleteAudio
+
+## enablePaymentAudio
+
+## gatewayServer
+
+## blockExplorer
+
+## elementID
+
+## hideWalletButton
+
+## hideAddressText
+
+## consoleOutput
 
 # Callbacks
 

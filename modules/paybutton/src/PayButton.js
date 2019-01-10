@@ -39,7 +39,9 @@ let PayButton = props => {
   let [amountBCH, setAmountBCH] = React.useState(0)
   let [paymentAddress, setPaymentAddress] = React.useState('loading...')
   let [sock, setSock] = React.useState(false)
-  let paymentCompleteAudio = new Audio(props.paymentCompleteAudio)
+  let paymentCompleteAudio = props.enablePaymentAudio ?
+    new Audio(props.paymentCompleteAudio) :
+    undefined
 
   // When the payment button is clicked, generate a new invoice
   let handleClick = async () => {

@@ -7,7 +7,7 @@ import bchaddr from 'bchaddrjs'
  */
 let formatCallback = cb => {
   if (!cb || cb === '' || cb.length < 1) {
-    return
+    return ''
   }
   if (cb.endsWith(';')) {
     cb = cb.substr(0, cb.length - 1)
@@ -16,6 +16,7 @@ let formatCallback = cb => {
     cb += '()'
   }
   cb += ';'
+  return cb
 }
 
 /**
@@ -38,9 +39,9 @@ export default ({
   merchantid,
   merchantID,
   paymentcompleteaudio,
-  paymentCompleteAudio = 'https://gateway.cash/audio/ding.mp3',
+  paymentCompleteAudio = 'bca',
   paymentcompletecallback,
-  paymentCompleteCallback = '',
+  paymentCompleteCallback,
   closewhencomplete,
   closeWhenComplete = 'no',
   enablepaymentaudio,
@@ -59,6 +60,14 @@ export default ({
   consoleOutput = 'none'
 }) => {
   let supportedCurrencies = ['BCH', 'USD', 'EUR', 'CNY', 'JPY']
+  let paymentAudioPresets = {
+    bca: 'https://raw.githubusercontent.com/The-Bitcoin-Cash-Fund/Branding/master/Bitcoin_Cash/Audio/BCH_Payment_Receive_Audio.wav',
+    ding: 'https://gateway.cash/audio/ding.mp3',
+    ca_ching: 'https://gateway.cash/audio/ca-ching.wav',
+    off: '',
+    none: '',
+    no: ''
+  }
 
   // assign all lower-case prop names to their correct upper-case counterparts
   buttonText = buttontext || buttonText
@@ -77,35 +86,33 @@ export default ({
   hideAddressText = hideaddresstext || hideAddressText
   consoleOutput = consoleoutput || consoleOutput
 
-  // APIURL sanity check
+  // validate gatewayServer
   if (!['http://', 'https://'].some(x => gatewayServer.startsWith(x))) {
     return showError('gatewayServer must start with http:// or https://')
   }
 
-  // check the provided API basepoint URL for sanity
+  // validate blockExplorer
   if (!['ws://', 'wss://'].some(x => blockExplorer.startsWith(x))) {
     return showError('blockExplorer must start with ws:// or wss://')
   }
 
+  // validate amount
   if (isNaN(amount)) {
     return showError('Currency amount must be a number (decimals are OK)')
   }
-
   if (amount < 0) {
     return showError('Currency amount must be a positive number')
   }
 
-  // Parse the currency. Default is to use BCH
+  // validate currency
   if (!supportedCurrencies.some(x => currency === x)) {
     return showError('The given currency is not supported')
   }
 
-  // check the callback URL length for sanity
+  // validate callbackURL
   if (callbackURL && callbackURL.length > 250) {
     return showError('Callback URL must be shorter than 250 characters!')
   }
-
-  // check the protocol of the callback URL for sanity
   if (
     callbackURL &&
     !['http://', 'https://'].some(x => callbackURL.startsWith(x))
@@ -113,12 +120,12 @@ export default ({
     return showError('Callback URL does not start with http:// or https://')
   }
 
-  // verify the length of the payment ID for sanity
+  // validate paymentID
   if (paymentID && paymentID.length > 64) {
     return showError('The payment ID cannot be longer than 64 characters!')
   }
 
-  // check the direct deposit address for validity, if provided
+  // validate address if given
   if (address) {
     try {
       address = bchaddr.toCashAddress(address)
@@ -127,12 +134,12 @@ export default ({
     }
   }
 
-  // check the merchant ID for sanity, if one was provided
+  // validate merchantID if given
   if (merchantID && merchantID.length !== 16) {
     return showError('Your merchantID needs to be 16 characters!')
   }
 
-  // fail if neither a merchant ID nor an address were provided
+  // fail if no merchantID and no address
   if (!merchantID && !address) {
     return showError('Either address or merchantID is required')
   }
@@ -148,6 +155,21 @@ export default ({
 
   // parse enablePaymentAudio
   enablePaymentAudio = enablePaymentAudio === 'yes'
+  if (
+    paymentCompleteAudio === 'off' ||
+    paymentCompleteAudio === 'none' ||
+    paymentCompleteAudio === 'no'
+  ) {
+    enablePaymentAudio = false
+  }
+
+  // parse paymentCompleteAudio
+  if (!['http://', 'https://'].some(x => paymentCompleteAudio.startsWith(x))) {
+    paymentCompleteAudio = paymentAudioPresets[paymentCompleteAudio]
+    if (paymentCompleteAudio === undefined) {
+      return showError('paymentCompleteAudio is invalid')
+    }
+  }
 
   // parse closeWhenComplete
   closeWhenComplete = closeWhenComplete === 'yes'
@@ -169,12 +191,20 @@ export default ({
       merchantID ||
       callbackURL ||
       paymentCompleteCallback !== '' ||
-      gatewayServer !== 'https://api.gateway.cash'
+      gatewayServer !== 'https://api.gateway.cash' ||
+      closeWhenComplete !== false
     ) {
+      console.log(paymentID)
+      console.log(merchantID)
+      console.log(callbackURL)
+      console.log(paymentCompleteCallback !== '')
+      console.log(gatewayServer !== 'https://api.gateway.cash')
+      console.log(closeWhenComplete !== false)
       return showError(
-        'When a direct deposit address is used, payment tracking and callbacks are not supported because Gateway does not know which transactions belong to which button clicks. Use a Gateway merchant account and a merchantID to enable this, and host a Gateway server if concerned about trust.'
+        'When a direct deposit address is used, payment tracking and callbacks are not supported because Gateway does not know which transactions belong to which button clicks. Use a Gateway merchant account and a merchantID to enable this, and host a Gateway server if concerned about trust. Specifically, paymentID, merchantID, callbackURL, paymentCompleteCallback, gatewayServer, closeWhenComplete, paymentCompleteAudio and enablePaymentAudio cannot be used if address is being used.'
       )
     }
+    enablePaymentAudio = false
   }
 
   return {
