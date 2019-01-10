@@ -72,8 +72,8 @@ In order that PayButton can be used in as many places as possible, we have worke
 Merchants, app developers and service providers across numerous industries have
 differing needs. From the Apple Watch to Samsung's newest 8K TV, from online
 retail to micropayments to vending machines, our goal is to make PayButton the
-solution for everyone. That means providing near-endless cuustomizability
-through a simple interface at the clock of a button (no pun intended).
+solution for everyone. That means providing near-endless customizability
+through a simple interface at the click of a button (no pun intended).
 
 ## Simplicity
 
@@ -565,8 +565,9 @@ When your buttons aren't working, errors will always be shown in the console.
 
 # Button Props
 
-"Props", short for properties, are passed as HTML attributes or React `props`.
-Properties control the behavior and functionality of your payment button.
+We've thrown aroundthe word "props" without formally introducing them, but if
+you're at all familiar with <a href="https://reactjs.org/">React</a>, you'll
+already get the idea. Props control the functionality and behavior of PayButton.
 
 ## buttonText
 

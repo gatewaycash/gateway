@@ -97,7 +97,7 @@ export default ({
 
   // Parse the currency. Default is to use BCH
   if (!supportedCurrencies.some(x => currency === x)) {
-    return showError('Currency must be one of', supportedCurrencies)
+    return showError('The given currency is not supported')
   }
 
   // check the callback URL length for sanity
