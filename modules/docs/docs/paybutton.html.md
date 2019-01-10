@@ -62,12 +62,12 @@ PayButton aims to be the de facto standard for Bitcoin Cash payments across the
 internet. By providing a wide array of customizable features we can tailor to
 the needs of merchants while providing a simple interface for everyone.
 
-## Versitility
+## Versatility
 
 In order that PayButton can be used in as many places as possible, we have worked to provide integrations with leading wallets and service providers such as TODO: (WordPress, Shopify, Weebly, Wix and many others.) Check out the
 <b>Integrating PayButton</b> section for lots more info.
 
-## Customisability
+## Customizability
 
 Merchants, app developers and service providers across numerous industries have
 differing needs. From the Apple Watch to Samsung's newest 8K TV, from online
@@ -97,10 +97,11 @@ started is by simply adding the `<script>` tag to their HTML.
 
 ## Script Tag
 
+> Switch to the HTML tab to view these examples.
 > To use PayButton, include this script tag once on each page where you'd like
-to use PayButton:
+> to use PayButton:
 
-```
+```html
 <script src="https://gateway.cash/pay.js"></script>
 <div
   class="payButton"
@@ -111,7 +112,7 @@ to use PayButton:
 ></div>
 ```
 
-> The script can be anywhere on the page, in either the <head> or <body> tags.
+> The script can be added anywhere on the page.
 
 The easiest way to get PayButton working is to include the script onto your
 website. The script will search for any `<div>`s where `class="payButton"`,
@@ -125,17 +126,21 @@ You can add as many PayButtons to a page as you wish.
 
 ## React Component
 
+> Switch to the React tab to view these examples.
 > From your React application, import PayButton like so:
 
-```
+```javascript
 import PayButton from '@gatewaycash/paybutton'
 
 export default () => (
-  <PayButton
-    merchantID="YOUR_MERCHANT_ID"
-    amount="2.49"
-    currency="JPY"
-  />
+  <div>
+    <h1>Give Me Free Money!</h1>
+    <PayButton
+      merchantID="YOUR_MERCHANT_ID"
+      amount="2.49"
+      currency="JPY"
+    />
+  </div>
 )
 ```
 
@@ -149,19 +154,21 @@ React-based PayButtons.
 
 ## Render Function
 
-```
+> Switch to the Render tab to view these examples.
+
+```json
 window.PayButton.render(
   'example',
   {
-    merchantID: "MERCHANT_ID",
-    amount: "4.99",
-    currency: "USD",
-    buttonText: 'Doe Nate'
+    "merchantID": "MERCHANT_ID",
+    "amount": "4.99",
+    "currency": "USD",
+    "buttonText": "Doe Nate"
   }
 )
 ```
 
-```
+```json
 {
   "merchantID": "MERCHANT_ID",
   "amount": "4.99",
@@ -368,8 +375,8 @@ any amount of BCH to be paid.
 ### Currency
 
 PayButton allows you to set prices in a large number of currencies other than
-Bitcoin Cash. When a currency is given, PayButton queries the current price of B
-itcoin Cash in order to calculate the correct amount.
+Bitcoin Cash. When a currency is given, PayButton queries the current price of
+Bitcoin Cash in order to calculate the correct amount.
 
 ## Tracking Payments
 
@@ -551,6 +558,10 @@ Value | Description
 `debug` | Show as much information as possible in console output
 `info` | Show general information about the payment and its progress
 `none` | Show no information in the console (default)
+
+<aside class="notice">
+When your buttons aren't working, errors will always be shown in the console.
+</aside>
 
 # Button Props
 

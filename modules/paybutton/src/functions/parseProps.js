@@ -6,6 +6,9 @@ import bchaddr from 'bchaddrjs'
  * @param {String} cb - The callback to format
  */
 let formatCallback = cb => {
+  if (!cb || cb === '' || cb.length < 1) {
+    return
+  }
   if (cb.endsWith(';')) {
     cb = cb.substr(0, cb.length - 1)
   }
@@ -37,7 +40,7 @@ export default ({
   paymentcompleteaudio,
   paymentCompleteAudio = 'https://gateway.cash/audio/ding.mp3',
   paymentcompletecallback,
-  paymentCompleteCallback = 'console.log("GATEWAY: Payment complete!\\n\\nTXID: "+window.gatewayPaymentTXID)',
+  paymentCompleteCallback = '',
   closewhencomplete,
   closeWhenComplete = 'no',
   enablepaymentaudio,
@@ -51,7 +54,9 @@ export default ({
   blockexplorer,
   blockExplorer = 'wss://bch.coin.space',
   gatewayserver,
-  gatewayServer = 'https://api.gateway.cash'
+  gatewayServer = 'https://api.gateway.cash',
+  consoleoutput,
+  consoleOutput = 'none'
 }) => {
   let supportedCurrencies = ['BCH', 'USD', 'EUR', 'CNY', 'JPY']
 
@@ -70,6 +75,7 @@ export default ({
   blockExplorer = blockexplorer || blockExplorer
   gatewayServer = gatewayserver || gatewayServer
   hideAddressText = hideaddresstext || hideAddressText
+  consoleOutput = consoleoutput || consoleOutput
 
   // APIURL sanity check
   if (!['http://', 'https://'].some(x => gatewayServer.startsWith(x))) {
@@ -140,8 +146,17 @@ export default ({
   // parse hideAddressText
   hideAddressText = hideAddressText === 'yes'
 
-  // return the parsed data
-  let parsedData = {
+  // validate the consoleOutput prop
+  consoleOutput = consoleOutput.toLowerCase()
+  if (
+    consoleOutput !== 'none' &&
+    consoleOutput !== 'info' &&
+    consoleOutput !== 'debug'
+  ) {
+    return showError('consoleOutput must be one of "debug", "info" or "none"')
+  }
+
+  return {
     buttonText: buttonText,
     dialogTitle: dialogTitle,
     amount: amount,
@@ -158,7 +173,7 @@ export default ({
     enablePaymentAudio: enablePaymentAudio,
     elementID: elementID,
     hideWalletButton: hideWalletButton,
-    hideAddressText: hideAddressText
+    hideAddressText: hideAddressText,
+    consoleOutput: consoleOutput
   }
-  return parsedData
 }
