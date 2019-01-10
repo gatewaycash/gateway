@@ -162,6 +162,21 @@ export default ({
     return showError('consoleOutput must be one of "debug", "info" or "none"')
   }
 
+  // verify that payment tracking is not attempted with direct deposit address
+  if (address) {
+    if (
+      paymentID ||
+      merchantID ||
+      callbackURL ||
+      paymentCompleteCallback !== '' ||
+      gatewayServer !== 'https://api.gateway.cash'
+    ) {
+      return showError(
+        'When a direct deposit address is used, payment tracking and callbacks are not supported because Gateway does not know which transactions belong to which button clicks. Use a Gateway merchant account and a merchantID to enable this, and host a Gateway server if concerned about trust.'
+      )
+    }
+  }
+
   return {
     buttonText: buttonText,
     dialogTitle: dialogTitle,
