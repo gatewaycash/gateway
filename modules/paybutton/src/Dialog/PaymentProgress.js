@@ -12,8 +12,7 @@ let PaymentProgress = ({
     <p
       style={{
         marginLeft: '0.5em',
-        marginRight: '0.5em',
-        marginTop: '-1.5em'
+        marginRight: '0.5em'
       }}
     >
       Send {amountBCH == 0 ? 'some' : amountBCH} Bitcoin&nbsp;Cash (BCH) to this
@@ -34,7 +33,7 @@ let PaymentProgress = ({
         width: '15em',
         margin: 'auto',
         marginTop: '-1em',
-        marginBottom: '-1.5em',
+        marginBottom: '-1em',
         align: 'center'
       }}
     />

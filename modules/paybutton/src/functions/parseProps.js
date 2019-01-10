@@ -129,7 +129,7 @@ export default ({
 
   // check the merchant ID for sanity, if one was provided
   if (merchantID && merchantID.length !== 16) {
-    return showError('Your Merchant ID needs to be 16 characters!')
+    return showError('Your merchantID needs to be 16 characters!')
   }
 
   // fail if neither a merchant ID nor an address were provided
@@ -145,6 +145,12 @@ export default ({
 
   // parse hideAddressText
   hideAddressText = hideAddressText === 'yes'
+
+  // parse enablePaymentAudio
+  enablePaymentAudio = enablePaymentAudio === 'yes'
+
+  // parse closeWhenComplete
+  closeWhenComplete = closeWhenComplete === 'yes'
 
   // validate the consoleOutput prop
   consoleOutput = consoleOutput.toLowerCase()
