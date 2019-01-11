@@ -27,7 +27,8 @@
   },
   "scripts": {
     "build": "rollup --config rollup.prod.js --environment INCLUDE_DEPS,BUILD:production",
-    "dev": "rollup --config rollup.dev.js --watch --environment INCLUDE_DEPS,BUILD:development"
+    "dev": "rollup --config rollup.dev.js --watch --environment INCLUDE_DEPS,BUILD:development",
+    "build-dev": "yarn workspace @gatewaycash/paybutton build && yarn workspace @gatewaycash/inject rollup --config rollup.dev.js --environment INCLUDE_DEPS,BUILD:development"
   },
   "dependencies": {
     "react": "^16.7.0-alpha.2",

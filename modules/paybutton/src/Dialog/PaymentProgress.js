@@ -1,19 +1,23 @@
 import React from 'react'
 import Button from '@material-ui/core/Button'
 import PropTypes from 'prop-types'
+import styles from 'jss/PaymentProgress'
+import withStyles from '@material-ui/core/styles/withStyles'
 
 let PaymentProgress = ({
+  classes,
   amountBCH,
   paymentAddress,
   hideWalletButton,
   hideAddressText
 }) => (
-  <center>
-    <p>
-      Send {amountBCH == 0 ? 'some' : amountBCH} Bitcoin&nbsp;Cash (BCH) to this
-      address to complete your payment
-    </p>
+  <div className={classes.container}>
+    <span>
+      Send {amountBCH || 'some'} Bitcoin&nbsp;Cash (BCH) to this address to
+      complete your payment
+    </span>
     <img
+      className={classes.qrCode}
       src={
         amountBCH > 0
           ? 'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' +
@@ -26,14 +30,6 @@ let PaymentProgress = ({
       alt="Payment QR code"
       title="Payment QR code"
       poster="Payment QR code"
-      style={{
-        width: '15em',
-        margin: 'auto',
-        marginTop: '-1em',
-        marginBottom: '-2em',
-        align: 'center',
-        clip: 'rect(10px,50px,50px,10px)'
-      }}
     />
     {hideAddressText || (
       <p
@@ -51,6 +47,7 @@ let PaymentProgress = ({
     {hideWalletButton || (
       <Button
         variant="contained"
+        className={classes.hideWalletButton}
         color="primary"
         href={
           amountBCH > 0
@@ -61,14 +58,15 @@ let PaymentProgress = ({
         OPEN WALLET
       </Button>
     )}
-  </center>
+  </div>
 )
 
 PaymentProgress.propTypes = {
+  classes: PropTypes.object,
   amountBCH: PropTypes.any.isRequired,
   paymentAddress: PropTypes.string.isRequired,
   hideWalletButton: PropTypes.bool.isRequired,
   hideAddressText: PropTypes.bool.isRequired
 }
 
-export default PaymentProgress
+export default withStyles(styles)(PaymentProgress)

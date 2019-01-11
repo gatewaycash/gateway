@@ -72,10 +72,7 @@ let PayButton = props => {
       .toString()
     // shave off all the exra zeros from the end
     while (calculatedAmount.endsWith('0')) {
-      calculatedAmount = calculatedAmount.substr(
-        0,
-        calculatedAmount.length - 1
-      )
+      calculatedAmount = calculatedAmount.substr(0, calculatedAmount.length - 1)
     }
     setAmountBCH(calculatedAmount)
     amountBCH = calculatedAmount
@@ -97,9 +94,7 @@ let PayButton = props => {
         }
       } catch (e) {
         alert(
-          showError(
-            'We\'re having some trouble contacting the Gateway server!'
-          )
+          showError('We\'re having some trouble contacting the Gateway server!')
         )
         return
       }
@@ -236,9 +231,9 @@ let PayButton = props => {
       </Button>
       <Dialog
         open={dialogOpen}
-        keepMounted
         onClose={handleClose}
         title={paymentComplete ? 'Thank you!' : props.dialogTitle}
+        closeDialog={() => setDialogOpen(false)}
       >
         {paymentComplete ? (
           <PaymentComplete />
