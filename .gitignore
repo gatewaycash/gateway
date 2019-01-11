@@ -43,3 +43,6 @@ modules/website/public/pay.js.map
 modules/website/public/docs/
 modules/api/public/
 modules/docs/source/index.html.md
+
+# Editor
+.vscode/

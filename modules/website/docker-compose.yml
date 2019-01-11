@@ -1,0 +1,11 @@
+version: '3.1'
+
+services:
+  gateway-website:
+    container_name: gateway-website_instance
+    image: webdevops/php-nginx:7.3
+    ports:
+      - '5051:80'
+    volumes:
+      - ./:/usr/share/nginx/html
+      - ./default.conf:/etc/nginx/conf.d/default.conf

@@ -1,0 +1,14 @@
+version: '3.1'
+
+services:
+  db:
+    container_name: gateway_db
+    image: mysql:5.7
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - 3311:3306
+    expose:
+      - 3306
