@@ -5,6 +5,7 @@ import replace from 'rollup-plugin-replace'
 import json from 'rollup-plugin-json'
 import builtins from 'rollup-plugin-node-builtins'
 import globals from 'rollup-plugin-node-globals'
+//import { uglify } from 'rollup-plugin-uglify'
 
 export default {
   input: 'inject.js',
