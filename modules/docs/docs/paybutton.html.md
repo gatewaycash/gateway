@@ -625,38 +625,561 @@ will always be displayed in upper case.
 
 ## dialogTitle
 
+> Change the title displayed on the dialog box:
+
+```html
+<div
+  class="payButton"
+  merchantID="YOUR_MERCHANT_ID"
+  buttonText="Send Your Donation"
+></div>
+```
+
+```javascript
+<PayButton
+  merchantID="YOUR_MERCHANT_ID"
+  dialogTitle="Send Your Donation"
+/>
+```
+
+```json
+{
+  "merchantID": "YOUR_MERCHANT_ID",
+  "dialogTitle": "Send Your Donation"
+}
+```
+
+The `dialogTitle` prop sets the title displayed in the payment dialog box. By default, the title is set to `Complete Your Payment`.
+
+### Examples
+
+<aside>
+<center>
+<div
+  class="payButton"
+  merchantID="ef0fcea08bfa9cb0"
+  buttonText="Default title"></div>
+<div
+  class="payButton"
+  merchantID="ef0fcea08bfa9cb0"
+  buttonText="Custom title"
+  dialogTitle="Dear mom & Dad Plz Send Money..."></div>
+</center>
+</aside>
+
 ## merchantID
+
+> Merchant IDs allow you to make use of Gateway's payment tracking features:
+
+```html
+<div
+  class="payButton"
+  merchantID="YOUR_MERCHANT_ID"
+></div>
+```
+
+```javascript
+<PayButton
+  merchantID="YOUR_MERCHANT_ID"
+/>
+```
+
+```json
+{
+  "merchantID": "YOUR_MERCHANT_ID"
+}
+```
+
+`merchantID` identifies the merchant for whom the payment is destined. To get
+your merchant ID, create an account on <a href="https://gateway.cash">
+gateway.cash</a> and find it on your dashboard. When a button uses your
+merchant ID, payments made to that button are forwarded to your merchant
+account payout address.
 
 ## address
 
-## currency
+> Using a direct deposit address can provide more decentralization and be
+> simpler:
 
-## amount
+```html
+<div
+  class="payButton"
+  address="BITCOIN_CASH_ADDRESS"
+></div>
+```
 
-## paymentID
+```javascript
+<PayButton
+  address="BITCOIN_CASH_ADDRESS"
+/>
+```
 
-## callbackURL
+```json
+{
+  "address": "BITCOIN_CASH_ADDRESS"
+}
+```
 
-## paymentCompleteCallback
+If you don't want a Gateway merchant account or want a simpler experience, you
+can specify an `address` instead of `merchantID`. All of your payments will go
+directly to this address, but you sacrifice the ability to use Gateway's
+payment tracking and callback features.
+
+<aside class="notice">
+Either a merchantID or an address is required for all PayButtons.
+</aside>
 
 ## closeWhenComplete
 
+> Closes the dialog when payment is complete:
+
+```html
+<div
+  class="payButton"
+  merchantID="YOUR_MERCHANT_ID"
+  closeWhenComplete="yes"
+></div>
+```
+
+```javascript
+<PayButton
+  merchantID="YOUR_MERCHANT_ID"
+  closeWhenComplete="yes"
+/>
+```
+
+```json
+{
+  "merchantID": "YOUR_MERCHANT_ID",
+  "closeWhenComplete": "yes"
+}
+```
+
+By default, PayButton will show a "Thank You" message when a payment is
+successful. With `closeWhenComplete`, you can instead simply close the dialog
+box when a successful payment is made.
+
+### Value
+
+The `closeWhenComplete` prop should be set to a "yes/no" value. This means
+things like `"yes"`, `"no"`, `"on"`, `"off"`, `"true"` and `"false"` will
+generally work.
+
+### Examples
+
+<aside>
+<center>
+<div
+  class="payButton"
+  merchantID="ef0fcea08bfa9cb0"
+  buttonText="Default behavior"></div>
+<div
+  class="payButton"
+  merchantID="ef0fcea08bfa9cb0"
+  buttonText="close when complete"
+  closeWhenComplete="yes"></div>
+</center>
+</aside>
+
 ## paymentCompleteAudio
+
+> Use standard audio for PayButton:
+
+```html
+<div
+  class="payButton"
+  merchantID="YOUR_MERCHANT_ID"
+  paymentCompleteAudio="bca"
+></div>
+```
+
+```javascript
+<PayButton
+  merchantID="YOUR_MERCHANT_ID"
+  paymentCompleteAudio="bca"
+/>
+```
+
+```json
+{
+  "merchantID": "YOUR_MERCHANT_ID",
+  "paymentCompleteAudio": "bca"
+}
+```
+
+> You can also use a URL instead:
+
+```html
+<div
+  class="payButton"
+  merchantID="YOUR_MERCHANT_ID"
+  paymentCompleteAudio="https://gateway.cash/audio/ding.mp3"
+></div>
+```
+
+```javascript
+<PayButton
+  merchantID="YOUR_MERCHANT_ID"
+  paymentCompleteAudio="https://gateway.cash/audio/ding.mp3"
+/>
+```
+
+```json
+{
+  "merchantID": "YOUR_MERCHANT_ID",
+  "paymentCompleteAudio": "https://gateway.cash/audio/ding.mp3"
+}
+```
+
+Using audio to confirm when a payment is successful improves customer
+assurance and helps to build a standard payment experience.
+`paymentCompleteAudio` lets you customize the audio being played while still
+adhering to Bitcoin Cash standards by default.
+
+### Audio Presets
+
+Set `paymentCompleteAudio` to one of these presets for a standard experience:
+
+Name | Description
+-----|------------
+`bca` | Standard "payment received" sound proposed by Bitcoin Cash Association (default)
+`ding` | A simple "ding" sound from FreeSound
+`ca_ching` | A cash register sound from FreeSound
+`off`, `none`, `no`, or `disabled` | Do not play payment audio
+
+### Audio URLs
+
+You can also set `paymentCompleteAudio` to a URL like
+`https://gateway.cash/audio/ding.mp3` in order to get a fully custom experience.
+
+### Examples
+
+<aside>
+<center>
+<div
+  class="payButton"
+  merchantID="ef0fcea08bfa9cb0"
+  buttonText="Default audio (BCA)"></div>
+<div
+  class="payButton"
+  merchantID="ef0fcea08bfa9cb0"
+  buttonText="ding"
+  paymentCompleteAudio="ding"></div>
+<div
+  class="payButton"
+  merchantID="ef0fcea08bfa9cb0"
+  buttonText="ca_ching"
+  paymentCompleteAudio="ca_ching"></div>
+<div
+  class="payButton"
+  merchantID="ef0fcea08bfa9cb0"
+  buttonText="no sound"
+  paymentCompleteAudio="none"></div>
+</center>
+</aside>
 
 ## enablePaymentAudio
 
-## gatewayServer
+This enables or disables `paymentCompleteAudio`. If you use
+`enablePaymentAudio="no"` it is the same as `paymentCompleteAudio="none"`.
 
-## blockExplorer
+### Value
 
-## elementID
+The `enablePaymentAudio` prop should be set to a "yes/no" value. This means
+things like `"yes"`, `"no"`, `"on"`, `"off"`, `"true"` and `"false"` will
+generally work.
 
 ## hideWalletButton
 
+> Remove the wallet button from the UI:
+
+```html
+<div
+  class="payButton"
+  merchantID="YOUR_MERCHANT_ID"
+  hideWalletButton="yes"
+></div>
+```
+
+```javascript
+<PayButton
+  merchantID="YOUR_MERCHANT_ID"
+  hideWalletButton="yes"
+/>
+```
+
+```json
+{
+  "merchantID": "YOUR_MERCHANT_ID",
+  "hideWalletButton": "yes"
+}
+```
+
+By default, when you click a PayButton, the "open wallet" button is visible.
+However, there are some situations where this is undesirable such as on PoS
+credit card terminals. `hideWalletButton` removes the "open wallet" button from
+the user interface which can make for a cleaner experience.
+
+### Value
+
+The `hideWalletButton` prop should be set to a "yes/no" value. This means
+things like `"yes"`, `"no"`, `"on"`, `"off"`, `"true"` and `"false"` will
+generally work.
+
+### Examples
+
+<aside>
+<center>
+<div
+  class="payButton"
+  merchantID="ef0fcea08bfa9cb0"
+  buttonText="Default"></div>
+<div
+  class="payButton"
+  merchantID="ef0fcea08bfa9cb0"
+  buttonText="Hidden"
+  hideWalletButton="yes"></div>
+</center>
+</aside>
+
 ## hideAddressText
 
-## consoleOutput
+> Remove the address text from the UI:
+
+```html
+<div
+  class="payButton"
+  merchantID="YOUR_MERCHANT_ID"
+  hideAddressText="yes"
+></div>
+```
+
+```javascript
+<PayButton
+  merchantID="YOUR_MERCHANT_ID"
+  hideAddressText="yes"
+/>
+```
+
+```json
+{
+  "merchantID": "YOUR_MERCHANT_ID",
+  "hideAddressText": "yes"
+}
+```
+
+Either for asthetic appeal or to make the dialog box smaller, it may be desirable to hide the actual text of the payment address from the user interface. The `hideAddressText` prop will achieve this purpose.
+
+### Value
+
+The `closeWhenComplete` prop should be set to a "yes/no" value. This means
+things like `"yes"`, `"no"`, `"on"`, `"off"`, `"true"` and `"false"` will
+generally work.
+
+### Examples
+
+<aside>
+<center>
+<div
+  class="payButton"
+  merchantID="ef0fcea08bfa9cb0"
+  buttonText="Default"></div>
+<div
+  class="payButton"
+  merchantID="ef0fcea08bfa9cb0"
+  buttonText="Hidden"
+  hideAddressText="yes"></div>
+</center>
+</aside>
+
+## gatewayServer
+
+> Point PayButton to a custom Gateway server:
+
+```html
+<div
+  class="payButton"
+  merchantID="YOUR_MERCHANT_ID"
+  gatewayServer="https://foo.bar"
+></div>
+```
+
+```javascript
+<PayButton
+  merchantID="YOUR_MERCHANT_ID"
+  gatewayServer="https;//foo.bar"
+/>
+```
+
+```json
+{
+  "merchantID": "YOUR_MERCHANT_ID",
+  "gatewayServer": "https://foo.bar"
+}
+```
+
+By default, PayButton use the production gateway.cash server located at
+`https://api.gateway.cash`. This is used for things like creating invoices,
+resolving `merchantID`s to addresses and marking payments as paid.
+
+if you (TODO: write article) run your own Gateway server for your
+website/organization, you can tell PayButton to use that server instead of ours.
+
+## blockExplorer
+
+> Set a custom block explorer WebSocket URL
+
+```html
+<div
+  class="payButton"
+  merchantID="YOUR_MERCHANT_ID"
+  blockExplorer="wss://bitcoincash.blockexplorer.com"
+></div>
+```
+
+```javascript
+<PayButton
+  merchantID="YOUR_MERCHANT_ID"
+  blockExplorer="wss://bitcoincash.blockexplorer.com"
+/>
+```
+
+```json
+{
+  "merchantID": "YOUR_MERCHANT_ID",
+  "blockExplorer": "wss://bitcoincash.blockexplorer.com"
+}
+```
+
+PayButton connects to a WebSocket and listens for transactions from a block
+explorer, providing instant feedback to the customer when their payment is
+received. The `blockExplorer` prop allows you to customize which block explorer
+is used when listening for new Bitcoin Cash transactions.
+
+### Default Value
+
+By default, PayButton uses the `bch.coin.space` explorer. Since these ar
+WebSocket URLs instead of normal HTTP connections, we use `wss://` instead of
+`https://`. Thus, the default value becomes `wss://bch.coin.space`.
+
+## elementID
+
+This is used to set the `id` of the PayButton element when it is rendered to
+the DOM. Generally, you shouldn't need to provide a custom value to this prop
+and doing so might break things. However, it is used internally in a few places
+so if you're a developer you might have an interest in checking it out.
 
 # Callbacks
 
-Callbacks are a thing.
+PayButton callbacks are a powerful way to get notified when a payment goes
+through. There are two types of callbacks, namely `callbackURL`s and
+`paymentCompleteCallback`s.
+
+The two types of callbacks are designed for two very different things and
+should not be used interchangably. The most convenient way to use PayButton
+callbacks is almost never the right way to use them. Please read this section
+in its entirety before you get scammed.
+
+<aside class="warning">
+Be careful with callbacks! Client-side callbacks can be trivially triggered
+from the browser without making a payment and callbackURL requests can be
+faked! Don't trust, verify.
+</aside>
+
+## callbackURL
+
+> Use the callbackURL prop like so:
+
+```html
+<div
+  class="payButton"
+  merchantID="YOUR_MERCHANT_ID"
+  callbackURL="https://example.com/callback.php"
+></div>
+```
+
+```javascript
+<PayButton
+  merchantID="YOUR_MERCHANT_ID"
+  callbackURL="https://example.com/callback.php"
+/>
+```
+
+```json
+{
+  "merchantID": "YOUR_MERCHANT_ID",
+  "callbackURL": "https://example.com/callback.php"
+}
+```
+
+Callback URLs are the <b>ONLY</b> way you should be verifying receipt of a
+payment. The callback URL is invoked by the Gateway API server when we process
+your payment, but you must remember that it is also public. The callback URL is
+generally called after around 30 seconds of the payment being sent by the
+customer, except in cases of broken payments which can take up to 24 hours.
+
+### Verify, Verify, Verify!
+
+Just because someone calls your callbackURL does not mean the payment is valid.
+You need to verify that a valid `transferTXID` was sent with the request,
+moving <b>an acceptable amount</b> of funds to <b>an address you control</b>.
+Read <a href="https://api.gateway.cash/#callback-urls">the API docs on callback
+URLs</a> before attempting to use them.
+
+<aside class="notice">
+Small merchants might find it easier to just log into gateway.cash and check
+the <b>Payments</b> page instead of using callbacks.
+</aside>
+
+## paymentCompleteCallback
+
+> Use the local, browser-side JavaScript callback like so:
+
+```html
+<div
+  class="payButton"
+  merchantID="YOUR_MERCHANT_ID"
+  paymentCompleteCallback="alert('Thanks!')"
+></div>
+```
+
+```javascript
+<PayButton
+  merchantID="YOUR_MERCHANT_ID"
+  paymentCompleteCallback="alert('Thanks!')"
+/>
+```
+
+```json
+{
+  "merchantID": "YOUR_MERCHANT_ID",
+  "paymentCompleteCallback": "alert('Thanks!')"
+}
+```
+
+The paymentCompleteCallback is executed locally in the customer's browser when
+a payment is detected from the block explorer. As tempting as it may be to use
+this for processing customer payments, doing so would open large security holes
+in your application.
+
+Since `paymentCompleteCallback` takes a reference to a JavaScript function as a
+parameter, any other code on the page (or even a malicious customer) can simply
+execute the JavaScript function without paying first. We recommend using this
+only for causmetic animations and other client-side effects.
+
+### Retrieval of the Payment TXID and Payment Address
+
+Before `paymentCompleteCallback` is executed, the `paymentTXID` picked up by
+the block explorer is stored in `window.gatewayPaymentTXID`. The
+`paymentAddress` is stored in `window.gatewayPaymentAddress` This makes these
+variables accessible from within the local callback function.
+
+<aside>
+<center>
+<div
+  class="payButton"
+  merchantID="ef0fcea08bfa9cb0"
+  buttonText="Local callback example"
+  paymentCompleteCallback="alert('TXID: ' + window.gatewayPaymentTXID + '\nAddress: ' + window.gatewayPaymentAddress)"
+</center>
+</aside>

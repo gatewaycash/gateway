@@ -178,7 +178,10 @@ let PayButton = props => {
 
       // close the dialog when completed, if requested
       if (props.closeWhenComplete) {
-        handleClose()
+        setDialogOpen(false)
+      } else {
+        // re-open a closed dialog to show the "Thank You" message
+        setDialogOpen(true)
       }
 
       // call the local website callback, if requested
@@ -203,7 +206,9 @@ let PayButton = props => {
   // when the dialog box is closed, close the WebSocket
   // TODO componentWillUnpount and all of that lifecycle stuff
   let handleClose = () => {
-    sock.close()
+    if (props.consoleOutput !== 'none') {
+      console.log('GATEWAY: Dialog closed, WebSocket still opened.')
+    }
     setDialogOpen(false)
   }
 
@@ -282,7 +287,8 @@ PayButton.propTypes = {
   hideWalletButton: PropTypes.bool,
   blockExplorer: PropTypes.string,
   closeWhenComplete: PropTypes.bool,
-  hideAddressText: PropTypes.string
+  hideAddressText: PropTypes.string,
+  consoleOutput: PropTypes.sttring
 }
 
 export default PayButton

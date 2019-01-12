@@ -20,6 +20,46 @@ let formatCallback = cb => {
 }
 
 /**
+ * Parses a boolean intention from a string
+ * @param {String} intent - The intention string to format
+ */
+let parseBool = intent => {
+  if (typeof intent === 'string') {
+    intent = intent.toLowerCase()
+  }
+  if (
+    intent === true ||
+    intent === 1 ||
+    intent === '1' ||
+    intent === 'enabled' ||
+    intent === 'enable' ||
+    intent === 'on' ||
+    intent === 'yes' ||
+    intent === 'true'
+  ) {
+    return true
+  } else if (
+    intent === false ||
+    intent === 0 ||
+    intent === '0' ||
+    intent === 'disabled' ||
+    intent === 'disable' ||
+    intent === 'off' ||
+    intent === 'no' ||
+    intent === 'false' ||
+    intent === 'none' ||
+    intent === undefined ||
+    intent === null
+  ) {
+    return false
+  } else {
+    throw {
+      message: 'Unknown intention'
+    }
+  }
+}
+
+/**
  * Parses and validates the data given as props to the PayButton
  * @param  {object} - An object containing the props to be parsed
  * @return {object} - Parsed and validated data
@@ -63,10 +103,7 @@ export default ({
   let paymentAudioPresets = {
     bca: 'https://raw.githubusercontent.com/The-Bitcoin-Cash-Fund/Branding/master/Bitcoin_Cash/Audio/BCH_Payment_Receive_Audio.wav',
     ding: 'https://gateway.cash/audio/ding.mp3',
-    ca_ching: 'https://gateway.cash/audio/ca-ching.wav',
-    off: '',
-    none: '',
-    no: ''
+    ca_ching: 'https://gateway.cash/audio/ca-ching.wav'
   }
 
   // assign all lower-case prop names to their correct upper-case counterparts
@@ -148,31 +185,50 @@ export default ({
   paymentCompleteCallback = formatCallback(paymentCompleteCallback)
 
   // parse hideWalletButton
-  hideWalletButton = hideWalletButton === 'yes'
+  try {
+    hideWalletButton = parseBool(hideWalletButton)
+  } catch (e) {
+    return showError('hideWalletButton needs to be a yes/no value')
+  }
 
   // parse hideAddressText
-  hideAddressText = hideAddressText === 'yes'
+  try {
+    hideAddressText = parseBool(hideAddressText)
+  } catch (e) {
+    return showError('hideAddressText needs to be a yes/no value')
+  }
 
   // parse enablePaymentAudio
-  enablePaymentAudio = enablePaymentAudio === 'yes'
+  try {
+    enablePaymentAudio = parseBool(enablePaymentAudio)
+  } catch (e) {
+    return showError('enablePaymentAudio must be a yes/no value')
+  }
   if (
     paymentCompleteAudio === 'off' ||
     paymentCompleteAudio === 'none' ||
-    paymentCompleteAudio === 'no'
+    paymentCompleteAudio === 'no' ||
+    paymentCompleteAudio === 'disabled'
   ) {
     enablePaymentAudio = false
   }
 
   // parse paymentCompleteAudio
-  if (!['http://', 'https://'].some(x => paymentCompleteAudio.startsWith(x))) {
-    paymentCompleteAudio = paymentAudioPresets[paymentCompleteAudio]
-    if (paymentCompleteAudio === undefined) {
-      return showError('paymentCompleteAudio is invalid')
+  if (enablePaymentAudio) {
+    if (!['http://', 'https://'].some(x => paymentCompleteAudio.startsWith(x))){
+      paymentCompleteAudio = paymentAudioPresets[paymentCompleteAudio]
+      if (paymentCompleteAudio === undefined) {
+        return showError('paymentCompleteAudio is not a valud URL or preset')
+      }
     }
   }
 
   // parse closeWhenComplete
-  closeWhenComplete = closeWhenComplete === 'yes'
+  try {
+    closeWhenComplete = parseBool(closeWhenComplete)
+  } catch (e) {
+    return showError('closeWhenComplete must be a yes/no value')
+  }
 
   // validate the consoleOutput prop
   consoleOutput = consoleOutput.toLowerCase()
