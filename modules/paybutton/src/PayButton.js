@@ -39,7 +39,9 @@ let PayButton = props => {
   let [amountBCH, setAmountBCH] = React.useState(0)
   let [paymentAddress, setPaymentAddress] = React.useState('loading...')
   let [sock, setSock] = React.useState(false)
-  let paymentCompleteAudio = new Audio(props.paymentCompleteAudio)
+  let paymentCompleteAudio = props.enablePaymentAudio ?
+    new Audio(props.paymentCompleteAudio) :
+    undefined
 
   // When the payment button is clicked, generate a new invoice
   let handleClick = async () => {
@@ -58,12 +60,14 @@ let PayButton = props => {
         props.currency
       let marketData = await axios.get(marketDataURL)
       let exchangeRate = marketData.data.averages.day
-      console.log(
-        'GATEWAY: Current',
-        'BCH/' + props.currency,
-        'exchange rate:',
-        exchangeRate
-      )
+      if (props.consoleOutput !== 'none') {
+        console.log(
+          'GATEWAY: Current',
+          'BCH/' + props.currency,
+          'exchange rate:',
+          exchangeRate
+        )
+      }
       amountMultiplier = 1 / exchangeRate
     }
     // multiply amount of fiat by amount multiplier to get amount of BCH
@@ -114,15 +118,21 @@ let PayButton = props => {
     setSock(sock)
     sock.on('connect', () => {
       sock.emit('subscribe', 'inv')
-      console.log('GATEWAY: Connected to block explorer!')
+      if (props.consoleOutput !== 'none') {
+        console.log('GATEWAY: Connected to block explorer')
+      }
     })
     sock.on('disconnect', () => {
-      console.log('GATEWAY: Disconnected from block explorer')
-      console.log('GATEWAY: This does not mean that your payment failed')
+      if (props.consoleOutput !== 'none') {
+        console.log('GATEWAY: Disconnected from block explorer')
+        console.log('GATEWAY: This does not mean that your payment failed')
+      }
     })
     sock.on('error', () => {
-      console.log('GATEWAY: Disconnected from block explorer')
-      console.log('GATEWAY: This does not mean that your payment failed')
+      if (props.consoleOutput !== 'none') {
+        console.log('GATEWAY: Disconnected from block explorer')
+        console.log('GATEWAY: This does not mean that your payment failed')
+      }
     })
     sock.on('tx', handlePayment)
 
@@ -163,7 +173,10 @@ let PayButton = props => {
 
       // close the dialog when completed, if requested
       if (props.closeWhenComplete) {
-        handleClose()
+        setDialogOpen(false)
+      } else {
+        // re-open a closed dialog to show the "Thank You" message
+        setDialogOpen(true)
       }
 
       // call the local website callback, if requested
@@ -188,7 +201,9 @@ let PayButton = props => {
   // when the dialog box is closed, close the WebSocket
   // TODO componentWillUnpount and all of that lifecycle stuff
   let handleClose = () => {
-    sock.close()
+    if (props.consoleOutput !== 'none') {
+      console.log('GATEWAY: Dialog closed, WebSocket still opened.')
+    }
     setDialogOpen(false)
   }
 
@@ -267,7 +282,8 @@ PayButton.propTypes = {
   hideWalletButton: PropTypes.bool,
   blockExplorer: PropTypes.string,
   closeWhenComplete: PropTypes.bool,
-  hideAddressText: PropTypes.string
+  hideAddressText: PropTypes.string,
+  consoleOutput: PropTypes.sttring
 }
 
 export default PayButton

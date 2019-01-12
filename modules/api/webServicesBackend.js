@@ -19,6 +19,7 @@ const payEndpoint = require('./endpoints/POST/pay')
 const newAPIKeyEndpoint = require('./endpoints/GET/newapikey')
 const totalSalesEndpoint = require('./endpoints/GET/totalsales')
 const getAddressEndpoint = require('./endpoints/GET/address')
+const passwordEndpoint = require('./endpoints/POST/password')
 
 // include all service daemons
 const fundsTransferService = require('./services/fundsTransfer')
@@ -59,6 +60,8 @@ app.post('/register', registerEndpoint)
 app.post('/paid', paidEndpoint)
 app.post('/pay', payEndpoint)
 app.post('/username', setUsernameEndpoint)
+app.post('/password', passwordEndpoint)
+
 // GET requests
 app.get('/login', loginEndpoint)
 app.get('/payments', getPaymentsEndpoint)
@@ -69,7 +72,6 @@ app.get('/totalsales', totalSalesEndpoint)
 app.get('/address', getAddressEndpoint)
 
 // start the payment processing services
-
 // run the main processor every 30 seconds
 setInterval(fundsTransferService.run, 30000)
 

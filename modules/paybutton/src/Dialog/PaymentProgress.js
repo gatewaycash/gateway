@@ -13,8 +13,10 @@ let PaymentProgress = ({
 }) => (
   <div className={classes.container}>
     <span>
+    <center>
       Send {amountBCH || 'some'} Bitcoin&nbsp;Cash (BCH) to this address to
       complete your payment
+    </center>
     </span>
     <img
       className={classes.qrCode}

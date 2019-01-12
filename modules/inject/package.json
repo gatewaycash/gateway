@@ -26,10 +26,10 @@
     "rollup-plugin-uglify": "^6.0.0"
   },
   "scripts": {
-    "build": "rollup --config rollup.prod.js --environment INCLUDE_DEPS,BUILD:production",
-    "dev": "rollup --config rollup.dev.js --watch --environment INCLUDE_DEPS,BUILD:development",
-    "build-dev": "yarn workspace @gatewaycash/paybutton build && yarn workspace @gatewaycash/inject rollup --config rollup.dev.js --environment INCLUDE_DEPS,BUILD:development"
-  },
+    "build": "rollup -c --environment INCLUDE_DEPS,BUILD:production",
+    "dev": "rollup -c --watch --environment INCLUDE_DEPS,BUILD:development",
+    "build-dev": "yarn workspace @gatewaycash/paybutton build && yarn workspace @gatewaycash/inject dev"
+},
   "dependencies": {
     "react": "^16.7.0-alpha.2",
     "react-dom": "^16.7.0-alpha.2"
