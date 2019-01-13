@@ -1,32 +1,26 @@
 import resolve from 'rollup-plugin-node-resolve'
+import commonjs from 'rollup-plugin-commonjs'
 import babel from 'rollup-plugin-babel'
 import replace from 'rollup-plugin-replace'
-import includePaths from 'rollup-plugin-includepaths'
-import commonjs from 'rollup-plugin-commonjs'
+import json from 'rollup-plugin-json'
+import builtins from 'rollup-plugin-node-builtins'
+import globals from 'rollup-plugin-node-globals'
+//import { uglify } from 'rollup-plugin-uglify'
 
 export default {
-  input: 'src/PayButton.js',
+  input: 'inject.js',
   output: {
-    file: 'build/PayButton.js',
-    format: 'esm'
+    file: './../website/public/pay.js',
+    format: 'iife',
+    sourcemap: true,
+    global: {}
   },
-  external: [
-    'react',
-    'axios',
-    'socket.io-client',
-    '@material-ui/core',
-    '@material-ui/core/Button',
-    '@material-ui/core/Dialog',
-    '@material-ui/core/DialogTitle',
-    '@material-ui/core/DialogContent',
-    '@material-ui/icons',
-    '@material-ui/icons/Done',
-    'prop-types',
-    'bchaddrjs'
-  ],
   plugins: [
     resolve({
-      preferBuiltins: false
+      jsnext: true,
+      main: true,
+      browser: true,
+      preferBuiltins: true
     }),
     commonjs({ include: '../../node_modules/**' }),
     babel({
@@ -51,12 +45,11 @@ export default {
         '@babel/plugin-external-helpers'
       ]
     }),
+    json(),
+    builtins(),
+    globals(),
     replace({
       'process.env.NODE_ENV': JSON.stringify('production')
-    }),
-    includePaths({
-      paths: ['src'],
-      extensions: ['.js']
     })
   ]
 }

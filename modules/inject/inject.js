@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import PayButton from '../paybutton/src/PayButton'
+import PayButton from '../paybutton/build/PayButton'
 
 // fail when there is no window object
 if (typeof window !== 'object') {
