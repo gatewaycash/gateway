@@ -18,9 +18,7 @@ let PaymentDialog = ({
     open={open}
     keepMounted
     onClose={onClose}
-    style={{
-      fontFamily: 'helvetica'
-    }}
+    className={classes.dialog}
     PaperProps={{
       classes: {
         root: classes.container_root

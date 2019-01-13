@@ -1,4 +1,8 @@
 export default () => ({
+  dialog: {
+    fontFamily: 'helvetica',
+    color: 'black'
+  },
   title_wrap: {
     display: 'flex',
     'flex-direction': 'row',

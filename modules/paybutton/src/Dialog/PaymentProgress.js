@@ -15,8 +15,8 @@ let PaymentProgress = ({
   <div className={classes.container}>
     <span>
       <center>
-        Send {amountBCH == 0 ? 'some' : amountBCH} Bitcoin&nbsp;Cash (BCH) to this address to
-        complete your payment
+        Send {amountBCH == 0 ? 'some' : amountBCH} Bitcoin&nbsp;Cash (BCH) to
+        this address to complete your payment
       </center>
     </span>
     <QRCode
@@ -49,7 +49,7 @@ let PaymentProgress = ({
     {hideWalletButton || (
       <Button
         variant="contained"
-        className={classes.hideWalletButton}
+        className={classes.walletButton}
         color="primary"
         href={
           amountBCH > 0
