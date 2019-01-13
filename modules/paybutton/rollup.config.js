@@ -1,8 +1,5 @@
 import resolve from 'rollup-plugin-node-resolve'
 import babel from 'rollup-plugin-babel'
-import replace from 'rollup-plugin-replace'
-import includePaths from 'rollup-plugin-includepaths'
-import commonjs from 'rollup-plugin-commonjs'
 
 export default {
   input: 'src/PayButton.js',
@@ -21,42 +18,20 @@ export default {
     '@material-ui/core/DialogContent',
     '@material-ui/icons',
     '@material-ui/icons/Done',
+    '@material-ui/core/styles/withStyles',
     'prop-types',
-    'bchaddrjs'
+    'bchaddrjs',
+    'qrcode.react'
   ],
   plugins: [
     resolve({
-      preferBuiltins: false
+      preferBuiltins: true
     }),
-    commonjs({ include: '../../node_modules/**' }),
     babel({
-      exclude: '../../node_modules/**',
       babelrc: false,
       presets: [
-        [
-          '@babel/env',
-          {
-            modules: false,
-            targets: {
-              chrome: '58',
-              ie: '11'
-            },
-            useBuiltIns: 'usage'
-          }
-        ],
         '@babel/preset-react'
-      ],
-      plugins: [
-        '@babel/transform-regenerator',
-        '@babel/plugin-external-helpers'
       ]
-    }),
-    replace({
-      'process.env.NODE_ENV': JSON.stringify('production')
-    }),
-    includePaths({
-      paths: ['src'],
-      extensions: ['.js']
     })
   ]
 }

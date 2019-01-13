@@ -1,7 +1,7 @@
 {
   "name": "@gatewaycash/paybutton",
   "description": "Gateway.cash PayButton",
-  "version": "0.3.11",
+  "version": "0.3.13",
   "main": "build/PayButton.js",
   "license": "AGPL-3.0",
   "repository": "git+https://github.com/gatewaycash/gateway.git",
@@ -16,8 +16,8 @@
     "@material-ui/core": "^3.5.1",
     "@material-ui/icons": "^3.0.1",
     "axios": "^0.18.0",
-    "babel-polyfill": "^6.26.0",
     "prop-types": "^15.6.2",
+    "qrcode.react": "^0.9.2",
     "react": "16.7.0-alpha.2",
     "react-dom": "16.7.0-alpha.2",
     "socket.io-client": "^2.2.0"

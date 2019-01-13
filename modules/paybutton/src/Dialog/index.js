@@ -2,7 +2,7 @@ import React from 'react'
 import Dialog from '@material-ui/core/Dialog'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import DialogContent from '@material-ui/core/DialogContent'
-import styles from 'jss/PaymentDialog'
+import styles from '../jss/PaymentDialog'
 import withStyles from '@material-ui/core/styles/withStyles'
 import PropTypes from 'prop-types'
 
@@ -35,7 +35,7 @@ let PaymentDialog = ({
         <span className={classes.title}>{title}</span>
       </h2>
       <span className={classes.close} onClick={closeDialog}>
-        X
+        ×
       </span>
     </DialogTitle>
     <DialogContent className={classes.content_wrap}>{children}</DialogContent>

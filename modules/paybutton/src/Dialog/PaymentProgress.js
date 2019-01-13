@@ -1,7 +1,8 @@
 import React from 'react'
 import Button from '@material-ui/core/Button'
+import QRCode from 'qrcode.react'
 import PropTypes from 'prop-types'
-import styles from 'jss/PaymentProgress'
+import styles from '../jss/PaymentProgress'
 import withStyles from '@material-ui/core/styles/withStyles'
 
 let PaymentProgress = ({
@@ -13,38 +14,37 @@ let PaymentProgress = ({
 }) => (
   <div className={classes.container}>
     <span>
-    <center>
-      Send {amountBCH || 'some'} Bitcoin&nbsp;Cash (BCH) to this address to
-      complete your payment
-    </center>
+      <center>
+        Send {amountBCH == 0 ? 'some' : amountBCH} Bitcoin&nbsp;Cash (BCH) to this address to
+        complete your payment
+      </center>
     </span>
-    <img
+    <QRCode
       className={classes.qrCode}
-      src={
-        amountBCH > 0
-          ? 'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' +
-            paymentAddress +
-            '?amount=' +
-            amountBCH
-          : 'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' +
-            paymentAddress
+      renderAs='svg'
+      size={320}
+      value={
+        amountBCH > 0 ? paymentAddress + '?amount=' + amountBCH : paymentAddress
       }
       alt="Payment QR code"
       title="Payment QR code"
       poster="Payment QR code"
     />
     {hideAddressText || (
-      <p
-        style={{
-          width: '17em',
-          fontFamily: 'monospace',
-          fontSize: '0.8em',
-          lineHeight: '100%',
-          wordWrap: 'break-word'
-        }}
-      >
-        {paymentAddress}
-      </p>
+      <center>
+        <p
+          style={{
+            width: '17em',
+            fontFamily: 'monospace',
+            fontSize: '0.8em',
+            lineHeight: '100%',
+            wordWrap: 'break-word',
+            textAlign: 'center'
+          }}
+        >
+          {paymentAddress}
+        </p>
+      </center>
     )}
     {hideWalletButton || (
       <Button
