@@ -1,7 +1,7 @@
 export default () => ({
   qrCode: {
     width: '60%',
-    margin: '0 auto',
+    margin: '1em auto',
     '@media (max-width: 546px)': {
       width: '100%'
     }
