@@ -45,7 +45,7 @@ class PaymentsPage extends Component {
     xhr.send()
   }
 
-  parsePayments = (payments) => {
+  parsePayments = payments => {
     if (this.state.payments === 'loading...') {
       return 'loading...'
     } else {

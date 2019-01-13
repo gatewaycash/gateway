@@ -2,8 +2,7 @@ import React from 'react'
 import { navigate } from '@reach/router'
 import { Button, TextField } from '@material-ui/core'
 import { login } from 'API'
-import Container from 'components/Container'
-import Text from 'components/Text'
+import { Container, Text } from 'components'
 
 export default () => {
   let [userID, setUserID] = React.useState('')
@@ -40,8 +39,6 @@ export default () => {
           style={{
             color: 'darkred',
             textAlign: 'left',
-            border: '0.2em solid darkred',
-            borderRadius: '0.5em',
             backgroundColor: '#ffdddd',
             margin: '0.5em',
             padding: '0.5em'

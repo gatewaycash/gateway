@@ -1,7 +1,5 @@
 import resolve from 'rollup-plugin-node-resolve'
 import babel from 'rollup-plugin-babel'
-import replace from 'rollup-plugin-replace'
-import include from 'rollup-plugin-includepaths'
 
 export default {
   input: 'src/PayButton.js',
@@ -30,29 +28,10 @@ export default {
       preferBuiltins: true
     }),
     babel({
-      exclude: '../../node_modules/**',
       babelrc: false,
       presets: [
-        [
-          '@babel/env',
-          {
-            modules: false,
-            targets: {
-              chrome: '58',
-              ie: '11'
-            },
-            useBuiltIns: 'usage'
-          }
-        ],
         '@babel/preset-react'
       ]
-    }),
-    replace({
-      'process.env.NODE_ENV': JSON.stringify('production')
-    }),
-    include({
-      paths: ['src'],
-      extensions: ['.js']
     })
   ]
 }
