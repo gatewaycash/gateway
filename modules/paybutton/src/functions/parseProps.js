@@ -97,7 +97,8 @@ export default ({
   gatewayserver,
   gatewayServer = 'https://api.gateway.cash',
   consoleoutput,
-  consoleOutput = 'none'
+  consoleOutput = 'none',
+  disabled = 'no'
 }) => {
   let supportedCurrencies = ['BCH', 'USD', 'EUR', 'CNY', 'JPY']
   let paymentAudioPresets = {
@@ -230,6 +231,11 @@ export default ({
     return showError('closeWhenComplete must be a yes/no value')
   }
 
+  // parse disabled
+  if (disabled !== undefined) {
+    disabled = true
+  }
+
   // validate the consoleOutput prop
   consoleOutput = consoleOutput.toLowerCase()
   if (
@@ -274,6 +280,7 @@ export default ({
     elementID: elementID,
     hideWalletButton: hideWalletButton,
     hideAddressText: hideAddressText,
-    consoleOutput: consoleOutput
+    consoleOutput: consoleOutput,
+    disabled: disabled
   }
 }
