@@ -22,7 +22,8 @@ export default {
     '@material-ui/icons/Done',
     '@material-ui/core/styles/withStyles',
     'prop-types',
-    'bchaddrjs'
+    'bchaddrjs',
+    'qrcode.react'
   ],
   plugins: [
     resolve({
