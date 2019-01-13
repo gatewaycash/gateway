@@ -3,7 +3,7 @@ export default () => ({
     display: 'flex',
     'flex-direction': 'row',
     margin: 0,
-    padding: '0.7em 0.7em 0.5em',
+    padding: '24px 24px 20px',
     'flex-basis': '90%'
   },
   title_wrap__root: {
@@ -18,14 +18,14 @@ export default () => ({
     'margin-left': '7%'
   },
   content_wrap: {
-    padding: '1.2em',
+    overflow: 'hidden',
+    padding: '24px',
     height: '100%'
   },
   close: {
     'margin-top': '2%',
     cursor: 'pointer',
-    'margin-right': '2%',
-    'font-size': '2em'
+    'margin-right': '2%'
   },
   container_root: {
     '@media (max-width: 546px)': {

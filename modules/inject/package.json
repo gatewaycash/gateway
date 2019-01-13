@@ -10,20 +10,26 @@
     "url": "https://github.com/gatewaycash/gateway/issues"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.2.3",
+    "@babel/core": "^7.1.6",
+    "@babel/plugin-external-helpers": "^7.2.0",
+    "@babel/plugin-transform-regenerator": "^7.0.0",
+    "@babel/preset-env": "^7.1.6",
     "@babel/preset-react": "^7.0.0",
-    "babel-core": "^6.26.3",
-    "babel-loader": "^8.0.5",
-    "babel-polyfill": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-react": "^6.24.1",
-    "webpack": "^4.28.4",
-    "webpack-cli": "^3.2.1"
+    "rollup": "^0.67.3",
+    "rollup-plugin-babel": "^4.0.3",
+    "rollup-plugin-commonjs": "^9.2.0",
+    "rollup-plugin-json": "^3.1.0",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-globals": "^1.4.0",
+    "rollup-plugin-node-resolve": "^3.4.0",
+    "rollup-plugin-replace": "^2.1.0",
+    "rollup-plugin-uglify": "^6.0.0"
   },
   "scripts": {
-    "build": "webpack --mode production",
-    "dev": "webpack --watch --mode development"
-  },
+    "build": "rollup -c --environment INCLUDE_DEPS,BUILD:production",
+    "dev": "rollup -c --watch --environment INCLUDE_DEPS,BUILD:development",
+    "build-dev": "yarn workspace @gatewaycash/paybutton build && yarn workspace @gatewaycash/inject dev"
+},
   "dependencies": {
     "react": "^16.7.0-alpha.2",
     "react-dom": "^16.7.0-alpha.2"

@@ -283,7 +283,7 @@ PayButton.propTypes = {
   blockExplorer: PropTypes.string,
   closeWhenComplete: PropTypes.bool,
   hideAddressText: PropTypes.string,
-  consoleOutput: PropTypes.string
+  consoleOutput: PropTypes.sttring
 }
 
 export default PayButton

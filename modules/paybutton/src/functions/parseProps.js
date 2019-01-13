@@ -247,10 +247,17 @@ export default ({
       merchantID ||
       callbackURL ||
       paymentCompleteCallback !== '' ||
-      gatewayServer !== 'https://api.gateway.cash'
+      gatewayServer !== 'https://api.gateway.cash' ||
+      closeWhenComplete !== false
     ) {
+      console.log(paymentID)
+      console.log(merchantID)
+      console.log(callbackURL)
+      console.log(paymentCompleteCallback !== '')
+      console.log(gatewayServer !== 'https://api.gateway.cash')
+      console.log(closeWhenComplete !== false)
       return showError(
-        'When a direct deposit address is used, payment tracking and callbacks are not supported because Gateway does not know which transactions belong to which button clicks. Use a Gateway merchant account and a merchantID to enable this, and host a Gateway server if concerned about trust. Specifically, paymentID, merchantID, callbackURL, paymentCompleteCallback and gatewayServer cannot be used if address is being used.'
+        'When a direct deposit address is used, payment tracking and callbacks are not supported because Gateway does not know which transactions belong to which button clicks. Use a Gateway merchant account and a merchantID to enable this, and host a Gateway server if concerned about trust. Specifically, paymentID, merchantID, callbackURL, paymentCompleteCallback, gatewayServer, closeWhenComplete, paymentCompleteAudio and enablePaymentAudio cannot be used if address is being used.'
       )
     }
     enablePaymentAudio = false
