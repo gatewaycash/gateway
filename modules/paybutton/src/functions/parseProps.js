@@ -97,7 +97,8 @@ export default ({
   gatewayserver,
   gatewayServer = 'https://api.gateway.cash',
   consoleoutput,
-  consoleOutput = 'none'
+  consoleOutput = 'none',
+  disabled = 'no'
 }) => {
   let supportedCurrencies = ['BCH', 'USD', 'EUR', 'CNY', 'JPY']
   let paymentAudioPresets = {
@@ -185,18 +186,10 @@ export default ({
   paymentCompleteCallback = formatCallback(paymentCompleteCallback)
 
   // parse hideWalletButton
-  try {
-    hideWalletButton = parseBool(hideWalletButton)
-  } catch (e) {
-    return showError('hideWalletButton needs to be a yes/no value')
-  }
+  hideWalletButton = hideWalletButton !== 'no'
 
   // parse hideAddressText
-  try {
-    hideAddressText = parseBool(hideAddressText)
-  } catch (e) {
-    return showError('hideAddressText needs to be a yes/no value')
-  }
+  hideAddressText = hideAddressText !== 'no'
 
   // parse enablePaymentAudio
   try {
@@ -224,11 +217,10 @@ export default ({
   }
 
   // parse closeWhenComplete
-  try {
-    closeWhenComplete = parseBool(closeWhenComplete)
-  } catch (e) {
-    return showError('closeWhenComplete must be a yes/no value')
-  }
+  closeWhenComplete = closeWhenComplete !== 'no'
+
+  // parse disabled
+  disabled = disabled !== 'no'
 
   // validate the consoleOutput prop
   consoleOutput = consoleOutput.toLowerCase()
@@ -274,6 +266,7 @@ export default ({
     elementID: elementID,
     hideWalletButton: hideWalletButton,
     hideAddressText: hideAddressText,
-    consoleOutput: consoleOutput
+    consoleOutput: consoleOutput,
+    disabled: disabled
   }
 }

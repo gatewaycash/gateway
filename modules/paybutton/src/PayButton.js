@@ -45,6 +45,12 @@ let PayButton = props => {
 
   // When the payment button is clicked, generate a new invoice
   let handleClick = async () => {
+
+    // do nothing if the button is disabled
+    if (props.disabled) {
+      return
+    }
+
     // if the payment was already completed, open the dialog and we are done
     if (paymentComplete) {
       setDialogOpen(true)
@@ -283,7 +289,8 @@ PayButton.propTypes = {
   blockExplorer: PropTypes.string,
   closeWhenComplete: PropTypes.bool,
   hideAddressText: PropTypes.string,
-  consoleOutput: PropTypes.string
+  consoleOutput: PropTypes.string,
+  disabled: PropTypes.string
 }
 
 export default PayButton
