@@ -36,7 +36,7 @@ example, you can use the button below to contribute to the Gateway project:
   merchantID="ef0fcea08bfa9cb0"
   buttonText="Donate to Gateway.cash"
   dialogTitle="Make a Donation"
-  closeWhenComplete="true"
+  closeWhenComplete
   paymentCompleteCallback="alert('Thank you for your donation.')"></div>
 </center>
 </aside>
@@ -48,13 +48,6 @@ looking to set up a simple button for your site, head over to
 if you're a developer and want to delve deeper into the specifics and semantics
 of the Gateway API, the <a href="https://api.gateway.cash">API docs</a> are
 your friend.
-</aside>
-
-<aside class="warning">
-These docs are a work in progress and are not yet complete. If you have
-questions, please join the
-<a href="https://ambassador.cash">ambassador.cash</a> Discord server and ask
-your questions in the #gatewaycash channel.
 </aside>
 
 # Principals
@@ -737,14 +730,14 @@ Either a merchantID or an address is required for all PayButtons.
 <div
   class="payButton"
   merchantID="YOUR_MERCHANT_ID"
-  closeWhenComplete="yes"
+  closeWhenComplete
 ></div>
 ```
 
 ```javascript
 <PayButton
   merchantID="YOUR_MERCHANT_ID"
-  closeWhenComplete="yes"
+  closeWhenComplete
 />
 ```
 
@@ -759,12 +752,6 @@ By default, PayButton will show a "Thank You" message when a payment is
 successful. With `closeWhenComplete`, you can instead simply close the dialog
 box when a successful payment is made.
 
-### Value
-
-The `closeWhenComplete` prop should be set to a "yes/no" value. This means
-things like `"yes"`, `"no"`, `"on"`, `"off"`, `"true"` and `"false"` will
-generally work.
-
 ### Examples
 
 <aside>
@@ -777,7 +764,7 @@ generally work.
   class="payButton"
   merchantID="ef0fcea08bfa9cb0"
   buttonText="close when complete"
-  closeWhenComplete="yes"></div>
+  closeWhenComplete ></div>
 </center>
 </aside>
 
@@ -897,14 +884,14 @@ generally work.
 <div
   class="payButton"
   merchantID="YOUR_MERCHANT_ID"
-  hideWalletButton="yes"
+  hideWalletButton
 ></div>
 ```
 
 ```javascript
 <PayButton
   merchantID="YOUR_MERCHANT_ID"
-  hideWalletButton="yes"
+  hideWalletButton
 />
 ```
 
@@ -920,12 +907,6 @@ However, there are some situations where this is undesirable such as on PoS
 credit card terminals. `hideWalletButton` removes the "open wallet" button from
 the user interface which can make for a cleaner experience.
 
-### Value
-
-The `hideWalletButton` prop should be set to a "yes/no" value. This means
-things like `"yes"`, `"no"`, `"on"`, `"off"`, `"true"` and `"false"` will
-generally work.
-
 ### Examples
 
 <aside>
@@ -938,7 +919,7 @@ generally work.
   class="payButton"
   merchantID="ef0fcea08bfa9cb0"
   buttonText="Hidden"
-  hideWalletButton="yes"></div>
+  hideWalletButton ></div>
 </center>
 </aside>
 
@@ -950,14 +931,14 @@ generally work.
 <div
   class="payButton"
   merchantID="YOUR_MERCHANT_ID"
-  hideAddressText="yes"
+  hideAddressText
 ></div>
 ```
 
 ```javascript
 <PayButton
   merchantID="YOUR_MERCHANT_ID"
-  hideAddressText="yes"
+  hideAddressText
 />
 ```
 
@@ -970,12 +951,6 @@ generally work.
 
 Either for asthetic appeal or to make the dialog box smaller, it may be desirable to hide the actual text of the payment address from the user interface. The `hideAddressText` prop will achieve this purpose.
 
-### Value
-
-The `closeWhenComplete` prop should be set to a "yes/no" value. This means
-things like `"yes"`, `"no"`, `"on"`, `"off"`, `"true"` and `"false"` will
-generally work.
-
 ### Examples
 
 <aside>
@@ -988,7 +963,55 @@ generally work.
   class="payButton"
   merchantID="ef0fcea08bfa9cb0"
   buttonText="Hidden"
-  hideAddressText="yes"></div>
+  hideAddressText ></div>
+</center>
+</aside>
+
+## disabled
+
+> Disable PayButton like so:
+
+```html
+<div
+  class="payButton"
+  merchantID="YOUR_MERCHANT_ID"
+  disabled
+></div>
+```
+
+```javascript
+<PayButton
+  merchantID="YOUR_MERCHANT_ID"
+  disabled
+/>
+```
+
+```json
+{
+  "merchantID": "YOUR_MERCHANT_ID",
+  "disabled": "yes"
+}
+```
+
+You can use the `disabled` prop to disable PayButton. When disabled, nothing happens when it is clicked. This can be useful when using PayButton as a submit button on a form that requires validation.
+
+### Value
+
+The `closeWhenComplete` prop only needs to be present to work. Nothing needs to be passed as a value.
+
+### Examples
+
+<aside>
+<center>
+<div
+  class="payButton"
+  merchantID="ef0fcea08bfa9cb0"
+  buttonText="Default"></div>
+<div
+  class="payButton"
+  merchantID="ef0fcea08bfa9cb0"
+  buttonText="Disabled"
+  disabled ></div>
 </center>
 </aside>
 
@@ -1076,9 +1099,11 @@ through. There are two types of callbacks, namely `callbackURL`s and
 `paymentCompleteCallback`s.
 
 The two types of callbacks are designed for two very different things and
-should not be used interchangably. The most convenient way to use PayButton
-callbacks is almost never the right way to use them. Please read this section
-in its entirety before you get scammed.
+should not be used interchangeably. The most convenient way to use PayButton
+callbacks might not be the right way to use them. Please read both this
+document as well as the section in the
+<a href="https://api.gateway.cash/#callback-urls">API docs</a> to avoid getting 
+scammed.
 
 <aside class="warning">
 Be careful with callbacks! Client-side callbacks can be trivially triggered
