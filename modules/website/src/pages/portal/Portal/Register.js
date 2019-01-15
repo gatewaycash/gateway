@@ -2,8 +2,7 @@ import React from 'react'
 import { navigate } from '@reach/router'
 import { Button, TextField } from '@material-ui/core'
 import { register } from 'API'
-import Container from 'components/Container'
-import Text from 'components/Text'
+import { Container, Text, Error } from 'components'
 
 export default () => {
   let [address, setAddress] = React.useState('')
@@ -11,6 +10,7 @@ export default () => {
   let [password, setPassword] = React.useState('')
   let [passwordConfirm, setPasswordConfirm] = React.useState('')
   let [registerError, setRegisterError] = React.useState({})
+  let [errorClosed, setErrorClosed] = React.useState(true)
 
   // a function for handling the form submission
   let handleSubmit = async (e) => {
@@ -21,9 +21,11 @@ export default () => {
     // call the API endpoint
     let result = await register(address, username, password, passwordConfirm)
     if (result.status === 'error') {
+      setErrorClosed(false)
       setRegisterError(result)
     } else {
       setRegisterError({})
+      setErrorClosed(true)
       sessionStorage.gatewayAPIKey = result.APIKey
       navigate('/portal/dashboard')
     }
@@ -38,23 +40,11 @@ export default () => {
         payment buttons and tracking invoices across your websites and apps.
         All you need is a Bitcoin Cash address, a username and a password:
       </Text>
-      {
-        registerError.error &&
-        <div
-          style={{
-            color: 'darkred',
-            textAlign: 'left',
-            border: '0.2em solid darkred',
-            borderRadius: '0.5em',
-            backgroundColor: '#ffdddd',
-            margin: '0.5em',
-            padding: '0.5em'
-          }}
-        >
-          <h4>{registerError.error}</h4>
-          <p>{registerError.description}</p>
-        </div>
-      }
+      <Error
+        error={registerError}
+        closed={errorClosed}
+        setClosed={setErrorClosed}
+      />
       <form
         onSubmit={handleSubmit}
       >
@@ -62,6 +52,9 @@ export default () => {
           value={address}
           onChange={(e) => setAddress(e.target.value)}
           placeholder="Bitcoin Cash address"
+          style={{
+            width: '80%'
+          }}
         />
         <br/>
         <br/>
@@ -69,6 +62,9 @@ export default () => {
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           placeholder="Your new ussrname"
+          style={{
+            width: '80%'
+          }}
         />
         <br />
         <br />
@@ -77,6 +73,9 @@ export default () => {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
           type="password"
+          style={{
+            width: '80%'
+          }}
         />
         <br />
         <br />
@@ -85,6 +84,9 @@ export default () => {
           onChange={(e) => setPasswordConfirm(e.target.value)}
           placeholder="Retype password"
           type="password"
+          style={{
+            width: '80%'
+          }}
         />
         <br />
         <br />

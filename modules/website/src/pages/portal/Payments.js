@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { FormControlLabel, Switch } from '@material-ui/core'
 import NavigationMenu from './NavigationMenu'
 import { payments } from 'API'
-import { Container, Text, Payment } from 'components'
+import { Container, Text, Payment, Footer } from 'components'
 
 class PaymentsPage extends Component {
   state = {
@@ -22,9 +22,10 @@ class PaymentsPage extends Component {
       this.state.showUnpaid ? 'YES' : 'NO'
     ).then((response) => {
       if (response.status === 'success') {
-        let parsedPayments = response.payments.map(payment => (
+        let parsedPayments = response.payments.map((payment, key) => (
           <Payment
             {...payment}
+            key={key}
           />
         ))
         console.log(parsedPayments)
@@ -60,10 +61,10 @@ class PaymentsPage extends Component {
     return (
       <>
         <NavigationMenu page="Your Payments" />
-        <Container>
-          <h2>Your Payments</h2>
+        <Container halfWidth>
+          <h2>View Your Payments</h2>
           <Text>
-            Below is a list of payments made to your merchant account. They are
+            This is a list of payments made to your merchant account. They are
             sorted by date, the most recent payments appearing at the top.
           </Text>
           <FormControlLabel
@@ -87,7 +88,6 @@ class PaymentsPage extends Component {
             }
             label="Show Private Keys"
           />
-          {this.state.payments}
           <h3>About Unpaid and Unprocessed Payments</h3>
           <Text>
             Unpaid and unprocessed payments usually occur when a customer clicks
@@ -96,6 +96,11 @@ class PaymentsPage extends Component {
             also fall into this category.
           </Text>
         </Container>
+        <Container halfWidth>
+          <h2>Payments</h2>
+          {this.state.payments}
+        </Container>
+        <Footer />
       </>
     )
   }
