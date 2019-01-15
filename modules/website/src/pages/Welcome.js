@@ -26,15 +26,12 @@ export default () => (
       </Button>
     </center>
     <Container>
-      <h2>Construction</h2>
+      <h2>What We Do</h2>
       <p>
-        Gateway is still being built. If you'd like to help, check out
-        our <a href="https://github.com/gatewaycash/gateway">GitHub</a>!
-        Portions of our website may not behave as expected or work at all until we bring everything online.
+        Gateway is a free and open-source software project which provides merchants and businesses with the tools they need to make accepting Bitcoin Cash simple and easy.
       </p>
-      <h3>API Functional</h3>
       <p>
-        If you're a developer, you can check out our API documentation. The production-ready API server is up and running, and our payment processing engines have started! See the API docs link at the bottom of this page for more information.
+        Our trademark PayButton is simplifying the payment experience for websites and apps across the ecosystem. Developers, community leaders and Bitcoin Cash ambassadors are constantly working to make the Gateway payment experience seamless and standard across all Bitcoin Cash applications.
       </p>
     </Container>
     <Container>
@@ -55,15 +52,6 @@ export default () => (
       </p>
     </Container>
     <Container>
-      <h2>What We Do</h2>
-      <p>
-        Gateway is a free and open-source software project which provides merchants and businesses with the tools they need to make accepting Bitcoin Cash simple and easy.
-      </p>
-      <p>
-        Our trademark PayButton is simplifying the payment experience for websites and apps across the ecosystem. Developers, community leaders and Bitcoin Cash ambassadors are constantly working to make the Gateway payment experience seamless and standard across all Bitcoin Cash applications.
-      </p>
-    </Container>
-    <Container>
       <h2>Doing it Together</h2>
       <p>
         Gateway is an open platform pioneering open standards for the future of
@@ -72,7 +60,7 @@ export default () => (
         way forward.
       </p>
     </Container>
-    <Container>
+    <Container halfWidth>
       <h2>Doing it for Everyone</h2>
       <p>
         Billions of people across the earth don't have the financial tools they
@@ -82,7 +70,7 @@ export default () => (
         and building those tools on top of Bitcoin Cash.
       </p>
     </Container>
-    <Container>
+    <Container halfWidth>
       <h2>Useful Links</h2>
       <ul>
         <li><a

@@ -149,18 +149,21 @@ export default ({
 
   // validate callbackURL
   if (callbackURL && callbackURL.length > 250) {
-    return showError('Callback URL must be shorter than 250 characters!')
+    return showError('Callback URL must be shorter than 250 characters')
   }
   if (
     callbackURL &&
     !['http://', 'https://'].some(x => callbackURL.startsWith(x))
   ) {
-    return showError('Callback URL does not start with http:// or https://')
+    return showError('Callback URL must start with http:// or https://')
   }
 
   // validate paymentID
   if (paymentID && paymentID.length > 64) {
-    return showError('The payment ID cannot be longer than 64 characters!')
+    return showError('paymentID must be shorter than 64 characters')
+  }
+  if (paymentID && paymentID.length === 1) {
+    return showError('paymentID must be longer than 1 character')
   }
 
   // validate address if given
@@ -168,13 +171,13 @@ export default ({
     try {
       address = bchaddr.toCashAddress(address)
     } catch (e) {
-      return showError('The BCH address provided is invalid!')
+      return showError('The BCH address provided is invalid')
     }
   }
 
   // validate merchantID if given
   if (merchantID && merchantID.length !== 16) {
-    return showError('Your merchantID needs to be 16 characters!')
+    return showError('merchantID must be 16 characters')
   }
 
   // fail if no merchantID and no address

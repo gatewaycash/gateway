@@ -1,6 +1,6 @@
 import { get, generateError } from './utils'
 
-export default async (keys = 'NO', unpaid = 'NO') => {
+export default async () => {
   if (!sessionStorage.gatewayAPIKey) {
     return generateError(
       'Not Logged In',
@@ -8,12 +8,9 @@ export default async (keys = 'NO', unpaid = 'NO') => {
     )
   }
   let response = await get(
-    '/payments',
-    {
-      APIKey: sessionStorage.gatewayAPIKey,
-      includeKeys: keys,
-      includeUnpaid: unpaid
-    }
+    '/newapikey',
+    { APIKey: sessionStorage.gatewayAPIKey }
   )
+
   return response
 }

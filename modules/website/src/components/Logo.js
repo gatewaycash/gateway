@@ -20,8 +20,8 @@ const Logo = ({ size = 10, centered = false }) => (
 )
 
 Logo.propTypes = {
-  size: PropTypes.integer,
-  centered: PropTypes.boolean
+  size: PropTypes.any,
+  centered: PropTypes.bool
 }
 
 export default Logo

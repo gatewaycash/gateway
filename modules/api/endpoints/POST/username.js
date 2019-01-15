@@ -35,7 +35,7 @@ module.exports = async function (req, res) {
   }
 
   // verify username was provided
-  if (!req.body.username) {
+  if (!req.body.newUsername) {
     response.status = 'error'
     response.error = 'No Username Provided'
     response.description = 'Please provide a new username!'
@@ -44,7 +44,7 @@ module.exports = async function (req, res) {
   }
 
   // verify new username is not too short
-  if (req.body.username.length < 5) {
+  if (req.body.newUsername.length < 5) {
     response.status = 'error'
     response.error = 'Username Too Short'
     response.description = 'Username must be at least 5 characters!'
@@ -53,7 +53,7 @@ module.exports = async function (req, res) {
   }
 
   // verify new username is not too long
-  if (req.body.username.length > 24) {
+  if (req.body.newUsername.length > 24) {
     response.status = 'error'
     response.error = 'Username Too Long'
     response.description = 'Username can be at most 24 characters!'
@@ -63,30 +63,30 @@ module.exports = async function (req, res) {
 
   // verify username does not contain special characters
   if (
-    req.body.username.indexOf(' ') !== -1 ||
-    req.body.username.indexOf('\n') !== -1 ||
-    req.body.username.indexOf('\t') !== -1 ||
-    req.body.username.indexOf('!') !== -1 ||
-    req.body.username.indexOf('@') !== -1 ||
-    req.body.username.indexOf('#') !== -1 ||
-    req.body.username.indexOf('$') !== -1 ||
-    req.body.username.indexOf('%') !== -1 ||
-    req.body.username.indexOf('^') !== -1 ||
-    req.body.username.indexOf('&') !== -1 ||
-    req.body.username.indexOf('*') !== -1 ||
-    req.body.username.indexOf('()') !== -1 ||
-    req.body.username.indexOf(')') !== -1 ||
-    req.body.username.indexOf('|') !== -1 ||
-    req.body.username.indexOf('\\') !== -1 ||
-    req.body.username.indexOf('/') !== -1 ||
-    req.body.username.indexOf('?') !== -1 ||
-    req.body.username.indexOf('<') !== -1 ||
-    req.body.username.indexOf('>') !== -1 ||
-    req.body.username.indexOf('{') !== -1 ||
-    req.body.username.indexOf('}') !== -1 ||
-    req.body.username.indexOf('[') !== -1 ||
-    req.body.username.indexOf(']') !== -1 ||
-    req.body.username.indexOf(';') !== -1
+    req.body.newUsername.indexOf(' ') !== -1 ||
+    req.body.newUsername.indexOf('\n') !== -1 ||
+    req.body.newUsername.indexOf('\t') !== -1 ||
+    req.body.newUsername.indexOf('!') !== -1 ||
+    req.body.newUsername.indexOf('@') !== -1 ||
+    req.body.newUsername.indexOf('#') !== -1 ||
+    req.body.newUsername.indexOf('$') !== -1 ||
+    req.body.newUsername.indexOf('%') !== -1 ||
+    req.body.newUsername.indexOf('^') !== -1 ||
+    req.body.newUsername.indexOf('&') !== -1 ||
+    req.body.newUsername.indexOf('*') !== -1 ||
+    req.body.newUsername.indexOf('()') !== -1 ||
+    req.body.newUsername.indexOf(')') !== -1 ||
+    req.body.newUsername.indexOf('|') !== -1 ||
+    req.body.newUsername.indexOf('\\') !== -1 ||
+    req.body.newUsername.indexOf('/') !== -1 ||
+    req.body.newUsername.indexOf('?') !== -1 ||
+    req.body.newUsername.indexOf('<') !== -1 ||
+    req.body.newUsername.indexOf('>') !== -1 ||
+    req.body.newUsername.indexOf('{') !== -1 ||
+    req.body.newUsername.indexOf('}') !== -1 ||
+    req.body.newUsername.indexOf('[') !== -1 ||
+    req.body.newUsername.indexOf(']') !== -1 ||
+    req.body.newUsername.indexOf(';') !== -1
   ) {
     response.status = 'error'
     response.error = 'No Special Characters'
@@ -97,7 +97,7 @@ module.exports = async function (req, res) {
 
   // verify username is not in use
   sql = 'select username from users where username like ? limit 1'
-  result = await mysql.query(sql, [req.body.username])
+  result = await mysql.query(sql, [req.body.newUsername])
 
   // fail unless there are no matches
   if (result.length > 0) {
@@ -112,11 +112,11 @@ module.exports = async function (req, res) {
   sql = 'update users set username = ? where APIKey = ?'
   await mysql.query(
     sql,
-    [req.body.username.toString().toLowerCase(), req.body.APIKey]
+    [req.body.newUsername.toString().toLowerCase(), req.body.APIKey]
   )
 
   // send success message to user
   response.status = 'success'
-  response.username = req.body.username.toString().toLowerCase()
+  response.username = req.body.newUsername.toString().toLowerCase()
   res.end(JSON.stringify(response))
 }

@@ -2,12 +2,13 @@ import React from 'react'
 import { navigate } from '@reach/router'
 import { Button, TextField } from '@material-ui/core'
 import { login } from 'API'
-import { Container, Text } from 'components'
+import { Container, Text, Error } from 'components'
 
 export default () => {
   let [userID, setUserID] = React.useState('')
   let [password, setPassword] = React.useState('')
   let [loginError, setLoginError] = React.useState({})
+  let [errorClosed, setErrorClosed] = React.useState(true)
 
   // a function for handling the login form submission
   let handleSubmit = async (e) => {
@@ -19,35 +20,27 @@ export default () => {
     let result = await login(userID, password)
     if (result.status === 'error') {
       setLoginError(result)
+      setErrorClosed(false)
     } else {
       setLoginError({})
+      setErrorClosed(true)
       sessionStorage.gatewayAPIKey = result.APIKey
       navigate('/portal/dashboard')
     }
   }
 
   return (
-    <Container centered>
+    <Container halfWidth centered>
       <h1>Log In</h1>
       <Text>
         If you have a Gateway account, log in below using either your
         Bitcoin&nbsp;Cash address or Gateway.cash username:
       </Text>
-      {
-        loginError.error &&
-        <div
-          style={{
-            color: 'darkred',
-            textAlign: 'left',
-            backgroundColor: '#ffdddd',
-            margin: '0.5em',
-            padding: '0.5em'
-          }}
-        >
-          <h4>{loginError.error}</h4>
-          <p>{loginError.description}</p>
-        </div>
-      }
+      <Error
+        error={loginError}
+        closed={errorClosed}
+        setClosed={setErrorClosed}
+      />
       <form
         onSubmit={handleSubmit}
       >
@@ -55,6 +48,9 @@ export default () => {
           value={userID}
           onChange={(e) => setUserID(e.target.value)}
           placeholder="Address or username"
+          style={{
+            width: '80%'
+          }}
         />
         <br/>
         <br/>
@@ -63,6 +59,9 @@ export default () => {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
           type="password"
+          style={{
+            width: '80%'
+          }}
         />
         <br/>
         <br/>

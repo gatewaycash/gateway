@@ -28,11 +28,11 @@ export default ({
     */}
       {`<div
   class="payButton"
-  merchantID="${merchantID}"${buttonText !== 'Donate' ? `
+  merchantID="${merchantID}"${buttonText !== 'Pay With Bitcoin Cash' ? `
   buttonText="${buttonText}"` : ''}${amount !== '0' ? `
   amount="${amount}"` : ''}${currency !== 'BCH' ? `
   currency="${currency}"` : ''}${dialogTitle !== 'Complete Your Payment' ? `
-  dialogTitle="${dialogTitle}"` : ''}${paymentID !== 'donation' ? `
+  dialogTitle="${dialogTitle}"` : ''}${paymentID && paymentID !== '' ? `
   paymentID="${paymentID}"` : ''}${(callbackURL && callbackURL !== '') ? `
   callbackURL="${callbackURL}"` : ''}
 ></div>`}

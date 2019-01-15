@@ -1,0 +1,24 @@
+.errorBox {
+  color: darkred;
+  text-align: left;
+  background-color: #ffdddd;
+  margin: 1em;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  display: inline-block;
+  width: stretch;
+}
+.errorBox-inner {
+  margin: 1em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  display: inline-block;
+  width: stretch;
+}
+.errorBox-close {
+  right: 2%;
+  float: right;
+  cursor: pointer;
+  font-size: 2em;
+  vertical-align: middle;
+}

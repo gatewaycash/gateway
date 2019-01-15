@@ -14,7 +14,7 @@ window.PayButton = {}
 window.PayButton.render = (elementID, props) => {
   // first, we clear anything that might be in the element
   ReactDOM.render(
-    <div id={elementID}>Loading...</div>,
+    <div />,
     document.getElementById(elementID),
     () => {
       // then, we render the actual PayButton
