@@ -13,7 +13,12 @@ create table if not exists users (
   password varchar(64),
   salt varchar(64),
   username varchar(24),
-  APIKey varchar(64)
+  APIKey varchar(64),
+  contributionPercentage varchar(6),
+  contributionAmount varchar(8),
+  contributionCurrency varchar(3),
+  contributionLessMore varchar(4),
+  contributionTotal varchar(15)
 );
 
 -- create new payments table

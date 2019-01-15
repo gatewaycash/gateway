@@ -9,7 +9,7 @@ export default async newUsername => {
   }
   let response = await post(
     '/username',
-    { APIKey: sessionStorage.gatewayAPIKey, username: newUsername }
+    { APIKey: sessionStorage.gatewayAPIKey, newUsername: newUsername }
   )
 
   return response

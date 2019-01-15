@@ -1,6 +1,7 @@
 import React from 'react'
 import Username from './Username'
 import Password from './Password'
+import APIInfo from './APIInfo'
 import { Container, Footer, Text } from 'components'
 import NavigationMenu from './../NavigationMenu'
 
@@ -9,6 +10,7 @@ export default () => (
     <NavigationMenu page="Your Account" />
     <Username />
     <Password />
+    <APIInfo />
     <Container>
       <h2>Display Currency</h2>
       <Text>
