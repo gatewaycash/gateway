@@ -240,7 +240,6 @@ let PayButton = props => {
         display: 'inline-block',
         padding: '0.25em'
       }}
-      id={props.elementID}
     >
       <Button
         onClick={handleClick}
