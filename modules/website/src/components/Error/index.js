@@ -2,9 +2,9 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import './Error.css'
 
-let Error = ({error, closed = false, setClosed}) => {
+let Error = ({error, closed = true, setClosed}) => {
 
-  return !closed && error.error ? (
+  return !closed ? (
     <div className="errorBox">
       <div className="errorBox-inner">
         <span

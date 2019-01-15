@@ -17,8 +17,8 @@ import {
 class CreateButtonPage extends Component {
   state = {
     merchantID: 'loading',
-    paymentID: 'donation',
-    buttonText: 'Donate',
+    paymentID: '',
+    buttonText: 'Pay With Bitcoin Cash',
     dialogTitle: 'Complete Your Payment',
     currency: 'BCH',
     amount: '0',

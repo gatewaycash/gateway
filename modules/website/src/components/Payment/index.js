@@ -47,7 +47,9 @@ let Payment = ({
         }
       </Text>
       <Text><b>Private Key: </b>{paymentKey}</Text>
-      <Text><b>Payment ID: </b>{paymentID || 'No Payment ID'}</Text>
+      <Text><b>Payment ID: </b>
+        {paymentID.length > 1 ? paymentID : 'No payment ID'}
+      </Text>
       <Text><b>Callback URL: </b>
         {callbackURL.length > 1 ? callbackURL : 'No callback URL'}
       </Text>
