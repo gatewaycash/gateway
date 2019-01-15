@@ -3,7 +3,7 @@ import Container from 'components/Container'
 import Text from 'components/Text'
 
 export default () => (
-  <Container>
+  <Container fullWidth>
     <h1>Great Bitcoin Cash Resources for Beginners</h1>
     <Text>
       If you're just starting out with Bitcoin Cash, welcome aboard! The

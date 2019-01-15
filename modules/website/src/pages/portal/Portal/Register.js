@@ -33,7 +33,7 @@ export default () => {
 
   return (
     <>
-    <Container centered>
+    <Container halfWidth centered>
       <h1>Register for Free</h1>
       <Text>
         Sign up for a Gateway merchant account to instantly start creating

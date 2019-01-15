@@ -30,7 +30,7 @@ export default () => {
   }
 
   return (
-    <Container centered>
+    <Container halfWidth centered>
       <h1>Log In</h1>
       <Text>
         If you have a Gateway account, log in below using either your

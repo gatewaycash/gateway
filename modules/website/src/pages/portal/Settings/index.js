@@ -1,11 +1,14 @@
 import React from 'react'
 import Username from './Username'
+import Password from './Password'
 import { Container, Footer, Text } from 'components'
 import NavigationMenu from './../NavigationMenu'
 
 export default () => (
   <>
     <NavigationMenu page="Your Account" />
+    <Username />
+    <Password />
     <Container>
       <h2>Display Currency</h2>
       <Text>
@@ -17,7 +20,6 @@ export default () => (
       </Text>
       <p>This feature hasn't been built yet, please check back soon.</p>
     </Container>
-    <Username />
     <Container>
       <h2>Supporting the Project</h2>
       <Text>
