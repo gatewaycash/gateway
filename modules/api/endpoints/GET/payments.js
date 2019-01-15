@@ -52,7 +52,7 @@ module.exports = async (req, res) => {
     1-50 are returned. For pageNumber 2, records 51-100 are returned.
    */
 
-  sql = 'select paymentAddress, paidAmount, paymentTXID, '
+  sql = 'select paymentAddress, paidAmount, paymentTXID, callbackURL, '
   sql += 'transferTXID, paymentID, created, paymentKey from payments '
   sql += 'where merchantID = ? '
   // require a transferTXID unless includeUnpaid is "YES"

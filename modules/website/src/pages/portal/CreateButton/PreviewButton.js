@@ -10,7 +10,10 @@ export default props => (
       Payments made to the button on this page will be sent to your address.
     </Text>
     <center>
-      <PayButton {...props} />
+      <PayButton
+        {...props}
+        gatewayServer={process.env.REACT_APP_GATEWAY_BACKEND}
+      />
     </center>
   </Container>
 )

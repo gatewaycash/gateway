@@ -1,6 +1,6 @@
 import { get, generateError } from './utils'
 
-export default async (keys = false, unpaid = false) => {
+export default async (keys = 'NO', unpaid = 'NO') => {
   if (!sessionStorage.gatewayAPIKey) {
     return generateError(
       'Not Logged In',
