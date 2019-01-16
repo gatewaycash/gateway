@@ -61,7 +61,7 @@ export default () => {
         <TextField
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          placeholder="Your new ussrname"
+          placeholder="Your new username"
           style={{
             width: '80%'
           }}

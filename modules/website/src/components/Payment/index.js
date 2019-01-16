@@ -10,7 +10,8 @@ let Payment = ({
   paymentID,
   callbackURL,
   paidAmount,
-  paymentKey
+  paymentKey,
+  created
 }) => (
   <div className="payment">
     <div className="payment-inner">
@@ -53,6 +54,9 @@ let Payment = ({
       <Text><b>Callback URL: </b>
         {callbackURL.length > 1 ? callbackURL : 'No callback URL'}
       </Text>
+      <Text><b>Invoice Created: </b>
+        {created}
+      </Text>
     </div>
   </div>
 )
@@ -64,7 +68,8 @@ Payment.propTypes = {
   paymentID: PropTypes.string,
   callbackURL: PropTypes.string,
   paidAmount: PropTypes.any,
-  paymentKey: PropTypes.string
+  paymentKey: PropTypes.string,
+  created: PropTypes.string
 }
 
 export default Payment

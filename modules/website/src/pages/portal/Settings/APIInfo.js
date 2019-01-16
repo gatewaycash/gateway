@@ -32,12 +32,15 @@ export default class APIInfo extends Component {
       <Container>
         <h2>Gateway API Access</h2>
         <Text>
-          Your merchant account comes with free access to the Gateway API! That means you can build custom services and solutions that fit your needs without running your own servers.
+          Your merchant account comes with free access to the Gateway API! That
+          means you can build custom services and solutions that fit your needs
+          without running your own servers.
         </Text>
         <h3>Your API Key</h3>
         <Text>
-          Your account's API key is being used behind the scenes whenever you use gateway.cash. To learn more about the Gateway API, go
-          <a href="https://api.gateway.cash">here</a>.
+          Your account's API key is being used behind the scenes whenever you
+          use gateway.cash. To learn more about the Gateway API,
+          go <a href="https://api.gateway.cash">here</a>.
         </Text>
         {
           this.state.showKey ? (
