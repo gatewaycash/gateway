@@ -1,47 +1,102 @@
 -- delete existing tables from the database
 drop table if exists users;
 drop table if exists payments;
-drop table if exists pending;
+drop table if exists pendingPayments;
+drop table if exists privateKeys;
+drop table if exists transactions;
+drop table if exists APIKeys;
+drop table if exists platforms;
+drop table if exists commissions;
 
 -- create new users table
 create table if not exists users (
-  userID int auto_increment primary key,
-  payoutAddress varchar(60),
-  totalSales int(15) default 0,
+  index int auto_increment primary key,
   created timestamp default current_timestamp,
+  payoutAddress varchar(60),
+  payoutXPUB varchar(115),
+  payoutMethod varchar(10) default "address",
+  totalSales int(15) default 0,
   merchantID varchar(16),
-  password varchar(64),
-  salt varchar(64),
+  passwordHash varchar(64),
+  passwordSalt varchar(64),
   username varchar(24),
-  APIKey varchar(64),
-  contributionPercentage varchar(6),
-  contributionAmount varchar(8),
-  contributionCurrency varchar(3),
-  contributionLessMore varchar(4),
-  contributionTotal varchar(15)
+  contributionPercentage varchar(6) default "0.00",
+  contributionAmount varchar(8) default "0.00",
+  contributionCurrency varchar(3) default "BCH",
+  contributionLessMore varchar(4) default "less",
+  contributionTotal varchar(15) default 0
 );
 
 -- create new payments table
 create table if not exists payments (
-  paymentIndex int auto_increment primary key,
-  paymentAddress varchar(60),
-  paidAmount int(15),
+  index int auto_increment primary key,
   created timestamp default current_timestamp,
-  paymentID varchar(64),
+  paymentAddress varchar(60),
+  paymentID varchar(64) default "",
   merchantID varchar(16),
-  paymentKey varchar(80),
-  paymentTXID varchar(64),
-  transferTXID varchar(64),
-  callbackURL varchar(250)
+  callbackURL varchar(250) default "",
+  invoiceAmount int(15) default 0,
+  complete int(1) default 0
 );
 
--- create new pending table
-CREATE table if not exists pending (
+--- create new transactions table
+create table if not exists transactions (
+  index int auto_increment primary key,
   created timestamp default current_timestamp,
-  address varchar(60),
-  txid varchar(64),
+  type varchar(10),
+  TXID varchar(64),
+  paymentIndex int(8)
+);
+
+--- create new privateKeys table
+create table if not exists privateKeys (
+  index int auto_increment primary key,
+  created timestamp default current_timestamp,
+  paymentIndex int(8),
+  privateKey varchar(80)
+)
+
+-- create new pendingPayments table
+create table if not exists pendingPayments (
+  index int auto_increment primary key,
+  created timestamp default current_timestamp,
+  paymentIndex int(8),
   attempts int(3) default 0
 );
+
+--- create new APIKeys table
+create table if not exists APIKeys (
+  index int auto_increment primary key,
+  created timestamp default current_timestamp,
+  active int(1) default 1,
+  revokedDate timestamp default 0,
+  userIndex int(8),
+  APIKey varchar(64)
+);
+
+--- create new platforms table
+create table if not exists platforms (
+  index int auto_increment primary key,
+  created timestamp default current_timestamp,
+  platformID varchar(16),
+  name varchar(36),
+  description varchar(160),
+  owner varchar(8)
+);
+
+--- create new commissions table
+create table if not exists commissions (
+  index int auto_increment primary key,
+  platformIndex int(8),
+  commissionAddress varchar(60),
+  commissionXPUB varchar(115),
+  commissionMethod varchar(10) default "address",
+  commissionPercentage varchar(6) default "0.00",
+  commissionAmount varchar(8) default "0.00",
+  commissionCurrency varchar(3) default "BCH",
+  commissionLessMore varchar(4) default "less",
+  commissionTotal varchar(15) default 0
+)
 
 -- create a test user
 insert into users (
