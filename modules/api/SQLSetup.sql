@@ -7,6 +7,7 @@ drop table if exists transactions;
 drop table if exists APIKeys;
 drop table if exists platforms;
 drop table if exists commissions;
+drpo table if exists platformAdministrators;
 
 -- create new users table
 create table if not exists users (
@@ -24,7 +25,9 @@ create table if not exists users (
   contributionAmount varchar(8) default "0.00",
   contributionCurrency varchar(3) default "BCH",
   contributionLessMore varchar(4) default "less",
-  contributionTotal varchar(15) default 0
+  contributionTotal varchar(15) default 0,
+  platformUser int(1) default 0,
+  platformIndex int(8)
 );
 
 -- create new payments table
@@ -96,7 +99,18 @@ create table if not exists commissions (
   commissionCurrency varchar(3) default "BCH",
   commissionLessMore varchar(4) default "less",
   commissionTotal varchar(15) default 0
-)
+);
+
+--- create new platformAdministrators table
+create table if not exists platformAdministrators (
+  index int auto_increment primary key,
+  created timestamp default current_timestamp,
+  active int(1) default 1,
+  revokedDate timestamp default 0,
+  revokedReason varchar(160),
+  userIndex int(8),
+  platformIndex int(8)
+);
 
 -- create a test user
 insert into users (
