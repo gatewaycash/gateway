@@ -74,6 +74,7 @@ create table if not exists APIKeys (
   active int(1) default 1,
   revokedDate timestamp default 0,
   userIndex int(8),
+  label varchar(36),
   APIKey varchar(64)
 );
 
@@ -84,7 +85,8 @@ create table if not exists platforms (
   platformID varchar(16),
   name varchar(36),
   description varchar(160),
-  owner varchar(8)
+  owner varchar(8),
+  totalSales int(15) default 0
 );
 
 --- create new commissions table
