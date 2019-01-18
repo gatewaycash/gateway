@@ -3,8 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "nodemon --ignore public webServicesBackend.js",
-    "production": "pm2 start webServicesBackend.js",
+    "dev": "concurrently \"webpack --mode development --watch\" \"nodemon --ignore public --ignore src build/server.js\"",
+    "build": "webpack --mode production",
+    "production": "pm2 start build/server.js",
+    "start": "nodemon build/server.js",
     "setup": "node setupEnvironment.js"
   },
   "dependencies": {
@@ -12,8 +14,17 @@
     "bitcore-lib-cash": "^0.19.0",
     "dotenv": "^6.1.0",
     "node-mysql": "^0.4.2",
-    "nodemon": "^1.18.7",
     "pm2": "^3.2.2",
     "sha256": "^0.2.0"
+  },
+  "devDependencies": {
+    "concurrently": "^4.1.0",
+    "@babel/preset-env": "^7.2.3",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.0.5",
+    "babel-polyfill": "^6.26.0",
+    "nodemon": "^1.18.7",
+    "webpack": "^4.28.4",
+    "webpack-cli": "^3.2.1"
   }
 }
