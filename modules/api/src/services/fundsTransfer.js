@@ -3,10 +3,10 @@
  * @author The Gateway Project Developers <hello@gateway.cash>
  * @file Provides a daemon for transfering funds
  */
-const bch = require('bitcore-lib-cash')
-const bchaddr = require('bchaddrjs')
-const mysql = require('../SQLWrapper')
-const axios = require('axios')
+import bch from 'bitcore-lib-cash'
+import bchaddr from 'bchaddrjs'
+import { mysql } from 'utils'
+import axios from 'axios'
 
 const BLOCK_EXPLORER_BASE = 'https://bch.coin.space/api'
 
@@ -238,6 +238,6 @@ let searchDatabase = async () => {
 }
 
 
-module.exports = {
+export default {
   run: searchDatabase
 }

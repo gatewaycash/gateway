@@ -3,9 +3,9 @@
  * @author The Gateway Project Developers <hello@gateway.cash>
  * @file Fixes broken payments, checking all addresses for funds
  */
-const bchaddr = require('bchaddrjs')
-const mysql = require('../SQLWrapper')
-const axios = require('axios')
+import bchaddr from 'bchaddrjs'
+import { mysql } from 'utils'
+import axios from 'axios'
 
 const BLOCK_EXPLORER_BASE = 'https://bch.coin.space/api'
 
@@ -89,6 +89,6 @@ let searchDatabase = async () => {
   }
 }
 
-module.exports = {
+export default {
   run: searchDatabase
 }

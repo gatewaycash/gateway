@@ -3,9 +3,11 @@
  * @author The Gateway Project Developers <hello@gateway.cash>
  * @file Defined a promisified wrapper for node-mysql
  */
-const mysql = require('mysql')
-const promisify = require('util').promisify
-require('dotenv').config()
+import mysql from 'mysql'
+import util from 'util'
+let promisify = util.promisify
+import dotenv from 'dotenv'
+dotenv.config()
 
 // pull in the MySQL credentials from environment variables
 const conn = mysql.createConnection({
@@ -23,4 +25,4 @@ conn.query = promisify(conn.query)
 conn.connect()
 
 // export the promisified functions
-module.exports = conn
+export default conn

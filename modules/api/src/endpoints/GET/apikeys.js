@@ -7,23 +7,37 @@ import { mysql, auth, handleResponse } from 'utils'
 import url from 'url'
 
 export default async (req, res) => {
-  console.log('GET /address requested')
+  console.log('GET /apikeys requested')
 
   // parse the provided data
   const query = url.parse(req.url, true).query
   console.log(query)
 
   let userIndex = await auth(query.APIKey, res)
-
-  console.log(userIndex)
   if (!userIndex) return
 
-  // return the record
+  // search for the record
   let result = await mysql.query(
-    'SELECT payoutAddress FROM users WHERE tableIndex = ? LIMIT 1',
+    'SELECT * FROM APIKeys WHERE userIndex = ?',
     [userIndex]
   )
+
+  // build the response
+  let response = []
+  result.forEach((e) => {
+    let key = {
+      created: e.created,
+      APIKey: e.APIKey,
+      label: e.label,
+      active: e.active === 1
+    }
+    if (!key.active) {
+      key.revokedDate = e.revokedDate
+    }
+    response.push(key)
+  })
+
   handleResponse({
-    address: result[0].payoutAddress
+    APIKeys: response
   }, res)
 }
