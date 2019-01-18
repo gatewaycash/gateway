@@ -3,117 +3,139 @@
  * @author The Gateway Project Developers <hello@gateway.cash>
  * @file Defines a GET endpoint for /login
  */
-const url = require('url')
-const sha256 = require('sha256')
-const mysql = require('../../SQLWrapper')
+import url from 'url'
+import sha256 from 'sha256'
+import { mysql, handleError, handleResponse } from 'utils'
 
-module.exports = async function (req, res) {
+export default async (req, res) => {
   console.log('GET /login requested')
 
   // parse the provided data
   const query = url.parse(req.url, true).query
 
-  // define a response object
-  const response = {}
-
   // ensure a password was sent
   if (!query.password) {
-    response.status = 'error'
-    response.error = 'No Password',
-    response.description = 'Provide a password when logging in'
-    res.end(JSON.stringify(response))
-    return
+    return handleError(
+      'No Password',
+      'Provide a password when logging in',
+      res
+    )
   }
 
   // verify that either an address or a username was provided
-  if (!query.address && !query.username) {
-    response.status = 'error'
-    response.error = 'Address or Username Required',
-    response.description = 'An address or a username is required to log in.'
-    res.end(JSON.stringify(response))
-    return
+  if (!query.address && !query.username && !query.XPUB) {
+    return handleError(
+      'Address, Username or XPUB Required',
+      'Provide either an address, a username or an XPUB key when logging in',
+      res
+    )
   }
 
-  /*
-    Since we prefer to log in with an address (when both an address and a
-    username were provided), we try searching for an address first.
-  */
+  // Variable to store the user record
+  let user
+
+  // search by address
   if (query.address) {
-
-    // search the database for records
-    let sql = `select password, salt, APIKey
-      from users
-      where
-      payoutAddress = ?
-      limit 1`
-    let result = await mysql.query(sql, [query.address])
-
-    // Fail unless the query returned exactly one record
+    let result = await mysql.query(
+      `SELECT passwordHash, passwordSalt, tableIndex
+        FROM users
+        WHERE
+          payoutAddress = ?
+        LIMIT 1`,
+      [query.address]
+    )
     if (result.length !== 1) {
-      response.status = 'error'
-      response.error = 'Invalid Login',
-      response.description = 'An incorrect address or password was given.'
-      res.end(JSON.stringify(response))
-      return
+      return handleError(
+        'Invalid Login',
+        'An incorrect address was given',
+        res
+      )
     }
+    user = result[0]
+  }
 
-    // validate the password
-    const user = result[0]
-    const passwordHash = sha256(query.password + user.salt)
-    // send the API key if the password matches
-
-    if (user.password === passwordHash) {
-      response.status = 'success'
-      response.APIKey = user.APIKey,
-      res.end(JSON.stringify(response))
-      return
+  // search by username
+  if (query.username && !user) {
+    let result = await mysql.query(
+      `SELECT passwordHash, passwordSalt, tableIndex
+        FROM users
+        WHERE
+        username = ?
+        LIMIT 1`,
+      [query.username]
+    )
+    if (result.length !== 1) {
+      return handleError(
+        'Invalid Login',
+        'An incorrect username was given',
+        res
+      )
     }
+    user = result[0]
+  }
 
-    // in all other cases, fail with invalid login
-    response.status = 'error'
-    response.error = 'Invalid Login',
-    response.description = 'An incorrect address or password was given.'
-    res.end(JSON.stringify(response))
+  // search by XPUB
+  if (query.XPUB && !user) {
+    let result = await mysql.query(
+      `SELECT passwordHash, passwordSalt, tableIndex
+        FROM users
+        WHERE
+        payoutXPUB = ?
+        LIMIT 1`,
+      [query.XPUB]
+    )
+    if (result.length !== 1) {
+      return handleError(
+        'Invalid Login',
+        'An incorrect XPUB key was given',
+        res
+      )
+    }
+    user = result[0]
+  }
 
-  /*
-    Try searching for the user by username only when the address was not
-    provided.
-   */
+  // verify a user was found either way
+  if (!user) {
+    return handleError(
+      'Login Error',
+      'An unknown error is preventing you from logging in',
+      res
+    )
+  }
+
+  // verify the password
+  const passwordHash = sha256(query.password + user.passwordSalt)
+  if (user.passwordHash === passwordHash) {
+    let response = await mysql.query(
+      'SELECT APIKey FROM APIKeys WHERE userIndex = ? LIMIT 1',
+      [user.tableIndex]
+    )
+    if (response.length !== 1) {
+      /*
+        since there were no API keys for this account but the user has just
+        verified the credentials we can generate a new API key right now to
+        avoid the error
+      */
+      let newKey = sha256(require('crypto').randomBytes(32))
+      await mysql.query(
+        `INSERT INTO APIKeys
+          (userIndex, APIKey, label)
+          VALUES
+          (?, ?, "Generated by GET /login")`,
+        [user.tableIndex, newKey]
+      )
+      return handleResponse({
+        APIKey: newKey
+      }, res)
+    }
+    return handleResponse({
+      APIKey: response[0].APIKey
+    }, res)
   } else {
-
-    // search for records
-    let sql = `select password, salt, APIKey
-      from users
-      where
-      username = ?
-      limit 1`
-    let result = await mysql.query(sql, [query.username])
-
-    // fail unless there is exactly one match
-    if (result.length !== 1) {
-      response.status = 'error'
-      response.error = 'Invalid Login',
-      response.description = 'An incorrect username or password was given.'
-      res.end(JSON.stringify(response))
-      return
-    }
-
-    // validate the password
-    var user = result[0]
-    var passwordHash = sha256(query.password + user.salt)
-
-    // send the API key if the password matches
-    if (user.password === passwordHash) {
-      response.status = 'success'
-      response.APIKey = user.APIKey,
-      res.end(JSON.stringify(response))
-      return
-    }
-
-    // in all other cases, fail with invalid login
-    response.status = 'error'
-    response.error = 'Invalid Login',
-    response.description = 'An incorrect username or password was given.'
-    res.end(JSON.stringify(response))
+    return handleError(
+      'Invalid Login',
+      'An incorrect password was given',
+      res
+    )
   }
 }

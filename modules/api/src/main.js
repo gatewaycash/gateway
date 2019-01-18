@@ -12,8 +12,7 @@ import * as GETEndpoints from 'endpoints/GET'
 import * as POSTEndpoints from 'endpoints/POST'
 
 // include all service daemons
-//const fundsTransferService = require('./services/fundsTransfer')
-//const brokenPaymentsService = require('./services/brokenPayments')
+import { fundsTransferService, brokenPaymentsService } from 'services'
 
 // print startup message
 console.log('Starting Web Services Backend...')
@@ -54,7 +53,7 @@ Object.keys(POSTEndpoints).forEach((e) => {
 
 // start the payment processing services
 // run the main processor every 30 seconds
-//setInterval(fundsTransferService.run, 30000)
+setInterval(fundsTransferService.run, 30000)
 
 // run the broken payments processor every 12 hours
-//setInterval(brokenPaymentsService.run, 43200000)
+setInterval(brokenPaymentsService.run, 43200000)

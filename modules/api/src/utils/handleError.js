@@ -3,7 +3,7 @@
  * @author The Gateway Project Developers <hello@gateway.cash>
  * @file Provides a handler for API errors
  */
-module.exports = (error, description, res) => {
+export default (error, description, res) => {
   let response = {}
   response.status = 'error'
   response.error = error
