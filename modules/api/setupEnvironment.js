@@ -152,7 +152,9 @@ database you want to keep, answer NO.
     try {
       await conn.query(data)
     } catch (e) {
-      console.log('Error executing the code from SQLSetup.sql!')
+      console.log('\n\nError executing the code from SQLSetup.sql!\n\n')
+      e.sql = '' // hide annoying output
+      console.log(e)
       return
     }
     rl.close()

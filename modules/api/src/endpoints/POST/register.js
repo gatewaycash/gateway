@@ -3,11 +3,11 @@
  * @author The Gateway Project Developers <hello@gateway.cash>
  * @file Defines a POST endpoint for /register
  */
-const mysql = require('../../SQLWrapper')
-const bchaddr = require('bchaddrjs')
-const sha256 = require('sha256')
+import { mysql, handleError } from 'utils'
+import bchaddr from 'bchaddrjs'
+import sha256 from 'sha256'
 
-module.exports = async function(req, res) {
+export default async (req, res) => {
   console.log('POST /register requested')
 
   // An object to hold the response

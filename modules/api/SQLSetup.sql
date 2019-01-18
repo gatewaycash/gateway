@@ -1,132 +1,124 @@
 -- delete existing tables from the database
-drop table if exists users;
-drop table if exists payments;
-drop table if exists pendingPayments;
-drop table if exists privateKeys;
-drop table if exists transactions;
-drop table if exists APIKeys;
-drop table if exists platforms;
-drop table if exists commissions;
-drpo table if exists platformAdministrators;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS payments;
+DROP TABLE IF EXISTS pendingPayments;
+DROP TABLE IF EXISTS privateKeys;
+DROP TABLE IF EXISTS transactions;
+DROP TABLE IF EXISTS APIKeys;
+DROP TABLE IF EXISTS platforms;
+DROP TABLE IF EXISTS commissions;
+DROP TABLE IF EXISTS platformAdministrators;
 
 -- create new users table
-create table if not exists users (
-  index int auto_increment primary key,
-  created timestamp default current_timestamp,
-  payoutAddress varchar(60),
-  payoutXPUB varchar(115),
-  payoutMethod varchar(10) default "address",
-  totalSales int(15) default 0,
-  merchantID varchar(16),
-  passwordHash varchar(64),
-  passwordSalt varchar(64),
-  username varchar(24),
-  contributionPercentage varchar(6) default "0.00",
-  contributionAmount varchar(8) default "0.00",
-  contributionCurrency varchar(3) default "BCH",
-  contributionLessMore varchar(4) default "less",
-  contributionTotal varchar(15) default 0,
-  platformUser int(1) default 0,
-  platformIndex int(8)
+CREATE TABLE IF NOT EXISTS users (
+  tableIndex INT AUTO_INCREMENT PRIMARY KEY,
+  created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  payoutAddress VARCHAR(60),
+  payoutXPUB VARCHAR(115),
+  payoutMethod VARCHAR(10) DEFAULT "address",
+  totalSales INT(15) DEFAULT 0,
+  merchantID VARCHAR(16),
+  passwordHash VARCHAR(64),
+  passwordSalt VARCHAR(64),
+  username VARCHAR(24),
+  contributionPercentage VARCHAR(6) DEFAULT "0.00",
+  contributionAmount VARCHAR(8) DEFAULT "0.00",
+  contributionCurrency VARCHAR(3) DEFAULT "BCH",
+  contributionLessMore VARCHAR(4) DEFAULT "less",
+  contributionTotal VARCHAR(15) DEFAULT 0,
+  platformUser INT(1) DEFAULT 0,
+  platformIndex INT(8)
 );
+ALTER TABLE users AUTO_INCREMENT = 1;
 
 -- create new payments table
-create table if not exists payments (
-  index int auto_increment primary key,
-  created timestamp default current_timestamp,
-  paymentAddress varchar(60),
-  paymentID varchar(64) default "",
-  merchantID varchar(16),
-  callbackURL varchar(250) default "",
-  invoiceAmount int(15) default 0,
-  complete int(1) default 0
+CREATE TABLE IF NOT EXISTS payments (
+  tableIndex INT AUTO_INCREMENT PRIMARY KEY,
+  created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  paymentAddress VARCHAR(60),
+  paymentID VARCHAR(64) DEFAULT "",
+  merchantID VARCHAR(16),
+  callbackURL VARCHAR(250) DEFAULT "",
+  invoiceAmount INT(15) DEFAULT 0,
+  complete INT(1) DEFAULT 0
 );
+ALTER TABLE payments AUTO_INCREMENT = 1;
 
---- create new transactions table
-create table if not exists transactions (
-  index int auto_increment primary key,
-  created timestamp default current_timestamp,
-  type varchar(10),
-  TXID varchar(64),
-  paymentIndex int(8)
+-- create new transactions table
+CREATE TABLE IF NOT EXISTS transactions (
+  tableIndex INT AUTO_INCREMENT PRIMARY KEY,
+  created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  type VARCHAR(10),
+  TXID VARCHAR(64),
+  paymentIndex INT(8)
 );
+ALTER TABLE transactions AUTO_INCREMENT = 1;
 
---- create new privateKeys table
-create table if not exists privateKeys (
-  index int auto_increment primary key,
-  created timestamp default current_timestamp,
-  paymentIndex int(8),
-  privateKey varchar(80)
-)
+-- create new privateKeys table
+CREATE TABLE IF NOT EXISTS privateKeys (
+  tableIndex INT AUTO_INCREMENT PRIMARY KEY,
+  created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  paymentIndex INT(8),
+  privateKey VARCHAR(80)
+);
+ALTER TABLE privateKeys AUTO_INCREMENT = 1;
 
 -- create new pendingPayments table
-create table if not exists pendingPayments (
-  index int auto_increment primary key,
-  created timestamp default current_timestamp,
-  paymentIndex int(8),
-  attempts int(3) default 0
+CREATE TABLE IF NOT EXISTS pendingPayments (
+  tableIndex INT AUTO_INCREMENT PRIMARY KEY,
+  created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  paymentIndex INT(8),
+  attempts INT(3) DEFAULT 0
 );
+ALTER TABLE pendingPayments AUTO_INCREMENT = 1;
 
---- create new APIKeys table
-create table if not exists APIKeys (
-  index int auto_increment primary key,
-  created timestamp default current_timestamp,
-  active int(1) default 1,
-  revokedDate timestamp default 0,
-  userIndex int(8),
-  label varchar(36),
-  APIKey varchar(64)
+-- create new APIKeys table
+CREATE TABLE IF NOT EXISTS APIKeys (
+  tableIndex INT AUTO_INCREMENT PRIMARY KEY,
+  created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  active INT(1) DEFAULT 1,
+  revokedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  userIndex INT(8),
+  label VARCHAR(36),
+  APIKey VARCHAR(64)
 );
+ALTER TABLE APIKeys AUTO_INCREMENT = 1;
 
---- create new platforms table
-create table if not exists platforms (
-  index int auto_increment primary key,
-  created timestamp default current_timestamp,
-  platformID varchar(16),
-  name varchar(36),
-  description varchar(160),
-  owner varchar(8),
-  totalSales int(15) default 0
+-- create new platforms table
+CREATE TABLE IF NOT EXISTS platforms (
+  tableIndex INT AUTO_INCREMENT PRIMARY KEY,
+  created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  platformID VARCHAR(16),
+  name VARCHAR(36),
+  description VARCHAR(160),
+  owner VARCHAR(8),
+  totalSales INT(15) DEFAULT 0
 );
+ALTER TABLE platforms AUTO_INCREMENT = 1;
 
---- create new commissions table
-create table if not exists commissions (
-  index int auto_increment primary key,
-  platformIndex int(8),
-  commissionAddress varchar(60),
-  commissionXPUB varchar(115),
-  commissionMethod varchar(10) default "address",
-  commissionPercentage varchar(6) default "0.00",
-  commissionAmount varchar(8) default "0.00",
-  commissionCurrency varchar(3) default "BCH",
-  commissionLessMore varchar(4) default "less",
-  commissionTotal varchar(15) default 0
+-- create new commissions table
+CREATE TABLE IF NOT EXISTS commissions (
+  tableIndex INT AUTO_INCREMENT PRIMARY KEY,
+  platformIndex INT(8),
+  commissionAddress VARCHAR(60),
+  commissionXPUB VARCHAR(115),
+  commissionMethod VARCHAR(10) DEFAULT "address",
+  commissionPercentage VARCHAR(6) DEFAULT "0.00",
+  commissionAmount VARCHAR(8) DEFAULT "0.00",
+  commissionCurrency VARCHAR(3) DEFAULT "BCH",
+  commissionLessMore VARCHAR(4) DEFAULT "less",
+  commissionTotal VARCHAR(15) DEFAULT 0
 );
+ALTER TABLE commissions AUTO_INCREMENT = 1;
 
---- create new platformAdministrators table
-create table if not exists platformAdministrators (
-  index int auto_increment primary key,
-  created timestamp default current_timestamp,
-  active int(1) default 1,
-  revokedDate timestamp default 0,
-  revokedReason varchar(160),
-  userIndex int(8),
-  platformIndex int(8)
+-- create new platformAdministrators table
+CREATE TABLE IF NOT EXISTS platformAdministrators (
+  tableIndex INT AUTO_INCREMENT PRIMARY KEY,
+  created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  active INT(1) DEFAULT 1,
+  revokedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  revokedReason VARCHAR(160),
+  userIndex INT(8),
+  platformIndex INT(8)
 );
-
--- create a test user
-insert into users (
-  merchantID,
-  password,
-  salt,
-  username,
-  APIKey,
-  payoutAddress
-) values (
-  "deadbeef20181111",
-  "1e79982e5189b4acb72018535d1b02dc75e554212dc06e411490ba1e56ee24c3",
-  "d8245dbc8c67cf0f849e9b5c73122bed3f84207852091f70f4fa2a12923a5700",
-  "gwtestuser1",
-  "aaaa00001111ed3f8429e9b5c73122bed3f8429e9b5c73122bed3f842deaddea",
-  "bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng"
-)
+ALTER TABLE platformAdministrators AUTO_INCREMENT = 1;

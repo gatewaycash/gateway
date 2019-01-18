@@ -2,8 +2,8 @@
  * Authenticates a given APIKey
  * @author The Gateway Project Developers <hello@gateway.cash>
  */
-let mysql = require('./SQLWrapper')
-let handleError = require('./handleError')
+const mysql = require('./SQLWrapper')
+const handleError = require('./handleError')
 
 module.exports = async (APIKey, res) => {
   // fail if no API key was provided
