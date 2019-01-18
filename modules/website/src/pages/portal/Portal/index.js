@@ -2,27 +2,29 @@ import React from 'react'
 import { navigate } from '@reach/router'
 import Login from './Login'
 import Register from './Register'
-import { Footer, Logo } from 'components'
+import { Header, Footer } from 'components'
 import OnboardingInfo from './OnboardingInfo'
+import styles from '../../../jss/Portal'
+import withStyles from '@material-ui/core/styles/withStyles'
+import PropTypes from 'prop-types'
 
-export default () => {
+const Portal = ({ classes }) => {
   sessionStorage.gatewayAPIKey && navigate('/portal/dashboard')
   return (
-    <>
-      <div
-        style={{
-          width: '100%',
-          display: 'inline-block',
-          margin: '1em',
-        }}
-      >
-        <Logo size="10" centered />
-        <h1 style={{textAlign: 'center'}} >Bitcoin Made Simple</h1>
+    <div>
+      <Header />
+      <div className={classes.content_wrap}>
+        <Login className={classes.login} />
+        <Register className={classes.register} />
+        <OnboardingInfo className={classes.onboarding_info} />
       </div>
-      <Login />
-      <Register />
-      <OnboardingInfo />
       <Footer />
-    </>
+    </div>
   )
 }
+
+Portal.propTypes = {
+  classes: PropTypes.object
+}
+
+export default withStyles(styles)(Portal)
