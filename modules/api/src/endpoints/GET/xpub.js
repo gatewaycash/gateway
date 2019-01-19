@@ -1,13 +1,13 @@
 /**
- * GET /username API endpoint
+ * GET /xpub API endpoint
  * @author The Gateway Project Developers <hello@gateway.cash>
- * @file Defines a GET endpoint for /username
+ * @file Defines a GET endpoint for /xpub
  */
 import { mysql, handleResponse, auth } from 'utils'
 import url from 'url'
 
 export default async (req, res) => {
-  console.log('GET /username requested')
+  console.log('GET /xpub requested')
 
   // parse the provided data
   const query = url.parse(req.url, true).query
@@ -17,10 +17,10 @@ export default async (req, res) => {
   if (!userIndex) return
 
   let result = await mysql.query(
-    'SELECT username FROM users WHERE userIndex = ? LIMIT 1',
+    'SELECT payoutXPUB FROM users WHERE tableIndex = ? LIMIT 1',
     [userIndex]
   )
   return handleResponse({
-    username: result[0].username
+    payoutXPUB: result[0].payoutXPUB
   }, res)
 }

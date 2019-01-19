@@ -41,7 +41,8 @@ CREATE TABLE IF NOT EXISTS payments (
   merchantID VARCHAR(16),
   callbackURL VARCHAR(250) DEFAULT "",
   invoiceAmount INT(15) DEFAULT 0,
-  complete INT(1) DEFAULT 0
+  status VARCHAR(10) DEFAULT "clicked",
+  platformID VARCHAR(16)
 );
 ALTER TABLE payments AUTO_INCREMENT = 1;
 
