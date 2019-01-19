@@ -1,7 +1,7 @@
 /**
- * GET /address API endpoint
+ * GET /apikeys API endpoint
  * @author The Gateway Project Developers <hello@gateway.cash>
- * @file Defines a GET endpoint for /address
+ * @file Defines a GET endpoint for /apikeys
  */
 import { mysql, auth, handleResponse } from 'utils'
 import url from 'url'
