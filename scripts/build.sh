@@ -13,4 +13,4 @@
 # After all of the commands, finish, the site is built
 
 echo "Starting the build..."
-concurrently "yarn paybutton-docs-build && yarn api-docs-build" "yarn paybutton-build" "yarn inject-build" && yarn site-build
+concurrently --raw "yarn paybutton-docs-build && yarn api-docs-build" "yarn paybutton-build" "yarn inject-build" "yarn api-build" && yarn site-build

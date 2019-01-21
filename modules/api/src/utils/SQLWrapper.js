@@ -22,7 +22,7 @@ const conn = mysql.createConnection({
 conn.query = promisify(conn.query)
 
 // connect to the database
-conn.connect()
+//conn.connect()
 
 // export the promisified functions
 export default conn
