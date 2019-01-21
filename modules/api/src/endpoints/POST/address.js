@@ -3,68 +3,44 @@
  * @author The Gateway Project Developers <hello@gateway.cash>
  * @file Defines a POST endpoint for /address
  */
-const mysql = require('../../SQLWrapper')
-const bchaddr = require('bchaddrjs')
+import { auth, mysql, handleResponse, handleError } from 'utils'
+import bchaddr from 'bchaddrjs'
 
-module.exports = async function (req, res) {
+export default async (req, res) => {
   console.log('POST /address requested')
   console.log(req.body)
 
-  // an object to hold the response
-  const response = {}
-
-  // verify the API key was provided
-  if (!req.body.APIKey) {
-    response.status = 'error'
-    response.error = 'No API Key'
-    response.description = 'An API Key is required for this endpoint.'
-    res.end(JSON.stringify(response))
-    return
-  }
-
-  // search the database for the record
-  let sql = 'select payoutAddress from users where APIKey = ? limit 1'
-  let result = await mysql.query(sql, [req.body.APIKey])
-
-  // fail unless there is exactly 1 record
-  if (result.length !== 1) {
-    response.status = 'error'
-    response.error = 'Invalid API Key'
-    response.description = 'No user currently has that API key. You might have changed your API key in your account settings, or the API key might be invalid.'
-    res.end(JSON.stringify(response))
-    return
-  }
-
-  // verify username was provided
+  // verify address was provided
   if (!req.body.newAddress) {
-    response.status = 'error'
-    response.error = 'No Address Provided'
-    response.description = 'Please provide a new Bitcoin Cash payout address!'
-    res.end(JSON.stringify(response))
-    return
+    return handleError(
+      'No Address Provided',
+      'Please provide a new Bitcoin Cash address',
+      res
+    )
   }
 
-  // verify new username is not too short
+  // verify new address is valid
   let newAddress
   try {
     newAddress = bchaddr.toCashAddress(req.body.newAddress)
   } catch(e) {
-    response.status = 'error'
-    response.error = 'Invalid Address'
-    response.description = 'Ensure you provided a valid Bitcoin Cash address!'
-    res.end(JSON.stringify(response))
-    return
+    return handleError(
+      'Invalid Address',
+      'Provide a valid Bitcoin Cash (BCH) address',
+      res
+    )
   }
 
-  // update the username
-  sql = 'update users set payoutAddress = ? where APIKey = ?'
+  let userIndex = await auth(req.body.APIKey)
+  if (!userIndex) return
+
+  // update the address
   await mysql.query(
-    sql,
-    [newAddress, req.body.APIKey]
+    'UPDATE users SET payoutAddress = ? WHERE tableIndex = ? LIMIT 1',
+    [newAddress, userIndex]
   )
 
-  // send success message to user
-  response.status = 'success'
-  response.newAddress = newAddress
-  res.end(JSON.stringify(response))
+  return handleResponse({
+    newAdress: newAddress
+  }, res)
 }

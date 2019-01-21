@@ -1,1 +1,6 @@
 export { default as register } from './register'
+export { default as address  } from './address'
+export { default as pay     } from './pay'
+export { default as paid    } from './paid'
+export { default as password } from './password'
+export { default as username } from './username'

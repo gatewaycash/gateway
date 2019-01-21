@@ -3,54 +3,57 @@
  * @author The Gateway Project Developers <hello@gateway.cash>
  * @file Defines a POST endpoint for /pay
  */
-const mysql = require('../../SQLWrapper')
-const bch = require('bitcore-lib-cash')
-const bchaddr = require('bchaddrjs')
+import { mysql, handleError, handleResponse } from 'utils'
+import bch from 'bitcore-lib-cash'
+import bchaddr from 'bchaddrjs'
 
-module.exports = async function (req, res) {
+export default async (req, res) => {
   console.log('POST /pay requested')
   console.log(req.body)
 
-  // an object to hold the response
-  const response = {}
-
   // ensure a merchant ID was given
   if (!req.body.merchantID) {
-    response.status = 'error'
-    response.error = 'No Merchant ID Given'
-    response.description = 'A merchant ID is required in order to generate the payment invoice. This is because Gateway needs to know where to send the funds once we receive then.'
-    res.end(JSON.stringify(response))
-    return
+    return handleError(
+      'No Merchant ID',
+      'A merchant ID is required in order to generate the payment invoice. This is because Gateway needs to know where to send the funds once we receive then.',
+      res
+    )
   }
 
   // make sure the merchant ID is in the database
-  let sql = `select merchantID
-    from users
-    where
-    merchantID = ?
-    limit 1`
-  let result = await mysql.query(sql, [req.body.merchantID])
+  let result = await mysql.query(
+    `SELECT merchantID, payoutMethod, payoutXPUB, XPUBIndex
+      FROM users
+      WHERE
+      merchantID = ?
+      LIMIT 1`,
+    [req.body.merchantID]
+  )
 
   // fail unless there is exactly 1 result
   if (result.length !== 1) {
-    response.status = 'error'
-    response.error = 'Merchant ID Not Found'
-    response.description = 'The merchant ID you provided wasn\'t found in the database. Make sure you\'re sending the correct merchant ID.'
-    res.end(JSON.stringify(response))
-    return
+    return handleError(
+      'Merchant ID Not Found',
+      'The merchant ID you provided wasn\'t found in the database. Make sure you\'re sending the correct merchant ID.',
+      res
+    )
   }
 
-  // define variables for callback URL and payment ID
-  let callbackURL = req.body.callbackURL ? req.body.callbackURL : false
-  let paymentID = req.body.paymentID ? req.body.paymentID : false
+  // define variables for callbackURL, paymentID and invoiceAmount
+  const callbackURL = req.body.callbackURL || false
+  const paymentID = req.body.paymentID || false
+  const invoiceAmount = req.body.invoiceAmount || 0
+  const payoutMethod = result[0].payoutMethod
+  const payoutXPUB = result[0].payoutXPUB
+  const XPUBIndex = result[0].XPUBIndex
 
   // make sure callback URL is not too long
   if (callbackURL && callbackURL.length > 250) {
-    response.status = 'error'
-    response.error = 'Callback URL too long'
-    response.description = 'The maximum length of a callback URL is 250 characters. Please find a way to shorten your callback URL, or consider using a URL shortening service.'
-    res.end(JSON.stringify(response))
-    return
+    return handleError(
+      'Callback URL Too Long',
+      'The maximum length of a callback URL is 250 characters. Please find a way to shorten your callback URL, or consider using a URL shortening service.',
+      res
+    )
   }
 
   // check some basic aspects of the callback URL for validity.
@@ -65,44 +68,79 @@ module.exports = async function (req, res) {
       callbackURL.length < 10
     )
   ) {
-    response.status = 'error'
-    response.error = 'Callback URL is not valid'
-    response.description = 'Please check the callback URL you provided and make sure it is valid. Ensure it starts with http:// or https:// and that it resolves to a reachable server.'
-    res.end(JSON.stringify(response))
-    return
+    return handleError(
+      'Callback URL is not Valid',
+      'Please check the callback URL you provided and make sure it is valid. Ensure it starts with http:// or https:// and that it resolves to a reachable server.',
+      res
+    )
   }
 
   // verify the payment ID is not too long
   if (paymentID && paymentID.length > 64) {
-    response.status = 'error'
-    response.error = 'Payment ID is too long'
-    response.description = 'Payment IDs are used for distinguishing one payment from another. The maximum length of a payment ID is 64 characters. Please shorten your payment ID.'
-    res.end(JSON.stringify(response))
-    return
+    return handleError(
+      'Payment ID Too Long',
+      'Payment IDs are used for distinguishing one payment from another. The maximum length of a payment ID is 64 characters. Please shorten your payment ID.',
+      res
+    )
   }
 
-  // generate the new address
-  const privateKey = new bch.PrivateKey()
-  const paymentKey = privateKey.toWIF()
-  const paymentAddress = bchaddr.toCashAddress(
-    privateKey.toAddress().toString()
-  )
+  // a variable to hold the paymentAddress
+  let paymentAddress
+  let paymentKey = false
+
+  // if the merchant uses payoutAddress generate a new keypair and store it
+  if (payoutMethod === 'address') {
+    const privateKey = new bch.PrivateKey()
+    paymentKey = privateKey.toWIF()
+    paymentAddress = bchaddr.toCashAddress(
+      privateKey.toAddress().toString()
+    )
+
+  // if the merchant uses XPUB then derive a new address and increment the index
+  } else if (payoutMethod === 'xpub') {
+    let node = bch.HDNode.fromBase58(payoutXPUB)
+    paymentAddress = bchaddr.toCashAddress(
+      node.derive(XPUBIndex).getAddress()
+    )
+    await mysql.query(
+      'UPDATE users SET XPUBIndex = XPUBIndex + 1 WHERE merchantID = ? LIMIT 1',
+      [req.body.merchantID]
+    )
+  } else {
+    return handleError(
+      'Invalid Payoutt Method',
+      'This merchant has an invalid payout method. Please try again later.',
+      res
+    )
+  }
 
   // insert the record into the database
-  sql = `insert into payments (
-      merchantID,
-      paymentID,
-      paymentAddress,
-      paymentKey,
-      callbackURL
-    ) values (?, ?, ?, ?, ?)`
   result = await mysql.query(
-    sql,
-    [req.body.merchantID, paymentID, paymentAddress, paymentKey, callbackURL]
+    `insert into payments (
+        merchantID,
+        paymentID,
+        paymentAddress,
+        callbackURL,
+        invoiceAmount
+      ) values (?, ?, ?, ?)`,
+    [req.body.merchantID, paymentID, paymentAddress, callbackURL, invoiceAmount]
   )
 
+  // add the payment key
+  if (paymentKey) {
+    let paymentIndex = await mysql.query(
+      'SELECT tableIndex FROM payments WHERE paymentAddress = ?',
+      [paymentAddress]
+    )
+    paymentIndex = paymentIndex[0].tableIndex
+    await mysql.query(
+      'INSERT INTO privateKeys (paymentIndex, paymentKey) VALUES (?, ?)',
+      [paymentIndex, paymentKey]
+    )
+  }
+
   // send the payment address to the user
-  response.status = 'success'
-  response.paymentAddress = paymentAddress
-  res.end(JSON.stringify(response))
+  return handleResponse({
+    paymentAddress: paymentAddress
+  }, res)
 }
