@@ -54,6 +54,12 @@ export default async (req, res) => {
     [merchantID, resultsOffset, resultsPerPage]
   )
 
+  // get total number of payments
+  let total = await mysql.query(
+    'SELECT COUNT(*) FROM payments WHERE merchantID = ?',
+    [merchantID]
+  )
+
   let response = []
   result.forEach(async (e) => {
     let object = {
@@ -77,5 +83,8 @@ export default async (req, res) => {
     object.transactions = transactions
     response.push(object)
   })
-  return handleResponse({payments: response}, res)
+  return handleResponse({
+    payments: response,
+    totalPages: total
+  }, res)
 }

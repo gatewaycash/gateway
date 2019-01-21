@@ -3,221 +3,118 @@
  * @author The Gateway Project Developers <hello@gateway.cash>
  * @file Defines a POST endpoint for /register
  */
-import { mysql, handleError } from 'utils'
+import {
+  mysql,
+  handleError,
+  handleResponse,
+  validateUsername,
+  validatePassword,
+  addAPIKey
+} from 'utils'
 import bchaddr from 'bchaddrjs'
+import bch from 'bitcore-lib-cash'
 import sha256 from 'sha256'
 
 export default async (req, res) => {
   console.log('POST /register requested')
 
-  // An object to hold the response
-  const response = {}
-
   // Make sure the user sent an address with their request
-  if (!req.body.address) {
-    response.status = 'error'
-    response.error = 'No Address'
-    response.description =
-      'No address was provided as a POST parameter. Please ensure that you have included a Bitcoin Cash (BCH) address as a POST parameter to the registration request.'
-    res.end(JSON.stringify(response))
-    return
+  if (!req.body.address && !req.body.xpub) {
+    return handleError(
+      'No Address or XPUB',
+      'Either a Bitcoin Cash (BCH) address or an XPUB key is required to register',
+      res
+    )
   }
 
-  // make sure the address is a valid Bitcoin Cash address
+  // validate the address
   let address = req.body.address
-  try {
-    // convert to CashAddress format
-    address = bchaddr.toCashAddress(address)
-  } catch (e) {
-    address = 'invalid'
-  }
-  if (address === 'invalid') {
-    response.status = 'error'
-    response.error = 'Invalid Address'
-    response.description =
-      'It looks like you provided an invalid Bitcoin Cash address. Make sure you\'re using the new-style CashAddress format (e.g. bitcoincash:q.....), and not a legacy-style Bitcoin address (starting with a 1 or a 3). Also ensure that you\'re using a Bitcoin Cash address and not a Bitcoin Core address.'
-    res.end(JSON.stringify(response))
-    return
+  if (req.body.address) {
+    try {
+      // convert to CashAddress format
+      address = bchaddr.toCashAddress(address)
+    } catch (e) {
+      return handleError(
+        'Invalid Address',
+        'It looks like you provided an invalid Bitcoin Cash address. Make sure you\'re using the new-style CashAddress format (e.g. bitcoincash:q.....), and not a legacy-style Bitcoin address (starting with a 1 or a 3). Also ensure that you\'re using a Bitcoin Cash address and not a Bitcoin Core address.',
+        res
+      )
+    }
+
+  // validate the XPUB key
+  } else {
+    try {
+      bch.HDNode.fromBase58(req.body.xpub)
+    } catch (e) {
+      return handleError(
+        'Invalid XPUB key',
+        'The XPUB key you provided is invalid',
+        res
+      )
+    }
   }
 
-  // ensure user has sent a password
-  if (!req.body.password) {
-    response.status = 'error'
-    response.error = 'No Password'
-    response.description =
-      'Your account registration request needs to include a password.'
-    res.end(JSON.stringify(response))
-    return
-  }
+  let passwordValid = await validatePassword(req.body.password, res)
+  if (!passwordValid) return
 
-  // ensure the password is sufficiently long
-  if (req.body.password.toString().length < 12) {
-    response.status = 'error'
-    response.error = 'Password Too Short'
-    response.description =
-      'The security of your account is important. For this reason, your password is required to be at least 12 characters in length.'
-    res.end(JSON.stringify(response))
-    return
-  }
-
-  // ensure the password does not contain odd characters
-  if (
-    req.body.password.toString().indexOf(' ') !== -1 ||
-    req.body.password.toString().indexOf('\n') !== -1 ||
-    req.body.password.toString().indexOf('\t') !== -1
-  ) {
-    response.status = 'error'
-    response.error = 'Password Cannot Contain Odd Characters'
-    response.description =
-      'The security of your account is important. For this reason, your password may not contain spaces, tabs, return characters or other non-standard characters.'
-    res.end(JSON.stringify(response))
-    return
-  }
-
-  // make sure address is not in the database already
-  let sql = `select payoutAddress
-    from users
-    where
-    payoutAddress = ?`
-  let result = await mysql.query(sql, [req.body.address])
+  // make sure address and xpub are not in the database already
+  let result = await mysql.query(
+    `SELECT payoutAddress
+      FROM users
+      WHERE
+      payoutAddress = ?
+      or
+      payoutXPUB = ?
+      LIMIT 1`,
+    [req.body.address, req.body.xpub]
+  )
 
   // fail if user is in the database
   if (result.length !== 0) {
-    response.status = 'error'
-    response.error = 'Address Already In Use'
-    response.description =
-      'It looks like that address is already being used by another user! If this is your address, send an email to support@gateway.cash and we\'ll help you get access to this merchant account.'
-    res.end(JSON.stringify(response))
-    return
+    return handleError(
+      'Address or XPUB key is in use',
+      'It looks like that address is already being used by another user! If this is your address, send an email to support@gateway.cash and we\'ll help you get access to this merchant account.',
+      res
+    )
   }
 
-  /*
-    Create a new merchant account without a username when no username was
-    provided
-   */
-  if (!req.body.username) {
-    // create the new user account
-    const merchantID = sha256(require('crypto').randomBytes(32)).substr(0, 16)
-    const passwordSalt = sha256(require('crypto').randomBytes(32))
-    const APIKey = sha256(require('crypto').randomBytes(32))
-    const passwordHash = sha256(req.body.password + passwordSalt)
-    sql = `insert into users
-      (payoutAddress, merchantID, password, salt, APIKey)
-      values
-      (?, ?, ?, ?, ?)`
-    await mysql.query(sql, [
-      req.body.address,
+  // validate the username
+  let usernameValid = await validateUsername(req.body.username, res)
+  if (!usernameValid) return
+
+  // create the new user account
+  const merchantID = sha256(require('crypto').randomBytes(32)).substr(0, 16)
+  const passwordSalt = sha256(require('crypto').randomBytes(32))
+  const passwordHash = sha256(req.body.password + passwordSalt)
+  await mysql.query(
+    `insert into users (
+        payoutAddress,
+        payoutXPUB,
+        payoutMethod,
+        merchantID,
+        passwordHash,
+        passwordSalt,
+      ) values (?, ?, ?, ?, ?)`,
+    [
+      address,
+      req.body.xpub,
+      req.body.xpub ? 'xpub' : 'address',
       merchantID,
       passwordHash,
       passwordSalt,
-      APIKey,
-    ])
+    ]
+  )
 
-    // send the API key to the user
-    response.status = 'success'
-    response.APIKey = APIKey
-    res.end(JSON.stringify(response))
-    return
-  }
+  let userIndex = await mysql.query(
+    'SELECT tableIndex FROM users WHERE merchantID = ?',
+    [merchantID]
+  )
+  userIndex = userIndex[0].tableIndex
 
-  /*
-    Registering a new account with a username.
-    Proceed with checks since a username was provided
-   */
-
-  // verify new username is not too short
-  if (req.body.username.length < 5) {
-    response.status = 'error'
-    response.error = 'Username Too Short'
-    response.description = 'Username must be at least 5 characters!'
-    res.end(JSON.stringify(response))
-    return
-  }
-
-  // verify new username is not too long
-  if (req.body.username.length > 24) {
-    response.status = 'error'
-    response.error = 'Username Too Long'
-    response.description = 'Username can be at most 24 characters!'
-    res.end(JSON.stringify(response))
-    return
-  }
-
-  // verify username does not contain special characters
-  if (
-    req.body.username.indexOf(' ') !== -1 ||
-    req.body.username.indexOf('\n') !== -1 ||
-    req.body.username.indexOf('\t') !== -1 ||
-    req.body.username.indexOf('!') !== -1 ||
-    req.body.username.indexOf('@') !== -1 ||
-    req.body.username.indexOf('#') !== -1 ||
-    req.body.username.indexOf('$') !== -1 ||
-    req.body.username.indexOf('%') !== -1 ||
-    req.body.username.indexOf('^') !== -1 ||
-    req.body.username.indexOf('&') !== -1 ||
-    req.body.username.indexOf('*') !== -1 ||
-    req.body.username.indexOf('()') !== -1 ||
-    req.body.username.indexOf(')') !== -1 ||
-    req.body.username.indexOf('|') !== -1 ||
-    req.body.username.indexOf('\\') !== -1 ||
-    req.body.username.indexOf('/') !== -1 ||
-    req.body.username.indexOf('?') !== -1 ||
-    req.body.username.indexOf('<') !== -1 ||
-    req.body.username.indexOf('>') !== -1 ||
-    req.body.username.indexOf('{') !== -1 ||
-    req.body.username.indexOf('}') !== -1 ||
-    req.body.username.indexOf('[') !== -1 ||
-    req.body.username.indexOf(']') !== -1 ||
-    req.body.username.indexOf(';') !== -1
-  ) {
-    response.status = 'error'
-    response.error = 'No Special Characters'
-    response.description = 'Usernames cannot contain special characters!'
-    res.end(JSON.stringify(response))
-    return
-  }
-
-  // verify username is not in use
-  sql = `select username
-    from users
-    where
-    username like ?
-    limit 1`
-  result = await mysql.query(sql, [req.body.username])
-
-  // fail unless there are no matches
-  if (result.length > 0) {
-    response.status = 'error'
-    response.error = 'Username In Use'
-    response.description = 'That username is already in use! Try another?'
-    res.end(JSON.stringify(response))
-    return
-  }
-
-  // create the new record with a username
-  const merchantID = sha256(require('crypto').randomBytes(32)).substr(0, 16)
-  const passwordSalt = sha256(require('crypto').randomBytes(32))
-  const APIKey = sha256(require('crypto').randomBytes(32))
-  const passwordHash = sha256(req.body.password + passwordSalt)
-  sql = `insert into users (
-      payoutAddress,
-      merchantID,
-      password,
-      salt,
-      APIKey,
-      username
-    ) values (?, ?, ?, ?, ?, ?)`
-  await mysql.query(sql, [
-    req.body.address,
-    merchantID,
-    passwordHash,
-    passwordSalt,
-    APIKey,
-    req.body.username.toLowerCase(),
-  ])
+  let APIKey = await addAPIKey(userIndex, 'Created at registration')
 
   // send the API key to the user
-  response.status = 'success'
-  response.APIKey = APIKey
-  res.end(JSON.stringify(response))
+  return handleResponse({
+    APIKey: APIKey
+  }, res)
 }

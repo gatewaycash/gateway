@@ -3,120 +3,27 @@
  * @author The Gateway Project Developers <hello@gateway.cash>
  * @file Defines a POST endpoint for /username
  */
-const mysql = require('../../SQLWrapper')
+import { mysql, handleResponse, auth, validateUsername } from 'utils'
 
-module.exports = async function (req, res) {
+export default async (req, res) => {
   console.log('POST /username requested')
-  console.log(req.body)
 
-  // an object to hold the response
-  const response = {}
+  let usernameValid = await validateUsername(req.body.newUsername, res)
+  if (!usernameValid) return
 
-  // verify the API key was provided
-  if (!req.body.APIKey) {
-    response.status = 'error'
-    response.error = 'No API Key'
-    response.description = 'An API Key is required for this endpoint.'
-    res.end(JSON.stringify(response))
-    return
-  }
-
-  // search the database for the record
-  let sql = 'select username from users where APIKey = ? limit 1'
-  let result = await mysql.query(sql, [req.body.APIKey])
-
-  // fail unless there is exactly 1 record
-  if (result.length !== 1) {
-    response.status = 'error'
-    response.error = 'Invalid API Key'
-    response.description = 'No user currently has that API key. You might have changed your API key in your account settings, or the API key might be invalid.'
-    res.end(JSON.stringify(response))
-    return
-  }
-
-  // verify username was provided
-  if (!req.body.newUsername) {
-    response.status = 'error'
-    response.error = 'No Username Provided'
-    response.description = 'Please provide a new username!'
-    res.end(JSON.stringify(response))
-    return
-  }
-
-  // verify new username is not too short
-  if (req.body.newUsername.length < 5) {
-    response.status = 'error'
-    response.error = 'Username Too Short'
-    response.description = 'Username must be at least 5 characters!'
-    res.end(JSON.stringify(response))
-    return
-  }
-
-  // verify new username is not too long
-  if (req.body.newUsername.length > 24) {
-    response.status = 'error'
-    response.error = 'Username Too Long'
-    response.description = 'Username can be at most 24 characters!'
-    res.end(JSON.stringify(response))
-    return
-  }
-
-  // verify username does not contain special characters
-  if (
-    req.body.newUsername.indexOf(' ') !== -1 ||
-    req.body.newUsername.indexOf('\n') !== -1 ||
-    req.body.newUsername.indexOf('\t') !== -1 ||
-    req.body.newUsername.indexOf('!') !== -1 ||
-    req.body.newUsername.indexOf('@') !== -1 ||
-    req.body.newUsername.indexOf('#') !== -1 ||
-    req.body.newUsername.indexOf('$') !== -1 ||
-    req.body.newUsername.indexOf('%') !== -1 ||
-    req.body.newUsername.indexOf('^') !== -1 ||
-    req.body.newUsername.indexOf('&') !== -1 ||
-    req.body.newUsername.indexOf('*') !== -1 ||
-    req.body.newUsername.indexOf('()') !== -1 ||
-    req.body.newUsername.indexOf(')') !== -1 ||
-    req.body.newUsername.indexOf('|') !== -1 ||
-    req.body.newUsername.indexOf('\\') !== -1 ||
-    req.body.newUsername.indexOf('/') !== -1 ||
-    req.body.newUsername.indexOf('?') !== -1 ||
-    req.body.newUsername.indexOf('<') !== -1 ||
-    req.body.newUsername.indexOf('>') !== -1 ||
-    req.body.newUsername.indexOf('{') !== -1 ||
-    req.body.newUsername.indexOf('}') !== -1 ||
-    req.body.newUsername.indexOf('[') !== -1 ||
-    req.body.newUsername.indexOf(']') !== -1 ||
-    req.body.newUsername.indexOf(';') !== -1
-  ) {
-    response.status = 'error'
-    response.error = 'No Special Characters'
-    response.description = 'Usernames cannot contain special characters!'
-    res.end(JSON.stringify(response))
-    return
-  }
-
-  // verify username is not in use
-  sql = 'select username from users where username like ? limit 1'
-  result = await mysql.query(sql, [req.body.newUsername])
-
-  // fail unless there are no matches
-  if (result.length > 0) {
-    response.status = 'error'
-    response.error = 'Username In Use'
-    response.description = 'That username is already in use! Try another?'
-    res.end(JSON.stringify(response))
-    return
-  }
+  // verify the user is authorized
+  let userIndex = await auth(req.body.APIKey, res)
+  if (!userIndex) return
 
   // update the username
-  sql = 'update users set username = ? where APIKey = ?'
   await mysql.query(
-    sql,
-    [req.body.newUsername.toString().toLowerCase(), req.body.APIKey]
+    `UPDATE users
+      SET username = ?
+      WHERE tableIndex = ?
+      LIMIT 1`,
+    [req.body.newUsername, userIndex]
   )
 
   // send success message to user
-  response.status = 'success'
-  response.username = req.body.newUsername.toString().toLowerCase()
-  res.end(JSON.stringify(response))
+  return handleResponse({}, res)
 }
