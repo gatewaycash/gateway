@@ -22,6 +22,7 @@
     "api-prod": "yarn workspace @gatewaycash/api production",
     "api-setup": "yarn workspace @gatewaycash/api setup",
     "api-start": "yarn workspace @gatewaycash/api start",
+    "api-test": "yarn workspace @gatewaycash/api test",
     "api-docs-build": "yarn workspace @gatewaycash/docs api",
     "inject-build": "yarn workspace @gatewaycash/inject build",
     "inject-dev": "yarn workspace @gatewaycash/inject dev",
@@ -34,7 +35,8 @@
     "dev": "./scripts/dev.sh",
     "setup": "./scripts/setup.sh",
     "cli": "node modules/utils/APIInterface.js",
-    "lint": "eslint --fix ."
+    "lint": "eslint --fix .",
+    "test": "yarn api-test"
   },
   "author": "The Gateway Project Developers <hello@gateway.cash>",
   "license": "AGPL-3.0",

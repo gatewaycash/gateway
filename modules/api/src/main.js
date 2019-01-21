@@ -3,7 +3,7 @@
  * @author The Gateway Project Developers <hello@gateway.cash>
  * @file Starts and manages the web services backend
  */
-import express from 'express'
+let express = require('express')
 import bodyParser from 'body-parser'
 import dotenv from 'dotenv'
 dotenv.config()
@@ -13,6 +13,9 @@ import * as POSTEndpoints from 'endpoints/POST'
 
 // include all service daemons
 import { fundsTransferService, brokenPaymentsService } from 'services'
+
+// include test scripts
+import tests from 'tests'
 
 // print startup message
 console.log('Starting Web Services Backend...')
@@ -38,11 +41,6 @@ app.use((req, res, next) => {
 // (API docs landing page)
 app.use(express.static('public'))
 
-// listen for connections
-app.listen(process.env.WEB_PORT, () => {
-  console.log('Web services API listening on port', process.env.WEB_PORT)
-})
-
 // utilize the API endpoints for appropriate requests
 Object.keys(GETEndpoints).forEach((e) => {
   app.get('/' + e, GETEndpoints[e])
@@ -51,9 +49,19 @@ Object.keys(POSTEndpoints).forEach((e) => {
   app.post('/' + e, POSTEndpoints[e])
 })
 
-// start the payment processing services
-// run the main processor every 30 seconds
-setInterval(fundsTransferService.run, 30000)
+// listen for connections
+app.listen(process.env.WEB_PORT, () => {
+  console.log('Web services API listening on port', process.env.WEB_PORT)
+})
 
-// run the broken payments processor every 12 hours
-setInterval(brokenPaymentsService.run, 43200000)
+// start the payment processing services if we are not in test mode
+if (!process.env.TEST_MODE) {
+  // run the main processor every 30 seconds
+  setInterval(fundsTransferService.run, 30000)
+  // run the broken payments processor every 12 hours
+  setInterval(brokenPaymentsService.run, 43200000)
+
+// run tests if we are in test mode
+} else {
+  tests()
+}
