@@ -8,12 +8,33 @@ import bchaddr from 'bchaddrjs'
 import { mysql } from 'utils'
 import axios from 'axios'
 
+// the block explorer URL
 const BLOCK_EXPLORER_BASE = 'https://bch.coin.space/api'
 
-let checkFunds = async (payment) => {
+/**
+ * Checks if a pending payment needs to be processed.
+ * Calls processPayment if needed.
+ * @param pendingPayment - The record from the pendingPayments table
+ */
+let checkPayment = async (pendingPayment) => {
+
+  // discover the payment
+  let payment = await mysql.query(
+    'SELECT * FROM payments WHERE tableIndex = ? LIMIT 1',
+    [pendingPayment.paymentIndex]
+  )
+  payment = payment[0]
+
+  // discover the merchant
+  let merchant = await mysql.query(
+    'SELECT * FROM users WHERE merchantID = ? LIMIT 1',
+    [payment.merchantID]
+  )
+  merchant = merchant[0]
+
   let legacyAddress
   try {
-    legacyAddress = bchaddr.toLegacyAddress(payment.address)
+    legacyAddress = bchaddr.toLegacyAddress(payment.paymentAddress)
   } catch (e) {
     // delete the payment with the erroneous paymentAddress
     console.error('Untranslatable address', payment.address, 'removing')
@@ -181,63 +202,15 @@ let transferFunds = async (payment) => {
   sql = 'update users set totalSales = totalSales + ? where merchantID = ?'
   await mysql.query(sql, [totalTransferred, merchantID])
 
-  // we are done if there is not a callbackURL
-  if (
-    !callbackURL ||
-    callbackURL === '' ||
-    callbackURL === 'None' ||
-    callbackURL == 0
-  ) {
-    console.log('No callback URL provided')
-    return
-  }
 
-  // build the callback request
-  let callbackRequest = {
-    callbackURL:     callbackURL,
-    invoiceAddress:  paymentAddress,
-    paymentTXID:     paymentTXID,
-    merchantAddress: merchantAddress,
-    paymentID:       paymentID
-  }
+}
 
-  // verify the callback URL is sane. If not, we are done and we return.
-  if (
-    !callbackURL.startsWith('https://') &&
-    !callbackURL.startsWith('http://')
-  ) {
-    console.log(
-      'Unable to execute callback to URL:',
-      callbackURL
-    )
-    return
-  }
 
-  // try to execute the callback
-  try {
-    await axios.post(callbackRequest.callbackURL, callbackRequest)
-  } catch (e) {
-    console.error(
-      'Unable to execute callback to URL:',
-      callbackRequest.callbackURL
-    )
-    return
-  }
-  console.log(
-    'Successfully executed callback to URL',
-    callbackRequest.callbackURL
+export default async () => {
+  let pendingPayments = await mysql.query(
+    'SELECT * FROM pendingPayments'
   )
-}
-
-let searchDatabase = async () => {
-  let sql = 'select * from pending'
-  let result = await mysql.query(sql)
-  for(let i = 0; i < result.length; i++) {
-    await checkFunds(result[i])
-  }
-}
-
-
-export default {
-  run: searchDatabase
+  pendingPayments.forEach(async (pendingPayment) => {
+    await checkPayment(pendingPayment)
+  })
 }

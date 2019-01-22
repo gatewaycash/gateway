@@ -21,7 +21,6 @@
     "api-dev": "yarn workspace @gatewaycash/api dev",
     "api-prod": "yarn workspace @gatewaycash/api production",
     "api-setup": "yarn workspace @gatewaycash/api setup",
-    "api-start": "yarn workspace @gatewaycash/api start",
     "api-test": "yarn workspace @gatewaycash/api test",
     "api-docs-build": "yarn workspace @gatewaycash/docs api",
     "inject-build": "yarn workspace @gatewaycash/inject build",

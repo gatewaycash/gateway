@@ -1,13 +1,13 @@
 /**
- * GET /address API endpoint
+ * GET /payoutMethod API endpoint
  * @author The Gateway Project Developers <hello@gateway.cash>
- * @file Defines a GET endpoint for /address
+ * @file Defines a GET endpoint for /payoutMethod
  */
-import { mysql, auth, handleResponse } from 'utils'
+import { mysql, handleResponse, auth } from 'utils'
 import url from 'url'
 
 export default async (req, res) => {
-  console.log('GET /address requested')
+  console.log('GET /payoutMethod requested')
 
   // parse the provided data
   const query = url.parse(req.url, true).query
@@ -16,12 +16,11 @@ export default async (req, res) => {
   let userIndex = await auth(query.APIKey, res)
   if (!userIndex) return
 
-  // return the record
   let result = await mysql.query(
-    'SELECT payoutAddress FROM users WHERE tableIndex = ? LIMIT 1',
+    'SELECT payoutMethod FROM users WHERE userIndex = ? LIMIT 1',
     [userIndex]
   )
-  handleResponse({
-    address: result[0].payoutAddress
+  return handleResponse({
+    payoutMethod: result[0].payoutMethod
   }, res)
 }
