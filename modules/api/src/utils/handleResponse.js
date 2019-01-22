@@ -5,6 +5,7 @@
  */
 export default (response, res) => {
   response.status = 'success'
-  res.end(JSON.stringify(response))
+  console.log(response)
+  res.status(200).end(JSON.stringify(response))
   return true
 }

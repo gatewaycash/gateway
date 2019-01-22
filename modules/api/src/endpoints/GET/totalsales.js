@@ -17,7 +17,7 @@ export default async (req, res) => {
   if (!userIndex) return
 
   let result = await mysql.query(
-    'SELECT totalSales FROM users WHERE userIndex = ? LIMIT 1',
+    'SELECT totalSales FROM users WHERE tableIndex = ? LIMIT 1',
     [userIndex]
   )
   return handleResponse({

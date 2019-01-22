@@ -36,5 +36,5 @@ export default (password, res) => {
     )
   }
 
-  return true
+  return password.toString()
 }

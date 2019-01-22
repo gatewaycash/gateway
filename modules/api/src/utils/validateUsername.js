@@ -72,8 +72,7 @@ export default async (username, res) => {
     `SELECT username
       FROM users
       WHERE
-      username = ?
-      LIMIT 1`,
+      username LIKE ?`,
     [username]
   )
 
@@ -86,5 +85,5 @@ export default async (username, res) => {
     )
   }
 
-  return true
+  return username.toString().toLowerCase()
 }

@@ -9,6 +9,7 @@ import {
   handleResponse,
   validateUsername,
   validatePassword,
+  validateAddress,
   addAPIKey
 } from 'utils'
 import bchaddr from 'bchaddrjs'
@@ -18,7 +19,7 @@ import sha256 from 'sha256'
 export default async (req, res) => {
   console.log('POST /register requested')
 
-  // Make sure the user sent an address with their request
+  // Make sure the user sent an address or XPUB key with their request
   if (!req.body.address && !req.body.xpub) {
     return handleError(
       'No Address or XPUB',
@@ -28,18 +29,10 @@ export default async (req, res) => {
   }
 
   // validate the address
-  let address = req.body.address
+  let address
   if (req.body.address) {
-    try {
-      // convert to CashAddress format
-      address = bchaddr.toCashAddress(address)
-    } catch (e) {
-      return handleError(
-        'Invalid Address',
-        'It looks like you provided an invalid Bitcoin Cash address. Make sure you\'re using the new-style CashAddress format (e.g. bitcoincash:q.....), and not a legacy-style Bitcoin address (starting with a 1 or a 3). Also ensure that you\'re using a Bitcoin Cash address and not a Bitcoin Core address.',
-        res
-      )
-    }
+    address = validateAddress(req.body.address, res)
+    if (!address) return
 
   // validate the XPUB key
   } else {
@@ -87,14 +80,15 @@ export default async (req, res) => {
   const passwordSalt = sha256(require('crypto').randomBytes(32))
   const passwordHash = sha256(req.body.password + passwordSalt)
   await mysql.query(
-    `insert into users (
+    `INSERT INTO users (
         payoutAddress,
         payoutXPUB,
         payoutMethod,
         merchantID,
         passwordHash,
         passwordSalt,
-      ) values (?, ?, ?, ?, ?)`,
+        username
+      ) VALUES (?, ?, ?, ?, ?, ?)`,
     [
       address,
       req.body.xpub,
@@ -102,6 +96,7 @@ export default async (req, res) => {
       merchantID,
       passwordHash,
       passwordSalt,
+      req.body.username
     ]
   )
 

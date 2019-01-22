@@ -3,7 +3,7 @@
  * @author The Gateway Project Developers <hello@gateway.cash>
  * @file Starts and manages the web services backend
  */
-let express = require('express')
+import express from 'express'
 import bodyParser from 'body-parser'
 import dotenv from 'dotenv'
 dotenv.config()
@@ -26,6 +26,8 @@ const app = express()
 // se up bodyParser tor form data handling
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
 // enable CORS to allow for API calls from other sites
 app.use((req, res, next) => {
@@ -34,6 +36,11 @@ app.use((req, res, next) => {
     'Access-Control-Allow-Headers',
     'Origin, X-Requested-With, Content-Type, Accept'
   )
+  next()
+})
+
+app.use((req, res, next) => {
+  req.body = {...req.body, ...req.params, ...req.query}
   next()
 })
 
@@ -57,7 +64,7 @@ app.listen(process.env.WEB_PORT, () => {
 // start the payment processing services if we are not in test mode
 if (!process.env.TEST_MODE) {
   // run the main processor every 30 seconds
-  setInterval(fundsTransferService.run, 30000)
+  setInterval(fundsTransferService, 30000)
   // run the broken payments processor every 12 hours
   setInterval(brokenPaymentsService.run, 43200000)
 
