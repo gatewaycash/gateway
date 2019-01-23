@@ -12,7 +12,6 @@ import {
   validateAddress,
   addAPIKey
 } from 'utils'
-import bchaddr from 'bchaddrjs'
 import bch from 'bitcore-lib-cash'
 import sha256 from 'sha256'
 

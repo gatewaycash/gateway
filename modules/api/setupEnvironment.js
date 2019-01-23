@@ -50,9 +50,14 @@ const collectInformation = async () => {
   let listen = await question('Web server port (ENTER for 8080): ')
   listen = listen || '8080'
 
+  let blockExplorer = await question(
+    'Block explorer Insight API base (ENTER for https://bch.coin.space/api): '
+  )
+  blockExplorer = blockExplorer || 'https://bch.coin.space/api'
+
   // close the readline stream
   rl.close()
-  testDatabaseConnection(hostname, port, user, pass, db, listen)
+  testDatabaseConnection(hostname, port, user, pass, db, listen, blockExplorer)
 }
 
 const testDatabaseConnection = async (host, port, user, pass, db, listen) => {
@@ -80,6 +85,7 @@ const testDatabaseConnection = async (host, port, user, pass, db, listen) => {
     fs.writeFile(
       '.env',
       'WEB_PORT=' + listen + '\n' +
+      'BLOCK_EXPLORER_BASE=' + blockExplorer + '\n' +
       'SQL_DATABASE_HOST=' + host + '\n' +
       'SQL_DATABASE_PORT=' + port + '\n' +
       'SQL_DATABASE_USER=' + user + '\n' +

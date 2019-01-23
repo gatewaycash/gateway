@@ -7,9 +7,6 @@ import { mysql, handleResponse, handleError } from 'utils'
 import bchaddr from 'bchaddrjs'
 
 let POST = async (req, res) => {
-  console.log('POST /paid requested')
-  console.log(req.body)
-
   // verify a payment address was provided
   if (!req.body.paymentAddress) {
     return handleError(
