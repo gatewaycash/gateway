@@ -6,7 +6,7 @@
 import { mysql, handleResponse, handleError, auth } from 'utils'
 import url from 'url'
 
-export default async (req, res) => {
+let GET = async (req, res) => {
   console.log('GET /payments requested')
 
   // parse the provided data
@@ -87,4 +87,8 @@ export default async (req, res) => {
     payments: response,
     totalPages: total
   }, res)
+}
+
+export default {
+  GET: GET
 }

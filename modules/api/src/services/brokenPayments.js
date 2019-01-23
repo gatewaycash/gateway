@@ -89,6 +89,4 @@ let searchDatabase = async () => {
   }
 }
 
-export default {
-  run: searchDatabase
-}
+export default searchDatabase

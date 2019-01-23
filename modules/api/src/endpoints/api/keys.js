@@ -6,7 +6,7 @@
 import { mysql, auth, handleResponse } from 'utils'
 import url from 'url'
 
-export default async (req, res) => {
+let GET = async (req, res) => {
   console.log('GET /apikeys requested')
 
   // parse the provided data
@@ -40,4 +40,8 @@ export default async (req, res) => {
   handleResponse({
     APIKeys: response
   }, res)
+}
+
+export default {
+  GET: GET
 }
