@@ -61,9 +61,9 @@ app.listen(process.env.WEB_PORT, () => {
 // start the payment processing services if we are not in test mode
 if (!process.env.TEST_MODE) {
   // run the main processor every 30 seconds
-  setInterval(fundsTransferService, 30000)
+  //setInterval(fundsTransferService, 30000)
   // run the broken payments processor every 12 hours
-  setInterval(brokenPaymentsService, 43200000)
+  //setInterval(brokenPaymentsService, 43200000)
 
 // run tests if we are in test mode
 } else {

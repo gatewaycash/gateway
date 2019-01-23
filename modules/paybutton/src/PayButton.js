@@ -90,7 +90,7 @@ let PayButton = props => {
     // if no address was given, and a merchantID was given, use the merchantID
     if (!props.address && props.merchantID) {
       try {
-        let invoiceResult = await axios.post(props.gatewayServer + '/pay', {
+        let invoiceResult = await axios.post(props.gatewayServer + '/v2/pay', {
           merchantID: props.merchantID,
           paymentID: props.paymentID,
           callbackURL: props.callbackURL
@@ -216,7 +216,7 @@ let PayButton = props => {
   // when we find a matching payment, send it to the server to mark invoice paid
   let sendPaymentToServer = async txid => {
     try {
-      let paymentResponse = await axios.post(props.gatewayServer + '/paid', {
+      let paymentResponse = await axios.post(props.gatewayServer + '/v2/paid', {
         paymentAddress: paymentAddress,
         paymentTXID: txid
       })
