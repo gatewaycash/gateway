@@ -9,6 +9,7 @@ import dotenv from 'dotenv'
 import { fundsTransferService, brokenPaymentsService } from 'services'
 import tests from 'tests'
 import routes from 'routes'
+import prettyjson from 'prettyjson'
 dotenv.config()
 
 const app = express()
@@ -31,6 +32,20 @@ app.use((req, res, next) => {
   next()
 })
 
+// log each request to the console, without logging passwords
+app.use((req, res, next) => {
+  console.log('[' + req.method + '] ' + req._parsedUrl.pathname)
+  if (req.body.password || req.body.newPassword) {
+    let logObject = JSON.parse(JSON.stringify(req.body))
+    if (logObject.newPassword) logObject.newPassword = '********'
+    if (logObject.password) logObject.password = '********'
+    console.log(prettyjson.render(logObject, {keysColor: 'blue'}))
+  } else {
+    console.log(prettyjson.render(req.body))
+  }
+  next()
+})
+
 // serve the public directory's static resources
 // (API docs landing page)
 app.use(express.static('public'))
@@ -40,7 +55,7 @@ routes(app)
 
 // listen for connections
 app.listen(process.env.WEB_PORT, () => {
-  console.log('Web services API listening on port', process.env.WEB_PORT)
+  console.log('Gateway API listening on port', process.env.WEB_PORT)
 })
 
 // start the payment processing services if we are not in test mode

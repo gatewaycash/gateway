@@ -19,6 +19,7 @@
     "mocha": "^5.2.0",
     "node-mysql": "^0.4.2",
     "pm2": "^3.2.2",
+    "prettyjson": "^1.2.1",
     "sha256": "^0.2.0",
     "uglifyjs-webpack-plugin": "^2.1.1"
   },

@@ -3,18 +3,12 @@
  * @author The Gateway Project Developers <hello@gateway.cash>
  * @file Defines a GET endpoint for /login
  */
-import url from 'url'
 import sha256 from 'sha256'
 import { mysql, handleError, handleResponse, addAPIKey } from 'utils'
 
 let GET = async (req, res) => {
-  console.log('GET /login requested')
-
-  // parse the provided data
-  const query = url.parse(req.url, true).query
-
   // ensure a password was sent
-  if (!query.password) {
+  if (!req.body.password) {
     return handleError(
       'No Password',
       'Provide a password when logging in',
@@ -23,7 +17,7 @@ let GET = async (req, res) => {
   }
 
   // verify that either an address or a username was provided
-  if (!query.address && !query.username && !query.XPUB) {
+  if (!req.body.address && !req.body.username && !req.body.XPUB) {
     return handleError(
       'Address, Username or XPUB Required',
       'Provide either an address, a username or an XPUB key when logging in',
@@ -35,14 +29,14 @@ let GET = async (req, res) => {
   let user
 
   // search by address
-  if (query.address) {
+  if (req.body.address) {
     let result = await mysql.query(
       `SELECT passwordHash, passwordSalt, tableIndex
         FROM users
         WHERE
           payoutAddress = ?
         LIMIT 1`,
-      [query.address]
+      [req.body.address]
     )
     if (result.length !== 1) {
       return handleError(
@@ -55,14 +49,14 @@ let GET = async (req, res) => {
   }
 
   // search by username
-  if (query.username && !user) {
+  if (req.body.username && !user) {
     let result = await mysql.query(
       `SELECT passwordHash, passwordSalt, tableIndex
         FROM users
         WHERE
         username = ?
         LIMIT 1`,
-      [query.username]
+      [req.body.username]
     )
     if (result.length !== 1) {
       return handleError(
@@ -75,14 +69,14 @@ let GET = async (req, res) => {
   }
 
   // search by XPUB
-  if (query.XPUB && !user) {
+  if (req.body.XPUB && !user) {
     let result = await mysql.query(
       `SELECT passwordHash, passwordSalt, tableIndex
         FROM users
         WHERE
         payoutXPUB = ?
         LIMIT 1`,
-      [query.XPUB]
+      [req.body.XPUB]
     )
     if (result.length !== 1) {
       return handleError(
@@ -104,7 +98,7 @@ let GET = async (req, res) => {
   }
 
   // verify the password
-  const passwordHash = sha256(query.password + user.passwordSalt)
+  const passwordHash = sha256(req.body.password + user.passwordSalt)
   if (user.passwordHash === passwordHash) {
     let response = await mysql.query(
       'SELECT APIKey FROM APIKeys WHERE userIndex = ? LIMIT 1',
