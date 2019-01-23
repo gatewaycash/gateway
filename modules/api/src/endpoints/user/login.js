@@ -7,7 +7,7 @@ import url from 'url'
 import sha256 from 'sha256'
 import { mysql, handleError, handleResponse, addAPIKey } from 'utils'
 
-export default async (req, res) => {
+let GET = async (req, res) => {
   console.log('GET /login requested')
 
   // parse the provided data
@@ -131,4 +131,8 @@ export default async (req, res) => {
       res
     )
   }
+}
+
+export default {
+  GET: GET
 }

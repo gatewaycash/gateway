@@ -1,11 +1,31 @@
 /**
- * POST /username API endpoint
+ * GET /username API endpoint
  * @author The Gateway Project Developers <hello@gateway.cash>
- * @file Defines a POST endpoint for /username
+ * @file Defines a GET endpoint for /username
  */
 import { mysql, handleResponse, auth, validateUsername } from 'utils'
+import url from 'url'
 
-export default async (req, res) => {
+let GET = async (req, res) => {
+  console.log('GET /username requested')
+
+  // parse the provided data
+  const query = url.parse(req.url, true).query
+  console.log(query)
+
+  let userIndex = await auth(query.APIKey, res)
+  if (!userIndex) return
+
+  let result = await mysql.query(
+    'SELECT username FROM users WHERE tableIndex = ? LIMIT 1',
+    [userIndex]
+  )
+  return handleResponse({
+    username: result[0].username
+  }, res)
+}
+
+let PUT = async (req, res) => {
   console.log('POST /username requested')
 
   let usernameValid = await validateUsername(req.body.newUsername, res)
@@ -26,4 +46,9 @@ export default async (req, res) => {
 
   // send success message to user
   return handleResponse({}, res)
+}
+
+export default {
+  GET: GET,
+  PUT: PUT
 }

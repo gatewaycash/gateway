@@ -6,7 +6,7 @@
 import { mysql, handleResponse, auth } from 'utils'
 import url from 'url'
 
-export default async (req, res) => {
+let GET = async (req, res) => {
   console.log('GET /merchantid requested')
 
   // parse the provided data
@@ -23,4 +23,8 @@ export default async (req, res) => {
   return handleResponse({
     merchantID: result[0].merchantID
   }, res)
+}
+
+export default {
+  GET: GET
 }

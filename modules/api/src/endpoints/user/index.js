@@ -1,0 +1,7 @@
+export { default as login } from './login'
+export { default as register } from './register'
+export { default as merchantid } from './merchantid'
+export { default as name } from './name'
+export { default as password } from './password'
+export { default as payments } from './payments'
+export { default as sales } from './sales'
