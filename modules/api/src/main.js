@@ -41,7 +41,7 @@ app.use((req, res, next) => {
     if (logObject.password) logObject.password = '********'
     console.log(prettyjson.render(logObject, {keysColor: 'blue'}))
   } else {
-    console.log(prettyjson.render(req.body))
+    console.log(prettyjson.render(req.body, {keysColor: 'blue'}))
   }
   next()
 })
