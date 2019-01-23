@@ -7,10 +7,7 @@ import { mysql, handleError, handleResponse } from 'utils'
 import bch from 'bitcore-lib-cash'
 import bchaddr from 'bchaddrjs'
 
-export default async (req, res) => {
-  console.log('POST /pay requested')
-  console.log(req.body)
-
+let POST = async (req, res) => {
   // ensure a merchant ID was given
   if (!req.body.merchantID) {
     return handleError(
@@ -97,10 +94,13 @@ export default async (req, res) => {
     )
 
   // if the merchant uses XPUB then derive a new address and increment the index
-  } else if (payoutMethod === 'xpub') {
-    let node = bch.HDNode.fromBase58(payoutXPUB)
+  } else if (payoutMethod === 'XPUB') {
+    let hdPub = new bch.HDPublicKey(payoutXPUB)
+    let derivedKey = hdPub.derive(0).derive(XPUBIndex)
+    let paymentPublicKey = new bch.PublicKey(derivedKey.publicKey)
+    let address = new bch.Address(paymentPublicKey)
     paymentAddress = bchaddr.toCashAddress(
-      node.derive(XPUBIndex).getAddress()
+      address.toString()
     )
     await mysql.query(
       'UPDATE users SET XPUBIndex = XPUBIndex + 1 WHERE merchantID = ? LIMIT 1',
@@ -108,7 +108,7 @@ export default async (req, res) => {
     )
   } else {
     return handleError(
-      'Invalid Payoutt Method',
+      'Invalid Payout Method',
       'This merchant has an invalid payout method. Please try again later.',
       res
     )
@@ -116,13 +116,13 @@ export default async (req, res) => {
 
   // insert the record into the database
   result = await mysql.query(
-    `insert into payments (
+    `INSERT INTO payments (
         merchantID,
         paymentID,
         paymentAddress,
         callbackURL,
         invoiceAmount
-      ) values (?, ?, ?, ?)`,
+      ) values (?, ?, ?, ?, ?)`,
     [req.body.merchantID, paymentID, paymentAddress, callbackURL, invoiceAmount]
   )
 
@@ -143,4 +143,8 @@ export default async (req, res) => {
   return handleResponse({
     paymentAddress: paymentAddress
   }, res)
+}
+
+export default {
+  POST: POST
 }

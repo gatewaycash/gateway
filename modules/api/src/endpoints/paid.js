@@ -6,7 +6,7 @@
 import { mysql, handleResponse, handleError } from 'utils'
 import bchaddr from 'bchaddrjs'
 
-export default async (req, res) => {
+let POST = async (req, res) => {
   console.log('POST /paid requested')
   console.log(req.body)
 
@@ -103,4 +103,8 @@ export default async (req, res) => {
 
   // send back a success message
   return handleResponse({}, res)
+}
+
+export default {
+  POST: POST
 }

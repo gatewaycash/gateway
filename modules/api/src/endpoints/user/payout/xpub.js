@@ -4,19 +4,12 @@
  * @file Defines a GET endpoint for /xpub
  */
 import { mysql, handleResponse, handleError, auth } from 'utils'
-import url from 'url'
 import bch from 'bitcore-lib-cash'
 
+// GET endpoint for returning payoutXPUB
 let GET = async (req, res) => {
-  console.log('GET /xpub requested')
-
-  // parse the provided data
-  const query = url.parse(req.url, true).query
-  console.log(query)
-
-  let userIndex = await auth(query.APIKey, res)
+  let userIndex = await auth(req.body.APIKey, res)
   if (!userIndex) return
-
   let result = await mysql.query(
     'SELECT payoutXPUB FROM users WHERE tableIndex = ? LIMIT 1',
     [userIndex]
@@ -26,12 +19,12 @@ let GET = async (req, res) => {
   }, res)
 }
 
-let PUT = async (req, res) => {
-  console.log('POST /xpub requested')
-  console.log(req.body)
+// PUT / PATCH requests for setting user XPUB keys
+let PATCH = async (req, res) => {
 
+  // validate the XPUB key
   try {
-    bch.HDNode.fromBase58(req.body.xpub)
+    new bch.HDPublicKey(req.body.newXPUB)
   } catch (e) {
     return handleError(
       'Invalid XPUB key',
@@ -40,14 +33,17 @@ let PUT = async (req, res) => {
     )
   }
 
+  // authenticate the user
   let userIndex = await auth(req.body.APIKey)
   if (!userIndex) return
 
+  // update the key
   await mysql.query(
     'UPDATE users SET payoutXPUB = ? WHERE tableIndex = ? LIMIT 1',
     [req.body.newXPUB, userIndex]
   )
 
+  // return the new key
   return handleResponse({
     newXPUB: req.body.newXPUB
   }, res)
@@ -55,5 +51,6 @@ let PUT = async (req, res) => {
 
 export default {
   GET: GET,
-  PUT: PUT
+  PUT: PATCH,
+  PATCH: PATCH
 }
