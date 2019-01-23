@@ -106,7 +106,7 @@ export default async (req, res) => {
   )
   userIndex = userIndex[0].tableIndex
 
-  let APIKey = await addAPIKey(userIndex, 'Created at registration')
+  let APIKey = await addAPIKey(userIndex, 'Created at registration', res)
 
   // send the API key to the user
   return handleResponse({
