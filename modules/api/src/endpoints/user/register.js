@@ -20,7 +20,7 @@ export default async (req, res) => {
   console.log('POST /register requested')
 
   // Make sure the user sent an address or XPUB key with their request
-  if (!req.body.address && !req.body.xpub) {
+  if (!req.body.address && !req.body.XPUB) {
     return handleError(
       'No Address or XPUB',
       'Either a Bitcoin Cash (BCH) address or an XPUB key is required to register',
@@ -37,7 +37,7 @@ export default async (req, res) => {
   // validate the XPUB key
   } else {
     try {
-      bch.HDNode.fromBase58(req.body.xpub)
+      bch.HDNode.fromBase58(req.body.XPUB)
     } catch (e) {
       return handleError(
         'Invalid XPUB key',
@@ -59,7 +59,7 @@ export default async (req, res) => {
       or
       payoutXPUB = ?
       LIMIT 1`,
-    [req.body.address, req.body.xpub]
+    [req.body.address, req.body.XPUB]
   )
 
   // fail if user is in the database
@@ -91,8 +91,8 @@ export default async (req, res) => {
       ) VALUES (?, ?, ?, ?, ?, ?)`,
     [
       address,
-      req.body.xpub,
-      req.body.xpub ? 'xpub' : 'address',
+      req.body.XPUB,
+      req.body.XPUB ? 'xpub' : 'address',
       merchantID,
       passwordHash,
       passwordSalt,
