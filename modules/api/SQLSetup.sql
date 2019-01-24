@@ -35,13 +35,14 @@ CREATE TABLE IF NOT EXISTS payments (
   tableIndex INT AUTO_INCREMENT PRIMARY KEY,
   created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   paymentAddress VARCHAR(60),
-  privateKey VARCHAR(80),
+  privateKey VARCHAR(80) DEFAULT "",
   paymentID VARCHAR(64) DEFAULT "",
   merchantID VARCHAR(16),
   callbackURL VARCHAR(250) DEFAULT "",
+  callbackStatus VARCHAR(30) DEFAULT "",
   invoiceAmount INT(15) DEFAULT 0,
   status VARCHAR(30) DEFAULT "clicked",
-  platformID VARCHAR(16)
+  platformID VARCHAR(16) DEFAULT ""
 );
 ALTER TABLE payments AUTO_INCREMENT = 1;
 
@@ -49,7 +50,7 @@ ALTER TABLE payments AUTO_INCREMENT = 1;
 CREATE TABLE IF NOT EXISTS transactions (
   tableIndex INT AUTO_INCREMENT PRIMARY KEY,
   created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  type VARCHAR(10),
+  type VARCHAR(10) DEFAULT "payment",
   TXID VARCHAR(64),
   paymentIndex INT(8)
 );
@@ -62,7 +63,7 @@ CREATE TABLE IF NOT EXISTS APIKeys (
   active INT(1) DEFAULT 1,
   revokedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   userIndex INT(8),
-  label VARCHAR(36),
+  label VARCHAR(36) DEFAULT "API Key",
   APIKey VARCHAR(64)
 );
 ALTER TABLE APIKeys AUTO_INCREMENT = 1;
