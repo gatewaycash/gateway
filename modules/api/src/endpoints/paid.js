@@ -12,9 +12,9 @@ import {
 } from 'utils'
 
 let POST = async (req, res) => {
-  let address = validateAddress(req.body.paymentAddress, res)
+  let address = await validateAddress(req.body.paymentAddress, res)
   if (!address) return
-  let TXID = validateTXID(req.body.paymentTXID, res)
+  let TXID = await validateTXID(req.body.paymentTXID, res)
   if (!TXID) return
 
   // verify the TXID is not already known

@@ -5,7 +5,7 @@
  */
 import { handleError } from 'utils'
 
-export default async (TXID, res) => {
+export default (TXID, res) => {
 
   if (!TXID) {
     return handleError(
@@ -22,6 +22,6 @@ export default async (TXID, res) => {
       res
     )
   }
-  
+
   return TXID.toString().toLowerCase()
 }

@@ -60,7 +60,15 @@ const collectInformation = async () => {
   testDatabaseConnection(hostname, port, user, pass, db, listen, blockExplorer)
 }
 
-const testDatabaseConnection = async (host, port, user, pass, db, listen) => {
+const testDatabaseConnection = async (
+  host,
+  port,
+  user,
+  pass,
+  db,
+  listen,
+  blockExplorer
+) => {
   console.log('\nTesting MySQL credentials...')
   const conn = mysql.createConnection({
     host: host,
