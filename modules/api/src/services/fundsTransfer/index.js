@@ -7,17 +7,19 @@ import bch from 'bitcore-lib-cash'
 import bchaddr from 'bchaddrjs'
 import { mysql, getAddressBalance, executeCallback } from 'utils'
 import axios from 'axios'
+import dotenv from 'dotenv'
+dotenv.config()
 
 /**
  * Checks if apayment needs to be processed.
- * Calls processPayment or executeCallback if needed.
+ * Calls processPayment or processXPUB if needed.
  * @param payment - The record from the payments table
  */
 let checkPayment = async (payment) => {
   console.log(`Checking payment #${payment.tableIndex}...`)
-  let balance = await getAddressBalance(payment.paymentAddres)
+  let balance = await getAddressBalance(payment.paymentAddress)
   if (balance <= 0) return
-  if (payment.privateKey) {
+  if (payment.privateKey && payment.privateKey.toString().length > 1) {
     payment.addressBalance = balance
     try {
       await processPayment(payment)
@@ -27,16 +29,69 @@ let checkPayment = async (payment) => {
     }
   } else {
     try {
-      await executeCallback(payment)
-      await mysql.query(
-        'UPDATE payments SET status = ? WHERE tableIndex = ? LIMIT 1',
-        ['complete', payment.tableIndex]
-      )
+      await processXPUB(payment)
       console.log(`XPUB payment #${payment.tableIndex} finished!`)
     } catch (e) {
       console.error(`Error with XPUB payment #${payment.tableIndex}`)
     }
   }
+}
+
+let processXPUB = async (payment) => {
+  // Increment the totalSales of the merchant
+  // This requires us to discover the amount from the TXID
+  let TXIDs = await mysql.query(
+    'SELECT TXID FROM transactions WHERE paymentIndex = ?',
+    [payment.tableIndex]
+  )
+
+  /*
+    This finds the actual value paid to the merchant's address and ignores any
+    change outputs on the TXID that was submitted.
+  */
+  let paymentTotal = 0
+  for (let i = 0; i < TXIDs.length; i++) {
+    try {
+      let result = await axios.get(
+        `${process.env.BLOCK_EXPLORER_BASE}/tx/${TXIDs[i].TXID}`
+      )
+      for(let l = 0; l < result.data.vout.length; l++) {{
+        let f = result.data.vout[l]
+        if (f.scriptPubKey && f.scriptPubKey.addresses) {
+          try {
+            if (
+              bchaddr.toCashAddress(f.scriptPubKey.addresses[0]) ===
+              bchaddr.toCashAddress(payment.paymentAddress)
+            ) {
+              paymentTotal += f.value
+            }
+          } catch (e) {
+            throw e
+          }
+        }
+      }}
+    } catch (e) {
+      throw e
+    }
+  }
+
+  // convert to satoshi
+  paymentTotal *= 100000000
+
+  // increment total sales of the merchant
+  await mysql.query(
+    'UPDATE users SET totalSales = totalSales + ? WHERE merchantID = ? LIMIT 1',
+    [paymentTotal, payment.merchantID]
+  )
+
+  // execute the callback
+  await executeCallback(payment)
+
+  // mark payment as complete
+  await mysql.query(
+    'UPDATE payments SET status = ? WHERE tableIndex = ? LIMIT 1',
+    ['complete', payment.tableIndex]
+  )
 }
 
 let processPayment = async (payment) => {
@@ -175,7 +230,7 @@ export default async () => {
     'SELECT * FROM payments WHERE status = ?',
     ['pending']
   )
-  pendingPayments.forEach(async (payment) => {
-    await checkPayment(payment)
-  })
+  for (let i = 0; i < pendingPayments.length; i++) {
+    await checkPayment(pendingPayments[i])
+  }
 }
