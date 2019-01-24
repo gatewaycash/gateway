@@ -4,9 +4,10 @@
 # Website setup scripts.
 
 clear
-echo 'Creating an initial build of the documentation, please wait...'
+echo 'Creating an initial build please wait...'
 yarn api-docs-build &>/dev/null
 yarn paybutton-docs-build &>/dev/null
+yarn paybutton-build &>/dev/null
 clear
 yarn api-setup
 clear
