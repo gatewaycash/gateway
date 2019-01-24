@@ -5,70 +5,41 @@
  */
 import bch from 'bitcore-lib-cash'
 import bchaddr from 'bchaddrjs'
-import { mysql } from 'utils'
+import { mysql, getAddressBalance, executeCallback } from 'utils'
 import axios from 'axios'
 
-// the block explorer URL
-const BLOCK_EXPLORER_BASE = 'https://bch.coin.space/api'
-
 /**
- * Checks if a pending payment needs to be processed.
- * Calls processPayment if needed.
- * @param pendingPayment - The record from the pendingPayments table
+ * Checks if apayment needs to be processed.
+ * Calls processPayment or executeCallback if needed.
+ * @param payment - The record from the payments table
  */
-let checkPayment = async (pendingPayment) => {
-
-  // discover the payment
-  let payment = await mysql.query(
-    'SELECT * FROM payments WHERE tableIndex = ? LIMIT 1',
-    [pendingPayment.paymentIndex]
-  )
-  payment = payment[0]
-
-  let legacyAddress
-  try {
-    legacyAddress = bchaddr.toLegacyAddress(payment.paymentAddress)
-  } catch (e) {
-    // delete the payment with the erroneous paymentAddress
-    console.error('Untranslatable address', payment.address, 'removing')
-    await mysql.query(
-      'delete from payments where paymentAddress = ?',
-      [payment.address]
-    )
-    await mysql.query(
-      'delete from pending where address = ?',
-      [payment.address]
-    )
-    return
-  }
-
-  try {
-    // find the combined balance of the payment address
-    let requestURL = BLOCK_EXPLORER_BASE + '/addr/' + legacyAddress + '/balance'
-    let confirmedBalance = await axios.get(requestURL)
-    requestURL = BLOCK_EXPLORER_BASE + '/addr/' + legacyAddress
-      + '/unconfirmedbalance'
-    let unconfirmedBalance = await axios.get(requestURL)
-    let balance = parseInt(unconfirmedBalance.data) +
-      parseInt(confirmedBalance.data)
-
-    // Print balance and run transferFunds if balance is non-zero
-    console.log('Balance', legacyAddress, ( balance / 100000000 ), 'BCH')
-    if (balance > 0) {
-      try {
-        await transferFunds(payment)
-      } catch (e) {
-        console.error('Error transferring funds', legacyAddress)
-        console.error(e)
-      }
+let checkPayment = async (payment) => {
+  console.log(`Checking payment #${payment.tableIndex}...`)
+  let balance = await getAddressBalance(payment.paymentAddres)
+  if (balance <= 0) return
+  if (payment.privateKey) {
+    payment.addressBalance = balance
+    try {
+      await processPayment(payment)
+      console.log(`Successfully forwarded payment #${payment.tableIndex}`)
+    } catch (e) {
+      console.error(`Error with payment #${payment.tableIndex}`)
     }
-  } catch (e) {
-    console.error('Error getting balance', legacyAddress)
-    console.error(e)
+  } else {
+    try {
+      await executeCallback(payment)
+      await mysql.query(
+        'UPDATE payments SET status = ? WHERE tableIndex = ? LIMIT 1',
+        ['complete', payment.tableIndex]
+      )
+      console.log(`XPUB payment #${payment.tableIndex} finished!`)
+    } catch (e) {
+      console.error(`Error with XPUB payment #${payment.tableIndex}`)
+    }
   }
 }
 
-let transferFunds = async (payment) => {
+let processPayment = async (payment) => {
   // get the merchant ID of the merchant for whom this payment is destined
   let sql = 'select merchantID from payments where paymentAddress = ? limit 1'
   let result = await mysql.query(sql, [payment.address])
@@ -201,9 +172,10 @@ let transferFunds = async (payment) => {
 
 export default async () => {
   let pendingPayments = await mysql.query(
-    'SELECT * FROM pendingPayments'
+    'SELECT * FROM payments WHERE status = ?',
+    ['pending']
   )
-  pendingPayments.forEach(async (pendingPayment) => {
-    await checkPayment(pendingPayment)
+  pendingPayments.forEach(async (payment) => {
+    await checkPayment(payment)
   })
 }

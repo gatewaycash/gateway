@@ -30,6 +30,7 @@ export default async (address, unconfirmed = true) => {
     }
     return balance
   } catch (e) {
+    console.error(e)
     return -1
   }
 }
