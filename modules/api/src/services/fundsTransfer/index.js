@@ -25,13 +25,6 @@ let checkPayment = async (pendingPayment) => {
   )
   payment = payment[0]
 
-  // discover the merchant
-  let merchant = await mysql.query(
-    'SELECT * FROM users WHERE merchantID = ? LIMIT 1',
-    [payment.merchantID]
-  )
-  merchant = merchant[0]
-
   let legacyAddress
   try {
     legacyAddress = bchaddr.toLegacyAddress(payment.paymentAddress)

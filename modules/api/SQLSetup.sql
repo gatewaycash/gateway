@@ -1,8 +1,6 @@
 -- delete existing tables from the database
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS payments;
-DROP TABLE IF EXISTS pendingPayments;
-DROP TABLE IF EXISTS privateKeys;
 DROP TABLE IF EXISTS transactions;
 DROP TABLE IF EXISTS APIKeys;
 DROP TABLE IF EXISTS platforms;
@@ -37,11 +35,12 @@ CREATE TABLE IF NOT EXISTS payments (
   tableIndex INT AUTO_INCREMENT PRIMARY KEY,
   created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   paymentAddress VARCHAR(60),
+  privateKey VARCHAR(80),
   paymentID VARCHAR(64) DEFAULT "",
   merchantID VARCHAR(16),
   callbackURL VARCHAR(250) DEFAULT "",
   invoiceAmount INT(15) DEFAULT 0,
-  status VARCHAR(10) DEFAULT "clicked",
+  status VARCHAR(30) DEFAULT "clicked",
   platformID VARCHAR(16)
 );
 ALTER TABLE payments AUTO_INCREMENT = 1;
@@ -55,24 +54,6 @@ CREATE TABLE IF NOT EXISTS transactions (
   paymentIndex INT(8)
 );
 ALTER TABLE transactions AUTO_INCREMENT = 1;
-
--- create new privateKeys table
-CREATE TABLE IF NOT EXISTS privateKeys (
-  tableIndex INT AUTO_INCREMENT PRIMARY KEY,
-  created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  paymentIndex INT(8),
-  privateKey VARCHAR(80)
-);
-ALTER TABLE privateKeys AUTO_INCREMENT = 1;
-
--- create new pendingPayments table
-CREATE TABLE IF NOT EXISTS pendingPayments (
-  tableIndex INT AUTO_INCREMENT PRIMARY KEY,
-  created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  paymentIndex INT(8),
-  attempts INT(3) DEFAULT 0
-);
-ALTER TABLE pendingPayments AUTO_INCREMENT = 1;
 
 -- create new APIKeys table
 CREATE TABLE IF NOT EXISTS APIKeys (
