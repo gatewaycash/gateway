@@ -25,7 +25,6 @@ CREATE TABLE IF NOT EXISTS users (
   contributionCurrency VARCHAR(3) DEFAULT "BCH",
   contributionLessMore VARCHAR(4) DEFAULT "less",
   contributionTotal VARCHAR(15) DEFAULT 0,
-  platformUser INT(1) DEFAULT 0,
   platformIndex INT(8)
 );
 ALTER TABLE users AUTO_INCREMENT = 1;
@@ -50,7 +49,7 @@ ALTER TABLE payments AUTO_INCREMENT = 1;
 CREATE TABLE IF NOT EXISTS transactions (
   tableIndex INT AUTO_INCREMENT PRIMARY KEY,
   created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  type VARCHAR(10) DEFAULT "payment",
+  type VARCHAR(30) DEFAULT "payment",
   TXID VARCHAR(64),
   paymentIndex INT(8)
 );
