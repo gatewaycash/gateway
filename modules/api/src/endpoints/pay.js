@@ -120,25 +120,20 @@ let POST = async (req, res) => {
         merchantID,
         paymentID,
         paymentAddress,
+        privateKey,
         callbackURL,
         invoiceAmount
-      ) values (?, ?, ?, ?, ?)`,
-    [req.body.merchantID, paymentID, paymentAddress, callbackURL, invoiceAmount]
+      ) values (?, ?, ?, ?, ?, ?)`,
+    [
+      req.body.merchantID,
+      paymentID,
+      paymentAddress,
+      paymentKey,
+      callbackURL,
+      invoiceAmount
+    ]
   )
-
-  // add the payment key
-  if (paymentKey) {
-    let paymentIndex = await mysql.query(
-      'SELECT tableIndex FROM payments WHERE paymentAddress = ?',
-      [paymentAddress]
-    )
-    paymentIndex = paymentIndex[0].tableIndex
-    await mysql.query(
-      'INSERT INTO privateKeys (paymentIndex, paymentKey) VALUES (?, ?)',
-      [paymentIndex, paymentKey]
-    )
-  }
-
+  
   // send the payment address to the user
   return handleResponse({
     paymentAddress: paymentAddress
