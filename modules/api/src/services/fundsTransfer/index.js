@@ -30,6 +30,7 @@ let checkPayment = async (payment) => {
       console.log(`Successfully forwarded payment #${payment.tableIndex}`)
     } catch (e) {
       console.error(`Error with payment #${payment.tableIndex}`)
+      console.error(e)
     }
   } else {
     try {
@@ -37,6 +38,7 @@ let checkPayment = async (payment) => {
       console.log(`XPUB payment #${payment.tableIndex} finished!`)
     } catch (e) {
       console.error(`Error with XPUB payment #${payment.tableIndex}`)
+      console.error(e)
     }
   }
 }
@@ -121,6 +123,7 @@ let processPayment = async (payment) => {
       contributionCurrency,
       contributionAmount,
       contributionLessMore,
+      username
       FROM users
       WHERE
         merchantID = ?
@@ -187,23 +190,104 @@ let processPayment = async (payment) => {
   }
 
   // round the totalTransferred to be Satoshis
-  totalTransferred = totalTransferred.toFixed(0)
-  console.log('Added UTXOs, total', ( totalTransferred / 100000000 ), 'BCH')
+  totalTransferred = parseInt(totalTransferred)
+  console.log(
+    `Total inputs for payment #${payment.tableIndex}: ${(totalTransferred / 100000000)} BCH`
+  )
 
   // build the outputs
-  // TODO: optional Gateway contributions
-  // to bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng
   let amountContributed = 0
   try {
+
+    /*
+      This piece of code calculates amountContributed
+    */
+    let contributionPercentage =
+      (merchant.contributionPercentage / 100) *
+      totalTransferred
+    let contributionAmount = merchant.contributionAmount
+    if (merchant.contributionCurrency !== 'BCH') {
+      let exchangeRate = await axios.get(
+        `https://apiv2.bitcoinaverage.com/indices/global/ticker/BCH${merchant.contributionCurrency}`
+      )
+      exchangeRate = exchangeRate.data.averages.day
+      contributionAmount *= (1 / exchangeRate)
+      contributionAmount = parseInt(contributionAmount *= 100000000)
+    }
+    if (merchant.contributionLessMore === 'less') {
+      amountContributed = (contributionPercentage < contributionAmount) ?
+        contributionPercentage : contributionAmount
+    } else {
+      amountContributed = (contributionPercentage < contributionAmount) ?
+        contributionAmount : contributionPercentage
+    }
+
+    // esure amountContributed is not greater than totalTransferred
+    if (amountContributed + 1000 >= totalTransferred) {
+      amountContributed = 0
+      console.error(
+        `In payment #${payment.tableIndex}, contribution is more than the payment amount itself. Contributing zero instead`
+      )
+    }
+
+    // eliminate very small contributions
+    if (amountContributed <= 1000) {
+      amountContributed = 0
+    }
+
+    // log the contribution
+    if (amountContributed > 0) {
+      console.log(
+        `Payment #${payment.tableIndex} from ${merchant.username} is contributing ${(amountContributed / 100000000)} BCH to Gateway!`
+      )
+    }
+
+    // add the contribution to the transaction
+    if (amountContributed > 0) {
+      amountContributed = parseInt(amountContributed)
+      transferTransaction.to(
+        'bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng',
+        parseInt(amountContributed)
+      )
+    }
+
+    // TODO: platform commissions for platform merchant accounts
+    // (code would go here)
+
+    // a variable to hold the amount being sent to the merchant
+    let merchantAmount =
+      totalTransferred -
+      amountContributed -
+      (transferTransaction.inputs.length * 165) -
+      ((transferTransaction.outputs.length + 1) * 35)
+    merchantAmount = parseInt(merchantAmount)
+    console.log(
+      `Payment #${payment.tableIndex} forwards ${(merchantAmount / 100000000)} BCH to the merchant address`
+    )
+
+    // verify the merchant isn't getting dust
+    if (merchantAmount < 600) {
+      console.error(
+        `Payment #${payment.tableIndex} merchant is getting dust, failing the payment`
+      )
+      await mysql.query(
+        'UPDATE payments SET status = ? WHERE tableIndex = ? LIMIT 1',
+        ['failed-dust', payment.tableIndex]
+      )
+      throw 'Dust is given to merchant'
+    }
+
+    // the merchant output
     transferTransaction.to(
       bchaddr.toCashAddress(merchantAddress),
-      totalTransferred - 200
+      parseInt(merchantAmount)
     )
-    transferTransaction.fee(200)
+
   } catch (e) {
     console.error(
       `Trouble adding outputs to transaction in payment #${payment.tableIndex}`
     )
+    throw e
   }
 
   // sign the transaction
@@ -220,6 +304,7 @@ let processPayment = async (payment) => {
     Broadcast transaction to multiple places
   */
   let rawTransferTransaction = transferTransaction.toString()
+  console.log(rawTransferTransaction)
 
   // Our current block explorer
   let transferTXID = await axios.post(
@@ -229,6 +314,11 @@ let processPayment = async (payment) => {
     }
   )
   transferTXID = transferTXID.data.txid
+
+  // log the broadcast
+  console.log(
+    `Payment #${payment.tableIndex} broadcasted! TXID: ${transferTXID}`
+  )
 
   // Blockchair.com block explorer
   await axios.post(
@@ -265,7 +355,7 @@ let processPayment = async (payment) => {
   )
 
   // execute a callback
-  executeCallback(payment)
+  await executeCallback(payment)
 }
 
 
