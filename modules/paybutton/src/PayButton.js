@@ -128,32 +128,82 @@ let PayButton = props => {
       alert(showError('We did not find a payment address!'))
     }
 
-    // connect to the webSocket
-    // TODO put in own function
-    sock = io(props.blockExplorer)
-    setSock(sock)
-    sock.on('connect', () => {
-      sock.emit('subscribe', 'inv')
-      if (props.consoleOutput !== 'none') {
-        console.log('GATEWAY: Connected to block explorer')
+    // open Badger Wallet if installed in the browser
+    if (typeof window.web4bch !== 'undefined') {
+      window.web4bch = new window.Web4Bch(window.web4bch.currentProvider)
+      var txParams = {
+        to: paymentAddress,
+        from: web4bch.bch.defaultAccount,
+        value: amountBCH > 0 ? amountBCH : 1000
       }
-    })
-    sock.on('disconnect', () => {
-      if (props.consoleOutput !== 'none') {
-        console.log('GATEWAY: Disconnected from block explorer')
-        console.log('GATEWAY: This does not mean that your payment failed')
-      }
-    })
-    sock.on('error', () => {
-      if (props.consoleOutput !== 'none') {
-        console.log('GATEWAY: Disconnected from block explorer')
-        console.log('GATEWAY: This does not mean that your payment failed')
-      }
-    })
-    sock.on('tx', handlePayment)
+      window.web4bch.bch.sendTransaction(txParams, async (err, res) => {
+        if (err) return
+        // send payment to Gateway server if it was not direct deposit
+        if (!props.address) {
+          await sendPaymentToServer(res)
+        }
 
-    // finally, open the dialog
-    setDialogOpen(true)
+        // update the state
+        setPaymentComplete(true)
+
+        // play the audio clip if enabled
+        if (props.enablePaymentAudio) {
+          paymentCompleteAudio.play()
+        }
+
+        // close the dialog when completed, if requested
+        if (props.closeWhenComplete) {
+          setDialogOpen(false)
+        } else {
+          // re-open a closed dialog to show the "Thank You" message
+          setDialogOpen(true)
+        }
+
+        // call the local website callback, if requested
+        if (props.paymentCompleteCallback) {
+          if (typeof window === 'object') {
+            // set the TXID global variable
+            window.gatewayPaymentTXID = data.txid
+            window.gatewayPaymentAddress = paymentAddress
+          }
+
+          // eval the callback from the global scope
+          try {
+            let globalEval = eval
+            globalEval(props.paymentCompleteCallback)
+          } catch (e) {
+            showError('Error running your local JavaScript callback!')
+          }
+        }
+      })
+
+    // open the dialog box if Badger wasn't opened
+    } else {
+      setDialogOpen(true)
+      // connect to the webSocket
+      // TODO put in own function
+      sock = io(props.blockExplorer)
+      setSock(sock)
+      sock.on('connect', () => {
+        sock.emit('subscribe', 'inv')
+        if (props.consoleOutput !== 'none') {
+          console.log('GATEWAY: Connected to block explorer')
+        }
+      })
+      sock.on('disconnect', () => {
+        if (props.consoleOutput !== 'none') {
+          console.log('GATEWAY: Disconnected from block explorer')
+          console.log('GATEWAY: This does not mean that your payment failed')
+        }
+      })
+      sock.on('error', () => {
+        if (props.consoleOutput !== 'none') {
+          console.log('GATEWAY: Disconnected from block explorer')
+          console.log('GATEWAY: This does not mean that your payment failed')
+        }
+      })
+      sock.on('tx', handlePayment)
+    }
   }
 
   // checks payment destinations to see if they concern this transaction
