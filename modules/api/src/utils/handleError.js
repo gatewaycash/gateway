@@ -12,6 +12,6 @@ export default (error, description, res) => {
   response.description = description
   console.log(prettyjson.render(response, {keysColor: 'red'}))
   if (!res) return false
-  res.status(400).end(JSON.stringify(response))
+  res.end(JSON.stringify(response))
   return false
 }
