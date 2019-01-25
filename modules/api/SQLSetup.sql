@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS users (
   payoutXPUB VARCHAR(115),
   XPUBIndex INT(8) DEFAULT 0,
   payoutMethod VARCHAR(10) DEFAULT "address",
+  nativeCurrency VARCHAR(4) DEFAULT "BCH",
   totalSales INT(15) DEFAULT 0,
   merchantID VARCHAR(16),
   passwordHash VARCHAR(64),

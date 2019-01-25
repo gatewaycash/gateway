@@ -4,16 +4,9 @@
  * @file Defines a GET endpoint for /username
  */
 import { mysql, handleResponse, auth, validateUsername } from 'utils'
-import url from 'url'
 
 let GET = async (req, res) => {
-  console.log('GET /username requested')
-
-  // parse the provided data
-  const query = url.parse(req.url, true).query
-  console.log(query)
-
-  let userIndex = await auth(query.APIKey, res)
+  let userIndex = await auth(req.body.APIKey, res)
   if (!userIndex) return
 
   let result = await mysql.query(
@@ -26,8 +19,6 @@ let GET = async (req, res) => {
 }
 
 let PUT = async (req, res) => {
-  console.log('POST /username requested')
-
   let usernameValid = await validateUsername(req.body.newUsername, res)
   if (!usernameValid) return
 
@@ -50,5 +41,6 @@ let PUT = async (req, res) => {
 
 export default {
   GET: GET,
-  PUT: PUT
+  PUT: PUT,
+  PATCH: PUT
 }

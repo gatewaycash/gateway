@@ -8,7 +8,7 @@ export default async () => {
     )
   }
   let response = await get(
-    '/merchantid',
+    '/v2/user/merchantid',
     { APIKey: sessionStorage.gatewayAPIKey }
   )
   return response

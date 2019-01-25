@@ -4,27 +4,20 @@
  * @file Defines a GET endpoint for /getpayments
  */
 import { mysql, handleResponse, handleError, auth } from 'utils'
-import url from 'url'
 
 let GET = async (req, res) => {
-  console.log('GET /payments requested')
-
-  // parse the provided data
-  const query = url.parse(req.url, true).query
-  console.log(query)
-
-  let userIndex = await auth(query.APIKey, res)
+  let userIndex = await auth(req.body.APIKey, res)
   if (!userIndex) return
 
   // get the merchantID for the user
-  let result = await mysql.query(
+  let merchantID = await mysql.query(
     'SELECT merchantID FROM users WHERE tableIndex = ? LIMIT 1',
     [userIndex]
   )
-  let merchantID = result[0].merchantID
+  merchantID = merchantID[0].merchantID
 
-  let resultsPerPage = query.resultsPerPage || 25
-  let page = query.page || 1
+  let resultsPerPage = req.body.resultsPerPage || 25
+  let page = req.body.page || 1
   let resultsOffset = (page - 1) * resultsPerPage
 
   if (resultsPerPage < 1 || resultsPerPage > 1000 || isNaN(resultsPerPage)) {
@@ -43,49 +36,71 @@ let GET = async (req, res) => {
   }
 
   // get all payments with this merchantID
-  result = await mysql.query(
+  let result = await mysql.query(
     `SELECT *
       FROM payments
       WHERE
       merchantID = ?
+      AND status LIKE ?
       ORDER BY created
       ASC
       LIMIT ?, ?`,
-    [merchantID, resultsOffset, resultsPerPage]
+    [
+      merchantID,
+      req.body.includeUnpaid === 'YES' ? '%' : 'complete',
+      resultsOffset,
+      resultsPerPage
+    ]
   )
 
   // get total number of payments
   let total = await mysql.query(
-    'SELECT COUNT(*) FROM payments WHERE merchantID = ?',
-    [merchantID]
+    'SELECT COUNT(1) FROM payments WHERE merchantID = ? AND status LIKE ?',
+    [merchantID, req.body.includeUnpaid === 'YES' ? '%' : 'complete']
   )
 
   let response = []
-  result.forEach(async (e) => {
+  for (let i = 0; i < result.length; i++) {
     let object = {
-      paymentID: e.paymentID,
-      invoiceAmount: e.invoiceAmount,
-      status: e.status,
-      paymentAddress: e.paymentAddress,
-      created: e.created,
+      status: result[i].status,
+      paymentAddress: result[i].paymentAddress,
+      privateKey: req.body.includeKeys === 'YES' ?
+        result[i].privateKey :
+        'hidden',
+      created: result[i].created,
       transactions: []
     }
-    if (e.paymentID) object.paymentID = e.paymentID
-    if (e.invoiceAmount) object.invoiceAmount = e.invoiceAmount
-    if (e.platformID) {
-      object.platformID = e.platformID
+    if (result[i].paymentID && result[i].paymentID != 0) {
+      object.paymentID = result[i].paymentID
+    }
+    if (result[i].invoiceAmount && result[i].invoiceAmount != 0) {
+      object.invoiceAmount = result[i].invoiceAmount
+    }
+    if (result[i].platformID && result[i].platformID.length === 16) {
+      object.platformID = result[i].platformID
+    }
+    if (result[i].callbackURL && result[i].callbackURL != 0) {
+      object.callbackURL = result[i].callbackURL
+    }
+    if (result[i].callbackStatus && result[i].callbackStatus != 0) {
+      object.callbackStatus = result[i].callbackStatus
     }
 
     let transactions = await mysql.query(
-      'SELECT * FROM transactions WHERE paymentIndex = ?',
-      [e.tableIndex]
+      'SELECT TXID, type FROM transactions WHERE paymentIndex = ?',
+      [result[i].tableIndex]
     )
     object.transactions = transactions
     response.push(object)
-  })
+  }
+
   return handleResponse({
     payments: response,
-    totalPages: total
+    totalPayments: total[0]['COUNT(1)'],
+    totalPages: Math.ceil(total[0]['COUNT(1)'] / resultsPerPage),
+    resultsPerPage: resultsPerPage,
+    resultsOffset: resultsOffset,
+    currentPage: page
   }, res)
 }
 

@@ -37,6 +37,6 @@ export default async (userID, password) => {
     loginData.username = userID
   }
 
-  let response = await get('/login', loginData)
+  let response = await get('/v2/user/login', loginData)
   return response
 }

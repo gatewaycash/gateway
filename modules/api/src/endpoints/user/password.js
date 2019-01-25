@@ -6,9 +6,7 @@
 import { mysql, handleResponse, auth, validatePassword } from 'utils'
 import sha256 from 'sha256'
 
-export default async (req, res) => {
-  console.log('POST /password requested')
-
+let PATCH = async (req, res) => {
   let passwordValid = await validatePassword(req.body.newPassword, res)
   if (!passwordValid) return
 
@@ -32,4 +30,8 @@ export default async (req, res) => {
 
   // send success message to user
   return handleResponse({}, res)
+}
+
+export default {
+  PATCH: PATCH
 }

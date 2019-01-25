@@ -1,4 +1,4 @@
-import { post, generateError } from './utils'
+import { patch, generateError } from './utils'
 
 export default async (newPassword, confirm) => {
   if (!sessionStorage.gatewayAPIKey) {
@@ -15,8 +15,8 @@ export default async (newPassword, confirm) => {
     )
   }
 
-  let response = await post(
-    '/password',
+  let response = await patch(
+    '/v2/user/password',
     { APIKey: sessionStorage.gatewayAPIKey, newPassword: newPassword }
   )
 

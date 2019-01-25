@@ -51,6 +51,6 @@ export default async (address, username, password, passwordConfirm) => {
   }
   payload.address = parsedAddress
 
-  let response = await post('/register', payload)
+  let response = await post('/v2/user/register', payload)
   return response
 }
