@@ -9,7 +9,6 @@ import Dialog from './Dialog'
 import PaymentComplete from './Dialog/PaymentComplete'
 import PaymentProgress from './Dialog/PaymentProgress'
 import bchaddr from 'bchaddrjs'
-import axios from 'axios'
 import io from 'socket.io-client'
 import showError from './functions/showError'
 import parseProps from './functions/parseProps'
@@ -90,19 +89,30 @@ let PayButton = props => {
     // if no address was given, and a merchantID was given, use the merchantID
     if (!props.address && props.merchantID) {
       try {
-        let invoiceResult = await axios.post(props.gatewayServer + '/v2/pay', {
-          merchantID: props.merchantID,
-          paymentID: props.paymentID,
-          callbackURL: props.callbackURL
-        })
-        if (invoiceResult.data.status === 'error') {
-          alert(showError(invoiceResult.data))
+        let invoiceResult = await fetch(
+          props.gatewayServer + '/v2/pay', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              merchantID: props.merchantID,
+              paymentID: props.paymentID,
+              callbackURL: props.callbackURL,
+              invoiceAmount: amountBCH
+            })
+          }
+        )
+        invoiceResult = await invoiceResult.json()
+        if (invoiceResult.status === 'error') {
+          alert(showError(invoiceResult))
           return
         } else {
-          setPaymentAddress(invoiceResult.data.paymentAddress)
-          paymentAddress = invoiceResult.data.paymentAddress
+          setPaymentAddress(invoiceResult.paymentAddress)
+          paymentAddress = invoiceResult.paymentAddress
         }
       } catch (e) {
+        console.error(e)
         alert(
           showError('We\'re having some trouble contacting the Gateway server!')
         )
@@ -216,12 +226,21 @@ let PayButton = props => {
   // when we find a matching payment, send it to the server to mark invoice paid
   let sendPaymentToServer = async txid => {
     try {
-      let paymentResponse = await axios.post(props.gatewayServer + '/v2/paid', {
-        paymentAddress: paymentAddress,
-        paymentTXID: txid
-      })
-      if (paymentResponse.data.status === 'error') {
-        showError(paymentResponse.data)
+      let paymentResponse = await fetch(
+        props.gatewayServer + '/v2/paid', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            paymentAddress: paymentAddress,
+            paymentTXID: txid
+          })
+        }
+      )
+      paymentResponse = await paymentResponse.json()
+      if (paymentResponse.status === 'error') {
+        showError(paymentResponse)
       }
     } catch (e) {
       alert(

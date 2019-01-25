@@ -30,7 +30,7 @@ export default class Username extends Component {
     setUsername(this.state.newUsername).then((response) => {
       if (response.status === 'success') {
         this.setState({
-          username: response.username,
+          username: response.newUsername,
           newUsername: response.newUsername,
           errorClosed: false,
           error: {

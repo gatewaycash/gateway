@@ -32,11 +32,13 @@ let PUT = async (req, res) => {
       SET username = ?
       WHERE tableIndex = ?
       LIMIT 1`,
-    [req.body.newUsername, userIndex]
+    [usernameValid, userIndex]
   )
 
   // send success message to user
-  return handleResponse({}, res)
+  return handleResponse({
+    newUsername: usernameValid
+  }, res)
 }
 
 export default {

@@ -3,7 +3,7 @@ import { generateError } from '.'
 
 export default async (endpoint, params) => {
   try {
-    let response = await axios.patch(
+    let response = await axios.delete(
       process.env.REACT_APP_GATEWAY_BACKEND + endpoint,
       params
     )
