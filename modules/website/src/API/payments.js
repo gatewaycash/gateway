@@ -8,7 +8,7 @@ export default async (keys = 'NO', unpaid = 'NO') => {
     )
   }
   let response = await get(
-    '/payments',
+    '/v2/user/payments',
     {
       APIKey: sessionStorage.gatewayAPIKey,
       includeKeys: keys,

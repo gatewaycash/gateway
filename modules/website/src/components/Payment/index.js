@@ -5,13 +5,13 @@ import { Text } from 'components'
 
 let Payment = ({
   paymentAddress,
-  paymentTXID,
-  transferTXID,
   paymentID,
   callbackURL,
-  paidAmount,
-  paymentKey,
-  created
+  callbackStatus,
+  invoiceAmount,
+  privateKey,
+  created,
+  transactions
 }) => (
   <div className="payment">
     <div className="payment-inner">
@@ -22,54 +22,57 @@ let Payment = ({
           {paymentAddress}
         </a>
       </Text>
-      <Text>
-        <b>Amount: </b>{(paidAmount / 100000000) + ' BCH' || '0 BCH'}
-      </Text>
-      <Text><b>Payment TXID: </b>
-        {
-          paymentTXID ?
-            <a
-              href={'https://explorer.bitcoin.com/bch/tx/' + paymentTXID}
-            >
-              {paymentTXID}
-            </a>
-            : 'No payment TXID'
-        }
-      </Text>
-      <Text><b>Transfer TXID: </b>
-        {
-          transferTXID ?
-            <a
-              href={'https://explorer.bitcoin.com/bch/tx/' + transferTXID}
-            >
-              {transferTXID}
-            </a>
-            : 'No transfer TXID'
-        }
-      </Text>
-      <Text><b>Private Key: </b>{paymentKey}</Text>
-      <Text><b>Payment ID: </b>
-        {paymentID.length > 1 ? paymentID : 'No payment ID'}
-      </Text>
-      <Text><b>Callback URL: </b>
-        {callbackURL.length > 1 ? callbackURL : 'No callback URL'}
-      </Text>
-      <Text><b>Invoice Created: </b>
-        {created}
-      </Text>
+      {
+        invoiceAmount &&
+        <Text>
+          <b>Invoice Amount: </b>{(invoiceAmount / 100000000) + ' BCH'}
+        </Text>
+      }
+      {
+        (privateKey && privateKey !== 'hidden') &&
+        <Text><b>Private Key: </b>{privateKey}</Text>
+      }
+      {
+        (paymentID && paymentID.length > 1) &&
+        <Text><b>Payment ID: </b>{paymentID}</Text>
+      }
+      {
+        (callbackURL && callbackURL.length > 1) &&
+        <Text><b>Callback URL: </b>{callbackURL}</Text>
+      }
+      {
+        (callbackStatus && callbackStatus.length > 1) &&
+        <Text><b>Callback Status: </b>{callbackStatus}</Text>
+      }
+      <Text><b>Invoice Created: </b>{created}</Text>
+      {
+        (transactions && transactions.length > 0) &&
+        transactions.map((t, k) => (
+          <div className="payment-transaction" key={k}>
+            <Text><b>Transaction Type: </b>{t.type}</Text>
+            <Text><b>TXID: </b>
+              <a
+                href={'https://explorer.bitcoin.com/bch/tx/' + t.TXID}
+              >
+                {t.TXID}
+              </a>
+            </Text>
+          </div>
+        ))
+      }
     </div>
   </div>
 )
 
 Payment.propTypes = {
   paymentAddress: PropTypes.string,
-  paymentTXID: PropTypes.string,
-  transferTXID: PropTypes.string,
   paymentID: PropTypes.string,
   callbackURL: PropTypes.string,
-  paidAmount: PropTypes.any,
-  paymentKey: PropTypes.string,
-  created: PropTypes.string
+  callbackStatus: PropTypes.string,
+  invoiceAmount: PropTypes.any,
+  privateKey: PropTypes.string,
+  created: PropTypes.string,
+  transactions: PropTypes.any
 }
 
 export default Payment

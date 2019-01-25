@@ -1,4 +1,4 @@
-import { post, generateError } from './utils'
+import { patch, generateError } from './utils'
 
 export default async newUsername => {
   if (!sessionStorage.gatewayAPIKey) {
@@ -7,8 +7,8 @@ export default async newUsername => {
       'Please go back and log in before viewing this page.'
     )
   }
-  let response = await post(
-    '/username',
+  let response = await patch(
+    '/v2/user/name',
     { APIKey: sessionStorage.gatewayAPIKey, newUsername: newUsername }
   )
 

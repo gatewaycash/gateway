@@ -19,6 +19,10 @@ export default async (payment) => {
     callbackURL == 0
   ) {
     console.log(`No callback URL provided for payment #${payment.tableIndex}`)
+    await mysql.query(
+      'UPDATE payments SET callbackStatus = ? WHERE tableIndex = ? LIMIT 1',
+      ['invalid-url', payment.tableIndex]
+    )
     return false
   }
 
@@ -30,6 +34,10 @@ export default async (payment) => {
     console.log(
       'Callback URL is invalid:',
       callbackURL
+    )
+    await mysql.query(
+      'UPDATE payments SET callbackStatus = ? WHERE tableIndex = ? LIMIT 1',
+      ['invalid-url', payment.tableIndex]
     )
     return false
   }
@@ -48,15 +56,21 @@ export default async (payment) => {
 
   // try to execute the callback
   try {
-    await axios.post(callbackURL, callbackParameters)
+    let response = await axios.post(callbackURL, callbackParameters)
     console.log(
-      'Successfully executed callback to URL:',
-      callbackURL
+      `Payment #${payment.tableIndex} callback completed with status ${response.status}`
+    )
+    await mysql.query(
+      'UPDATE payments SET callbackStatus = ? WHERE tableIndex = ? LIMIT 1',
+      [`status-${response.status}`, payment.tableIndex]
     )
   } catch (e) {
     console.error(
-      'Unable to execute callback to URL:',
-      callbackURL
+      `Payment #${payment.tableIndex} callback failed: ${e.code}`
+    )
+    await mysql.query(
+      'UPDATE payments SET callbackStatus = ? WHERE tableIndex = ? LIMIT 1',
+      [`failed-${e.code.toString().substr(0, 20)}`, payment.tableIndex]
     )
   }
 }
