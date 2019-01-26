@@ -16,7 +16,7 @@ let PATCH = async (req, res) => {
 
   // generate a new hash and salt
   const passwordSalt = sha256(require('crypto').randomBytes(32))
-  const passwordHash = sha256(req.body.newPassword + passwordSalt)
+  const passwordHash = sha256(passwordValid + passwordSalt)
 
   // update the password
   await mysql.query(

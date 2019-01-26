@@ -78,7 +78,9 @@ let PATCH = async (req, res) => {
       ['address', userIndex]
     )
     if (result.affectedRows === 1) {
-      return handleResponse({}, res)
+      return handleResponse({
+        newPayoutMethod: req.body.newPayoutMethod
+      }, res)
     } else {
       return handleError(
         'Did Not Update',
@@ -118,7 +120,9 @@ let PATCH = async (req, res) => {
       ['XPUB', userIndex]
     )
     if (result.affectedRows === 1) {
-      return handleResponse({}, res)
+      return handleResponse({
+        newPayoutMethod: req.body.newPayoutMethod
+      }, res)
     } else {
       return handleError(
         'Did Not Update',
