@@ -11,11 +11,12 @@ let GET = async (req, res) => {
   let userIndex = await auth(req.body.APIKey, res)
   if (!userIndex) return
   let result = await mysql.query(
-    'SELECT payoutXPUB FROM users WHERE tableIndex = ? LIMIT 1',
+    'SELECT payoutXPUB, XPUBIndex FROM users WHERE tableIndex = ? LIMIT 1',
     [userIndex]
   )
   return handleResponse({
-    payoutXPUB: result[0].payoutXPUB
+    payoutXPUB: result[0].payoutXPUB,
+    XPUBIndex: result[0].XPUBIndex
   }, res)
 }
 
@@ -39,13 +40,19 @@ let PATCH = async (req, res) => {
 
   // update the key
   await mysql.query(
-    'UPDATE users SET payoutXPUB = ? WHERE tableIndex = ? LIMIT 1',
+    `UPDATE users
+      SET payoutXPUB = ?,
+      XPUBIndex = 0
+      WHERE
+      tableIndex = ?
+      LIMIT 1`,
     [req.body.newXPUB, userIndex]
   )
 
   // return the new key
   return handleResponse({
-    newXPUB: req.body.newXPUB
+    newXPUB: req.body.newXPUB,
+    newXPUBIndex: 0
   }, res)
 }
 
