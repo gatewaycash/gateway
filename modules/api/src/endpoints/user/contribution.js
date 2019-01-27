@@ -69,7 +69,7 @@ let PATCH = async (req, res) => {
 
   // ensure contributionPercentage is positive number between 0 and 75
   if (
-    isNaN(req.body.newCntributionPercentage) ||
+    isNaN(req.body.newContributionPercentage) ||
     req.body.newContributionPercentage < 0 ||
     req.body.newContributionPercentage > 75
   ) {

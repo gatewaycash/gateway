@@ -28,7 +28,7 @@ export default async (req, res) => {
   }
 
   // validate the address
-  let address
+  let address = null
   if (req.body.address) {
     address = validateAddress(req.body.address, res)
     if (!address) return
@@ -36,7 +36,7 @@ export default async (req, res) => {
   // validate the XPUB key
   } else {
     try {
-      bch.HDNode.fromBase58(req.body.XPUB)
+      new bch.HDPublicKey(req.body.XPUB)
     } catch (e) {
       return handleError(
         'Invalid XPUB key',
@@ -46,38 +46,36 @@ export default async (req, res) => {
     }
   }
 
+  // validate the username and password
   let passwordValid = await validatePassword(req.body.password, res)
   if (!passwordValid) return
-
-  // make sure address and xpub are not in the database already
-  let result = await mysql.query(
-    `SELECT payoutAddress
-      FROM users
-      WHERE
-      payoutAddress = ?
-      or
-      payoutXPUB = ?
-      LIMIT 1`,
-    [req.body.address, req.body.XPUB]
-  )
-
-  // fail if user is in the database
-  if (result.length !== 0) {
-    return handleError(
-      'Address or XPUB key is in use',
-      'It looks like that address is already being used by another user! If this is your address, send an email to support@gateway.cash and we\'ll help you get access to this merchant account.',
-      res
-    )
-  }
-
-  // validate the username
   let usernameValid = await validateUsername(req.body.username, res)
   if (!usernameValid) return
+
+  // validate the platform ID if given
+  let platformIndex = 0
+  if (req.body.platformID) {
+    // discover the platformIndex from platformID
+    let platform = await mysql.query(
+      'SELECT platformIndex FROM platforms WHERE platformID = ? LIMIT 1',
+      [req.body.platformID]
+    )
+
+    // fail if there was no platform found
+    if (platform.length !== 1) {
+      return handleError(
+        'Invalid Platform ID',
+        'No platform with that ID could be found. Please contact the platform administrator (the person who runs this website) and tell them their Gateway registrations are failing.',
+        res
+      )
+    }
+    platformIndex = platform[0].tableIndex
+  }
 
   // create the new user account
   const merchantID = sha256(require('crypto').randomBytes(32)).substr(0, 16)
   const passwordSalt = sha256(require('crypto').randomBytes(32))
-  const passwordHash = sha256(req.body.password + passwordSalt)
+  const passwordHash = sha256(passwordValid + passwordSalt)
   await mysql.query(
     `INSERT INTO users (
         payoutAddress,
@@ -86,16 +84,18 @@ export default async (req, res) => {
         merchantID,
         passwordHash,
         passwordSalt,
-        username
-      ) VALUES (?, ?, ?, ?, ?, ?)`,
+        username,
+        platformIndex
+      ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
     [
       address,
       req.body.XPUB,
-      req.body.XPUB ? 'xpub' : 'address',
+      req.body.XPUB ? 'XPUB' : 'address',
       merchantID,
       passwordHash,
       passwordSalt,
-      req.body.username
+      usernameValid,
+      platformIndex
     ]
   )
 

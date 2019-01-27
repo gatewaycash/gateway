@@ -19,7 +19,9 @@ export default async (payment) => {
       contributionCurrency,
       contributionAmount,
       contributionLessMore,
-      username
+      username,
+      tableIndex,
+      platformIndex
       FROM users
       WHERE
         merchantID = ?
@@ -147,10 +149,99 @@ export default async (payment) => {
       )
     }
 
-    // TODO: platform commissions for platform merchant accounts
-    // (code would go here)
+    /*
+      platform commissions for platform merchant accounts
+    */
+    // check if this merchant account belongs to a platform (managed account)
+    if (merchant.platformIndex !== 0) {
+      // find all commissions of this platform
+      let commissions = await mysql.query(
+        'SELECT * FROM commissions WHERE platformIndex = ?',
+        [merchant.platformIndex]
+      )
+
+      // for each commission, create an output fulfilling the commission
+      for (let i = 0; i < commissions.length; i++) {
+
+        /*
+          This piece of code calculates amountCommissioned
+        */
+        let commissionPercentage =
+          (commissions[i].commissionPercentage / 100) *
+          totalTransferred
+        let commissionAmount = commissions[i].commissionAmount
+        if (commissions[i].commissionCurrency !== 'BCH') {
+          let exchangeRate = await axios.get(
+            `https://apiv2.bitcoinaverage.com/indices/global/ticker/BCH${commissions[i].commissionCurrency}`
+          )
+          exchangeRate = exchangeRate.data.averages.day
+          commissionAmount *= (1 / exchangeRate)
+          commissionAmount = parseInt(commissionAmount *= 100000000)
+        }
+        let amountCommissioned
+        if (commissions[i].commissionLessMore === 'less') {
+          amountCommissioned = (commissionPercentage < commissionAmount) ?
+            commissionPercentage : commissionAmount
+        } else {
+          amountCommissioned = (commissionPercentage < commissionAmount) ?
+            commissionAmount : commissionPercentage
+        }
+
+        // esure amountContributed is not greater than totalTransferred
+        if (
+          amountCommissioned + 1000 >=
+          (totalTransferred - amountContributed)
+        ) {
+          amountCommissioned = 0
+          console.error(
+            `In payment #${payment.tableIndex}, commission #${commissions[i].tableIndex} is more than the payment amount minus the Gateway contribution itself. Taking zero commission instead.`
+          )
+        }
+
+        // eliminate very small contributions
+        if (amountCommissioned <= 1000) {
+          amountCommissioned = 0
+        }
+
+        // log the commission
+        console.log(
+          `Payment #${payment.tableIndex} is subject to commission #${commissions[i].tableIndex}, which in this case is ${(amountCommissioned / 100000000)} BCH`
+        )
+
+        // now that we know amountCommissioned, we need to know where to send it
+        // this code finds that out
+        let commissionAddress
+        if (commissions[i].commissionMethod === 'XPUB') {
+          try {
+            let hdPub = new bch.HDPublicKey(commissions[i].commissionXPUB)
+            let derivedKey = hdPub.derive(0).derive(commissions[i].XPUBIndex)
+            let paymentPublicKey = new bch.PublicKey(derivedKey.publicKey)
+            let address = new bch.Address(paymentPublicKey)
+            commissionAddress = bchaddr.toCashAddress(
+              address.toString()
+            )
+          } catch (e) {
+            console.error(
+              `Payment #${payment.tableIndex} commission #${commissions[i].tableIndex} XPUB key address derivation error`
+            )
+            throw e
+          }
+        } else {
+          commissionAddress = commissions[i].commissionAddress
+        }
+
+        // finally, we build the commission output
+        transferTransaction.to(
+          commissionAddress,
+          amountCommissioned
+        )
+
+      } // commissions for loop
+
+    } // account belongs to platform
 
     // a variable to hold the amount being sent to the merchant
+    // the transaction fee is calculated and subtracted here
     let merchantAmount =
       totalTransferred -
       amountContributed -
@@ -244,9 +335,18 @@ export default async (payment) => {
         contributionTotal =
           contributionTotal + ?
       WHERE
-        merchantID = ?
+        tableIndex = ?
       LIMIT 1`,
-    [totalTransferred, amountContributed, merchant.merchantID]
+    [totalTransferred, amountContributed, merchant.tableIndex]
+  )
+
+  // increment the total sales of the platform if the user belongs to a platform
+  await mysql.query(
+    `UPDATE platforms
+      SET totalSales = totalSales + ?
+      WHERE tableIndex = ?
+      LIMIT 1`,
+    [totalTransferred]
   )
 
   // execute a callback
