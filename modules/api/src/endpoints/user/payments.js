@@ -67,7 +67,7 @@ let GET = async (req, res) => {
       privateKey: req.body.includeKeys === 'YES' ?
         result[i].privateKey :
         'hidden',
-      created: result[i].created,
+      created: '' + result[i].created,
       transactions: []
     }
     if (result[i].paymentID && result[i].paymentID != 0) {

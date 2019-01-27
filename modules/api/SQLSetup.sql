@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS users (
   contributionCurrency VARCHAR(3) DEFAULT "BCH",
   contributionLessMore VARCHAR(4) DEFAULT "less",
   contributionTotal VARCHAR(15) DEFAULT 0,
-  platformIndex INT(8)
+  platformIndex INT(8) DEFAULT 0
 );
 ALTER TABLE users AUTO_INCREMENT = 1;
 
@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS platforms (
   platformID VARCHAR(16),
   name VARCHAR(36),
   description VARCHAR(160),
-  owner VARCHAR(8),
+  ownerUserIndex VARCHAR(8),
   totalSales INT(15) DEFAULT 0
 );
 ALTER TABLE platforms AUTO_INCREMENT = 1;
@@ -94,7 +94,10 @@ CREATE TABLE IF NOT EXISTS commissions (
   commissionAmount VARCHAR(8) DEFAULT "0.00",
   commissionCurrency VARCHAR(3) DEFAULT "BCH",
   commissionLessMore VARCHAR(4) DEFAULT "less",
-  commissionTotal INT(15) DEFAULT 0
+  minimumTransactionAmount INT(8) DEFAULT -1,
+  maximumTransactionAmount INT(8) DEFAULT -1,
+  maximumCommissionAmount INT(8) DEFAULT -1,
+  minimumCommissionAmount INT(8) DEFAULT -1
 );
 ALTER TABLE commissions AUTO_INCREMENT = 1;
 
@@ -220,7 +223,7 @@ INSERT INTO platforms (
   platformID,
   name,
   description,
-  owner
+  ownerUserIndex
 ) VALUES (
   'deadbeef20191121',
   'gwtestplatform1',
@@ -272,7 +275,7 @@ INSERT INTO platforms (
   platformID,
   name,
   description,
-  owner
+  ownerUserIndex
 ) VALUES (
   'deadbeef20191122',
   'gwtestplatform2',
