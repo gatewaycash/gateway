@@ -129,7 +129,14 @@ let PayButton = props => {
     }
 
     // open Badger Wallet if installed in the browser
-    if (typeof window.web4bch !== 'undefined') {
+    let useBadger = true
+    if (typeof window.web4bch !== 'undefined' && !web4bch.bch.defaultAccount) {
+      useBadger = window.confirm(
+        'Press OK and unlock your Badger Wallet with your password, then click the button again. Press Cancel to use a QR code instead.'
+      )
+      if (useBadger === true) return
+    }
+    if (typeof window.web4bch !== 'undefined' && useBadger) {
       window.web4bch = new window.Web4Bch(window.web4bch.currentProvider)
       var txParams = {
         to: paymentAddress,

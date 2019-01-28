@@ -24,15 +24,8 @@ let GET = async (req, res) => {
 let PATCH = async (req, res) => {
 
   // validate the XPUB key
-  try {
-    new bch.HDPublicKey(req.body.newXPUB)
-  } catch (e) {
-    return handleError(
-      'Invalid XPUB key',
-      'The XPUB key you provided is invalid',
-      res
-    )
-  }
+  let XPUBValid = validateXPUB(req.body.newXPUB)
+  if (!XPUBValid) return
 
   // authenticate the user
   let userIndex = await auth(req.body.APIKey)
@@ -46,7 +39,7 @@ let PATCH = async (req, res) => {
       WHERE
       tableIndex = ?
       LIMIT 1`,
-    [req.body.newXPUB, userIndex]
+    [XPUBValid, userIndex]
   )
 
   // return the new key

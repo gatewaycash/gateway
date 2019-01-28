@@ -17,8 +17,17 @@ let GET = async (req, res) => {
       ownerUserIndex = ?`,
     [userIndex]
   )
+  let result = []
+  for (let i = 0; i < platforms.length; i++) {
+    result.push({
+      created: '' + platforms[i].created,
+      name: platforms[i].name,
+      description: platforms[i].description,
+      platformID: platforms[i].platformID
+    })
+  }
   return handleResponse({
-    platforms: platforms,
+    platforms: result,
     numberOfPlatforms: platforms.length
   }, res)
 }
@@ -76,15 +85,6 @@ let PUT = async (req, res) => {
 
 // PATCH an existing platform with new data
 let PATCH = async (req, res) => {
-  // ensure a platformID was given
-  if (!req.body.platformID) {
-    return handleError(
-      'No Platform ID',
-      'A platform ID is required',
-      res
-    )
-  }
-
   // ensure newName or newDescription was given
   if (!req.body.newName && !req.body.newDescription) {
     return handleError(

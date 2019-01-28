@@ -31,24 +31,38 @@ let GET = async (req, res) => {
 }
 
 let PATCH = async (req, res) => {
-  // ensure required fields were provided
-  if (
-    !req.body.newContributionAmount ||
-    !req.body.newContributionCurrency ||
-    !req.body.newContributionPercentage ||
-    !req.body.newContributionLessMore
-  ) {
-    return handleError(
-      'Missing Required Field',
-      'A required field is missing. Required fields: "newContributionAmount", "newContributionCurrency", "newContributionPercentage" and "newContributionLessMore".',
-      res
-    )
-  }
+  let userIndex = await auth(req.body.APIKey)
+  if (!userIndex) return
+
+  // discover the current values
+  let result = await mysql.query(
+    `SELECT
+      contributionAmount,
+      contributionCurrency,
+      contributionPercentage,
+      contributionLessMore
+      FROM users
+      WHERE
+      tableIndex = ?
+      LIMIT 1`,
+    [userIndex]
+  )
+  result = result[0]
+
+  // assign the updated values
+  let newContributionAmount = req.body.newContributionAmount ||
+    result.contributionAmount
+  let newContributionCurrency = req.body.newContributionCurrency ||
+    result.contributionCurrency
+  let newContributionPercentage = req.body.newContributionPercenage ||
+    result.contributionPercentage
+  let newContributionLessMore = req.body.newContributionLessMore ||
+    result.contributionLessMore
 
   // ensure contributionAmount is positive number or 0
   if (
-    isNaN(req.body.newContributionAmount) ||
-    req.body.newContributionAmount < 0
+    isNaN(newContributionAmount) ||
+    newContributionAmount < 0
   ) {
     return handleError(
       'Invalid Contribution Amount',
@@ -59,7 +73,7 @@ let PATCH = async (req, res) => {
 
   // ensure contributionCurrency is supported
   let supportedCurrencies = ['BCH', 'USD', 'EUR', 'JPY', 'CNY']
-  if (!supportedCurrencies.some(x => req.body.newContributionCurrency === x)) {
+  if (!supportedCurrencies.some(x => newContributionCurrency === x)) {
     return handleError(
       'Unsopported Currency',
       'Contribution Currency must be one of BCH, USD, EUR, JPY or CNY',
@@ -69,9 +83,9 @@ let PATCH = async (req, res) => {
 
   // ensure contributionPercentage is positive number between 0 and 75
   if (
-    isNaN(req.body.newContributionPercentage) ||
-    req.body.newContributionPercentage < 0 ||
-    req.body.newContributionPercentage > 75
+    isNaN(newContributionPercentage) ||
+    newContributionPercentage < 0 ||
+    newContributionPercentage > 75
   ) {
     return handleError(
       'Invalid Contribution Percentage',
@@ -82,8 +96,8 @@ let PATCH = async (req, res) => {
 
   // ensure newContributionLessMore is less or more
   if (
-    req.body.newContributionLessMore !== 'less' &&
-    req.body.newContributionLessMore !== 'more'
+    newContributionLessMore !== 'less' &&
+    newContributionLessMore !== 'more'
   ) {
     return handleError(
       'Invalid Contribution Less/More Value',
@@ -91,10 +105,6 @@ let PATCH = async (req, res) => {
       res
     )
   }
-
-  // verify the user is authorized
-  let userIndex = await auth(req.body.APIKey, res)
-  if (!userIndex) return
 
   // update the username
   await mysql.query(
@@ -106,20 +116,20 @@ let PATCH = async (req, res) => {
       WHERE tableIndex = ?
       LIMIT 1`,
     [
-      req.body.newContributionAmount,
-      req.body.newContributionCurrency,
-      req.body.newContributionPercentage,
-      req.body.newContributionLessMore,
+      newContributionAmount,
+      newContributionCurrency,
+      newContributionPercentage,
+      newContributionLessMore,
       userIndex
     ]
   )
 
   // send success message to user
   return handleResponse({
-    newContributionAmount: req.body.newContributionAmount,
-    newContributionCurrency: req.body.newContributionCurrency,
-    newContributionPercentage: req.body.newContributionPercentage,
-    newContributionLessMore: req.body.newContributionLessMore
+    newContributionAmount: newContributionAmount,
+    newContributionCurrency: newContributionCurrency,
+    newContributionPercentage: newContributionPercentage,
+    newContributionLessMore: newContributionLessMore
   }, res)
 }
 

@@ -10,12 +10,12 @@ import {
   validateUsername,
   validatePassword,
   validateAddress,
+  validateXPUB,
   addAPIKey
 } from 'utils'
-import bch from 'bitcore-lib-cash'
 import sha256 from 'sha256'
 
-export default async (req, res) => {
+let POST = async (req, res) => {
   console.log('POST /register requested')
 
   // Make sure the user sent an address or XPUB key with their request
@@ -27,23 +27,15 @@ export default async (req, res) => {
     )
   }
 
-  // validate the address
-  let address = null
-  if (req.body.address) {
-    address = validateAddress(req.body.address, res)
-    if (!address) return
-
-  // validate the XPUB key
+  // validate the address or XPUB key
+  let addressValid = null
+  let XPUBValid = null
+  if (req.body.XPUB) {
+    XPUBValid = validateXPUB(req.body.XPUB)
+    if (!XPUBValid) return
   } else {
-    try {
-      new bch.HDPublicKey(req.body.XPUB)
-    } catch (e) {
-      return handleError(
-        'Invalid XPUB key',
-        'The XPUB key you provided is invalid',
-        res
-      )
-    }
+    addressValid = validateAddress(req.body.address, res)
+    if (!addressValid) return
   }
 
   // validate the username and password
@@ -57,7 +49,7 @@ export default async (req, res) => {
   if (req.body.platformID) {
     // discover the platformIndex from platformID
     let platform = await mysql.query(
-      'SELECT platformIndex FROM platforms WHERE platformID = ? LIMIT 1',
+      'SELECT tableIndex FROM platforms WHERE platformID = ? LIMIT 1',
       [req.body.platformID]
     )
 
@@ -86,11 +78,11 @@ export default async (req, res) => {
         passwordSalt,
         username,
         platformIndex
-      ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     [
-      address,
-      req.body.XPUB,
-      req.body.XPUB ? 'XPUB' : 'address',
+      addressValid,
+      XPUBValid,
+      XPUBValid ? 'XPUB' : 'address',
       merchantID,
       passwordHash,
       passwordSalt,
@@ -111,4 +103,8 @@ export default async (req, res) => {
   return handleResponse({
     APIKey: APIKey
   }, res)
+}
+
+export default {
+  POST: POST
 }
