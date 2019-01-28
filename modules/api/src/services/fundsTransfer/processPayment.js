@@ -111,6 +111,8 @@ export default async (payment) => {
       exchangeRate = exchangeRate.data.averages.day
       contributionAmount *= (1 / exchangeRate)
       contributionAmount = parseInt(contributionAmount *= 100000000)
+    } else {
+      contributionAmount = contributionAmount * 100000000
     }
     if (merchant.contributionLessMore === 'less') {
       amountContributed = (contributionPercentage < contributionAmount) ?
@@ -152,8 +154,9 @@ export default async (payment) => {
     /*
       platform commissions for platform merchant accounts
     */
+    let allCommissionsTotal = 0
     // check if this merchant account belongs to a platform (managed account)
-    if (merchant.platformIndex !== 0) {
+    if (merchant.platformIndex != 0) {
       // find all commissions of this platform
       let commissions = await mysql.query(
         'SELECT * FROM commissions WHERE platformIndex = ?',
@@ -177,6 +180,8 @@ export default async (payment) => {
           exchangeRate = exchangeRate.data.averages.day
           commissionAmount *= (1 / exchangeRate)
           commissionAmount = parseInt(commissionAmount *= 100000000)
+        } else {
+          commissionAmount = commissionAmount * 100000000
         }
         let amountCommissioned
         if (commissions[i].commissionLessMore === 'less') {
@@ -200,7 +205,7 @@ export default async (payment) => {
 
         // eliminate very small contributions
         if (amountCommissioned <= 1000) {
-          amountCommissioned = 0
+          continue
         }
 
         // log the commission
@@ -236,6 +241,20 @@ export default async (payment) => {
           amountCommissioned
         )
 
+        // add the commission to allCommissionsTotal
+        allCommissionsTotal += amountCommissioned
+
+        // increment the XPUB counter if needed
+        if (commissions[i].commissionMethod === 'XPUB') {
+          await mysql.query(
+            `UPDATE commissions
+              SET XPUBIndex = XPUBIndex + 1
+              WHERE tableIndex = ?
+              LIMIT 1`,
+            [commissions[i].tableIndex]
+          )
+        }
+
       } // commissions for loop
 
     } // account belongs to platform
@@ -245,6 +264,7 @@ export default async (payment) => {
     let merchantAmount =
       totalTransferred -
       amountContributed -
+      allCommissionsTotal -
       (transferTransaction.inputs.length * 165) -
       ((transferTransaction.outputs.length + 1) * 35)
     merchantAmount = parseInt(merchantAmount)
@@ -340,14 +360,17 @@ export default async (payment) => {
     [totalTransferred, amountContributed, merchant.tableIndex]
   )
 
-  // increment the total sales of the platform if the user belongs to a platform
-  await mysql.query(
-    `UPDATE platforms
-      SET totalSales = totalSales + ?
-      WHERE tableIndex = ?
-      LIMIT 1`,
-    [totalTransferred]
-  )
+  // increment totalSales of the platform if the user belongs to a platform
+  if (merchant.platformIndex !== 0) {
+    await mysql.query(
+      `UPDATE platforms
+        SET totalSales = totalSales + ?
+        WHERE tableIndex = ?
+        LIMIT 1`,
+      [totalTransferred, merchant.tableIndex]
+    )
+
+  }
 
   // execute a callback
   await executeCallback(payment)
