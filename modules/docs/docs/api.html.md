@@ -37,14 +37,28 @@ The API is served over HTTP or HTTPS with your current URL as a basepoint.
 If you are running a local instance of the server at `http://127.0.0.1:8080/`
 then your requests will start with that URL.
 
-For example, the endpoint for `/login` would be `http://127.0.0.1:8080/login`
-on your local instance. The examples in this documentation assume you are
-using a basepoint URL of `https://api.gateway.cash/` which is the production
-server Gateway uses across all of our services.
+### URL Prefixes
+
+API endpoints are prefixed with a version number, in the format
+`BASEPOINT/vX/endpoint`. `X` represents the API version. New API versions are released when a "breaking change" is made which would cause old clients to stop working. The current version of the API is `v2`.
+
+For example, the endpoint for `/user/login` is
+`http://127.0.0.1:8080/v2/user/login` on your local instance. The examples in
+this documentation assume you are using a basepoint URL of
+`https://api.gateway.cash/` which is the production server Gateway uses across
+all of our services.
+
+### A Note on the Use of Our Servers
 
 You are free to use our API server as you wish. If we receive excessive
 spam we may choose to block your access. Like all open-source projects, you
 are also free to run your own server on the internet if you wish.
+
+It is a common misconception that because gateway.cash is able to block, ban or
+"censor" merchants who do bad things from our platform, that the Gateway
+project is somehow centralized. If you disagree with our decision, you may run
+your own servers since our code is open-source. Merchants can take advantage of
+all of the features of Gateway regardless of our policies.
 
 ## API Requests
 
@@ -53,7 +67,7 @@ are also free to run your own server on the internet if you wish.
 > in your JavaScript file like so:
 
 ```js
-const axios = require('axios')
+import axios from 'axios'
 ```
 
 Making a request to the API will result in a JSON object string being
@@ -73,33 +87,48 @@ documented here.
 
 An API key is required in all but a few special cases when working with the
 Gateway API. You don't need a key to create or pay invoices, but to be able to
-manage merchant accounts, you will need to generate an API key.
+manage merchant accounts, administrate platforms or view invoices you will need
+to generate an API key.
 
-Merchant accounts can be generated using the `POST /register` endpoint. The API
-key for your account can be retrieved with `GET /login`, and a new key can be
-generated with `GET /newapikey`. Creating a new key makes your old one unusable.
+Merchant accounts can be generated using the `/user/register` endpoint.
+When you create an account, your first API key is generated automatically. Keys
+can be managed with the `/api/keys` and `/api/key` endpoints, and `/user/login`
+will retrieve a working API key for your account.
 
 <aside class="success">
 <b>ProTip:</b> If you've already made a merchant account on gateway.cash, you
-can get your API key by using the GET /login endpoint.
+can retrieve an API key with /user/login.
 </aside>
 
-# POST Endpoints
+# Accounts, Access and Keys
 
-POST endpoints generally create or update information, as opposed to GET which
-is primarily for retrieving information from the server.
+This section covers topics related to accessing and managing your user account, API keys and related topics.
 
-## POST /register
+## Registration
 
-> Create a new merchant account:
+> Create a new basic merchant account:
 
 ```js
 let result = await axios.post(
-  'https://api.gateway.cash/register',
+  'https://api.gateway.cash/v2/user/register',
   {
     address: 'BITCOIN_CASH_ADDRESS',
     username: 'JohnGalt12',
     password: 'IHeartDagney'
+  }
+)
+```
+
+> Create a new Gateway Platforms user (see Platforms section):
+
+```js
+let result = await axios.post(
+  'https://api.gateway.cash/v2/user/register',
+  {
+    address: 'BITCOIN_CASH_ADDRESS',
+    username: 'JohnGalt12',
+    password: 'IHeartDagney',
+    platformID: 'YOUR_PLATFORM_ID'
   }
 )
 ```
@@ -129,9 +158,32 @@ view payments for each button, track your total sales and much more.
 
 Required | Name | Description
 ---------|------|------------
-YES | `address` | The Bitcoin Cash address to use for your merchant account
-NO | `username` | You may also provide a username for more convenient login
-YES | `password` | A unique and strong password to protect your new account
+Sometimes | `address` | The Bitcoin Cash address to use for your merchant account. Required when `XPUB` is not provided.
+Sometimes | `XPUB` | The extended public key (XPUB) for your merchant account. Required when `address` is not provided.
+Yes | `username` | The username for your merchant account, required when logging in.
+Yes | `password` | A unique and strong password to protect your new account.
+No | `platformID` | Makes this user a Gateway Platforms user. See the Platforms section below for more info.
+
+### A Warning About XPUB with Platforms Users
+
+It is not possible to utilize Platform commissions if your Platforms user
+accounts have XPUB keys. This is because when XPUB is used, payment is
+forwarded directly to the merchant and Gateway never controls the funds.
+
+To avoid this problem, always send Platforms user registration requests with an
+address only and not an XPUB key. If you are sending Platforms user
+registration requests from the user's browser, be aware of the possibility for
+malicious activity. A user can avoid paying any commissions if they are using
+XPUB.
+
+<b>Strongly consider</b> sending the Platforms user registration requests from
+your server instead. Randomly generate usernames and passwords which are stored
+with your users' login information.
+
+If you do not ever want to take a commission and only want to use Gateway
+Platforms to track total platform sales, you can still use XPUB with Platforms
+user accounts. Include `dismissXPUBWithPlatformIDWarning=YES` with your
+request to bypass the warning. You can also disallow XPUB entirely (see below).
 
 <aside class="notice">
 Please provide your Bitcoin Cash address in CashAddress format. If it is given
@@ -148,114 +200,414 @@ are always salted and hashed prior to being stored in the database.
 
 <aside class="notice">
 Your username must be between 5 and 24 characters, must be unique, must not
-contain spaces/tabs or other odd characters, and is an optional parameter at
-registration time. Usernames can always be set later with the POST /username
-endpoint. Usernames are converted to lower case before being stored in the
-database.
+contain spaces/tabs or other odd characters. Usernames are not case sensitive.
 </aside>
 
-## POST /pay
+## Logging In
 
-> Create a new invoice and generate a payment address:
+> In previous versions of this API, it was possible to log in with your payout
+> address. Since it's now possible for multiple people to have the same payout
+> address, you must always use your username and password when logging in:
 
 ```js
-let result = await axios.post(
-  'https://api.gateway.cash/pay',
+let result = await axios.get(
+  'https://api.gateway.cash/v2/user/login',
   {
-    merchantID: 'MERCHANT_ID',
-    paymentID: 'PAYMENT_ID',
-    callbackURL: 'CALLBACK_URL'
+    params: {
+      username: 'JohnGalt12',
+      password: 'IHeartDagney'
+    }
   }
 )
 ```
 
-> If successful, you should get back something like this:
+> A successful response will return a working API key for your account:
 
 ```json
 {
   "status": "success",
-  "paymentAddress": "BITCOIN_CASH_ADDRESS"
+  "APIKey": "YOUR_API_KEY"
 }
 ```
 
-> So, to print your payment address:
+> Use the API key you receive when calling other endpoints.
 
-```js
-console.log(result.data.paymentAddress)
-```
-
-The /pay endpoint generates a new invoice for the user and provides them with an
-address to pay the merchant.
+When you need to retrieve a working API key for your account, send a GET request to `/user/login` and one will be returned.
 
 ### Parameters
 
 Required | Name | Description
 ---------|------|------------
-YES | `merchantID` | The ID for the merchant for whom the payment is intended
-NO | `paymentID` | An identifier for the payment which will be shown to the merchant
-NO | `callbackURL` | A callback URL that can be used by the merchant for payment notifications
+Yes | `username` | The username for the merchant account
+Yes | `password` | The password for the merchant account
 
-<aside class="success">
-Nope! You don't need an API key when using this endpoint.
+If you delete all your API keys, the login endpoint will generate a new API key
+for your account so you aren't locked out.
+
+<aside class="notice">
+If you store the key somewhere, just be aware that it can
+be used to access and change merchant account settings, including the payout
+address. If you're building something like a mobile app where login information
+is generally saved, you should store the API key rather than the username and
+password. Also consider generating a new API key specific to each device or app.
+Always encrypt login credentials when plausible.
 </aside>
 
-<aside class="warning">
-Merchants who leverage callback URLs must be careful and make sure to
-validate that payments they receive are legitimate. <b>CALLBACK URLS ARE PUBLIC!!!</b> When you receive a callback from Gateway, it will ALWAYS contain a property called "transferTXID" which is a Bitcoin Cash transaction moving funds to the merchant's address. <b>Merchants MUST verify that this transaction
-is valid and that an acceptable amount has been paid.</b>
-</aside>
+## Getting Your Merchant ID
 
-## POST /paid
-
-> Send the request with the payment address and TXID:
+> Get the merchant ID for the account:
 
 ```js
-let result = await axios.post(
-  'https://api.gateway.cash/paid',
+let result = await axios.get(
+  'https://api.gateway.cash/v2/user/merchantid',
   {
-    paymentAddress: 'PAYMENT_ADDRESS',
-    paymentTXID: 'PAYMENT_TXID'
+    params: {
+      APIKey: 'YOUR_API_KEY'
+    }
   }
 )
 ```
 
-> If successful, you should get back something like this:
+> A successful response will look like this:
 
 ```json
 {
-  "status": "success"
+  "status": "success",
+  "merchantID": "MERCHANT_ID"
 }
 ```
 
-Once an invoice has been paid, use the `POST /paid` endpoint to give the
-payment TXID to the server for processing.
+The merchant ID is passed to the `/pay` endpoint to generate invoices. To
+retrieve the merchant ID, send a GET request to `/user/merchantid`.
 
 ### Parameters
 
 Required | Name | Description
 ---------|------|------------
-YES | `paymentAddress` | The payment address of the invoice
-YES | `paymentTXID` | The TXID of the transaction which pays the invoice
+Yes | `APIKey` | An active API key belonging to the merchant
 
-<aside class="success">
-Nope! You don't need an API key when using this endpoint.
+
+## Getting Total Sales
+
+> Get total sales information for the merchant account:
+
+```js
+let result = await axios.get(
+  'https://api.gateway.cash/v2/user/sales',
+  {
+    params: {
+      APIKey: 'YOUR_API_KEY'
+    }
+  }
+)
+```
+
+> A successful response will look like this:
+
+```json
+{
+  "status": "success",
+  "totalsales": 133706969
+}
+```
+
+> All values are in units of Satoshi.
+
+To retrieve the total amount ever paid to this merchant, send a GET request to
+`/user/sales`.
+
+### Parameters
+
+Required | Name | Description
+---------|------|------------
+Yes | `APIKey` | An active API key belonging to the merchant
+
+## Getting Total Contributions
+
+> Retrieve the total contributed to Gateway by this merchant:
+
+```js
+let result = await axios.get(
+  'https://api.gateway.cash/v2/user/contribution',
+  {
+    params: {
+      APIKey: 'YOUR_API_KEY'
+    }
+  }
+)
+```
+
+> A successful response will include a contributionTotal property:
+
+```json
+{
+  "status": "success",
+  ...
+  "contributionTotal": 133706969
+}
+```
+
+> All values are in units of Satoshi.
+
+To retrieve the total amount ever contributed to Gateway by this merchant, send a GET request to `/user/contribution`.
+
+### Parameters
+
+Required | Name | Description
+---------|------|------------
+Yes | `APIKey` | An active API key belonging to the merchant
+
+The response, among other things, will include a field called
+`"contributionTotal"` which represents the total.
+
+## Viewing Your Payments
+
+> Get the first page of payments for your account:
+
+```js
+let result = await axios.get(
+  'https://api.gateway.cash/v2/user/payments',
+  {
+    params: {
+      APIKey: 'YOUR_API_KEY',
+      includeKeys: 'NO',
+      includeUnpaid: 'NO'
+    }
+  }
+)
+```
+
+> The response will look something like this:
+
+```json
+{
+  "status": "success",
+  "totalPayments": 32,
+  "totalPages": 11,
+  "resultsPerPage": 3,
+  "resultsOffset": 0,
+  "currentPage": 1,
+  "payments": [
+    {
+      "status": "complete",
+      "paymentAddress":"BITCOIN_CASH_ADDRESS",
+      "invoiceAmount":9003,
+      "paymentID": "order-fe43dcb493ac",
+      "created": "2018-10-22T23:49:53.000Z",
+      "privateKey": "hidden",
+      "callbackURL": "https://www.ooooooggle.com",
+      "callbackStatus": "status-200",
+      "platformID": "GATEWAY_PLATFORM_ID",
+      "transactions": [
+        {
+          "type": "payment",
+          "TXID": "BITCOIN_CASH_TRANSACTION_ID"
+        },
+        {
+          "type": "transfer-to-merchant",
+          "TXID": "BITCOIN_CASH_TRANSACTION_ID"
+        }
+      ]
+    },
+    {
+      "paymentAddress":"BITCOIN_CASH_ADDRESS",
+      "invoiceAmount":9003,
+      "status": "complete",
+      "paymentID": "order-fe43dcb493ac",
+      "created": "2018-10-22T23:49:53.000Z",
+      "privateKey": "hidden",
+      "transactions": [
+        {
+          "type": "payment",
+          "TXID": "BITCOIN_CASH_TRANSACTION_ID"
+        },
+        {
+          "type": "transfer-to-merchant",
+          "TXID": "BITCOIN_CASH_TRANSACTION_ID"
+        }
+      ]
+    },
+    {
+      "paymentAddress": "BITCOIN_CASH_ADDRESS",
+      "invoiceAmount":9003,
+      "status": "complete",
+      "paymentID": "order-fe43dcb493ac",
+      "created": "2018-10-22T23:49:53.000Z",
+      "privateKey": "hidden",
+      "transactions": [
+        {
+          "type": "payment",
+          "TXID": "BITCOIN_CASH_TRANSACTION_ID"
+        },
+        {
+          "type": "transfer-to-merchant",
+          "TXID": "BITCOIN_CASH_TRANSACTION_ID"
+        }
+      ]
+    }
+  ]
+}
+```
+
+To retrieve your payments, send a GET request to `/user/payments`. Since some merchants have a lot of payments, this endpoint splits them into pages and allows you to cycle through to find the one you are looking for.
+
+### Parameters
+
+Required | Name | Default | Description
+---------|------|---------|------------
+Yes | `APIKey` | `N/A` | An active API key belonging to the merchant
+No | `includeKeys` | `NO` | Include payment address private keys in the response
+No | `includeUnpaid` | `NO` | Include broken, unpaid or half-complete invoices
+No | `resultsPerPage` | `25` | The max number of results to send
+No | `page` | `1` | The page number
+
+### Return Value
+
+Name | Description
+-----|------------
+`totalPayments` | The total number of payments in this category for the merchant
+`resultsPerPage` | The number of results being sent in the current page
+`totalPages` | When pages are this size, this is the total number of needed pages to display all results
+`resultsOffset` | The offset of the first payment on the page into the total number of payments. On page 3 with 25 results per page this is 50.
+`currentPage` | The current page being displayed
+`payments` | An array containing the payments on the current page
+`payments[x].paymentAddress` | The address associated with the payment
+`payments[x].status` | The current status of the payment
+`payments[x].privateKey` | The private key for the payments. Not applicabl to XPUB payments
+`payments[x].invoiceAmount` | The amount of the invoice from the user's browser
+`payments[x].created` | The timestamp when the payment was created
+`payments[x].paymentID` | An identifier for the payment
+`payments[x].callbackURL` | The callback URL for the payment
+`payments[x].callbackStatus` | The status of the callback request
+`payments[x].transactions` | An array of transactions associated with this payment
+`payments[x].transactions[y].TXID` | The TXID of the transaction
+`payments[x].transactions[y].type` | The type of the transaction, generally one of `payment`, `transfer-to-merchant`, `refund` etc.
+
+<aside class="notice">
+Private keys are never included by default. You may always request that private
+keys for payment addresses be included by using the "includeKeys" parameter and
+giving a value of uppercase "YES". This may be useful if you'd like to process
+your own payments or for debugging.
 </aside>
 
 <aside class="notice">
-If an invoice is paid without calling the POST /paid endpoint, the payment
-will still eventually be forwarded to the merchant via the Gateway broken
-payments service within 24 hours. However, applications should always send a
-POST /paid request whenever possible so the merchant can receive the payment
-instantaneously.
+You may set the "includeUnpaid" parameter to uppercase "YES" to include invoices
+that are broken, unpaid, half-processed or otherwise deformed. This is useful
+for hunting down stuck payments (which can be recovered with "includeKeys"), and
+for tracking down issues with your payment invoices.
 </aside>
 
-## POST /address
+## Getting Payout Method
+
+> Retrieve the payout method:
+
+```js
+let result = await axios.get(
+  'https://api.gateway.cash/v2/user/payout/method',
+  {
+    params: {
+      APIKey: 'YOUR_API_KEY'
+    }
+  }
+)
+```
+
+> Successful results will look as follows:
+
+```json
+{
+  "status": "success",
+  "payoutMethod": "METHOD"
+}
+```
+
+There are two supported payout methods for Gateway accounts. `"address"` allows
+merchants to receive all their payments with a single Bitcoin Cash address,
+while `"XPUB"` allows you to specify an extended public key.
+
+To get your payout method, send a GET request to `/user/payout/method`.
+
+### Parameters
+
+Required | Name | Description
+---------|------|------------
+Yes | `APIKey` | An active API key belonging to the merchant
+
+## Changing Payout Method
+
+> Update the payout method:
+
+```js
+let result = await axios.patch(
+  'https://api.gateway.cash/v2/user/payout/method',
+  {
+    APIKey: 'YOUR_API_KEY',
+    newPayoutMethod: 'METHOD'
+  }
+)
+```
+
+> When successful, the new payout method will be sent back:
+
+```json
+{
+  "status": "success",
+  "newPayoutMethod": "METHOD"
+}
+```
+
+To update the payout method, first make sure you've provided a valid address or XPUB key, then send a PATCH request to `/user/payout/method`.
+
+### Parameters
+
+Required | Name | Description
+---------|------|------------
+Yes | `APIKey` | An active API key belonging to the merchant
+Yes | `newPayoutMethod` | The new payout method for the merchant
+
+<aside class="notice">
+Valid payout methods are "address" and "XPUB".
+</aside>
+
+## Getting Payout Address
+
+> Get the payout address for the merchant account:
+
+```js
+let result = await axios.get(
+  'https://api.gateway.cash/v2/user/payout/address',
+  {
+    params: {
+      APIKey: 'YOUR_API_KEY'
+    }
+  }
+)
+```
+
+> A successful response will look like this:
+
+```json
+{
+  "status": "success",
+  "payoutAddress": "BITCOIN_CASH_ADDRESS"
+}
+```
+
+To retrieve the payout address, send a GET request to `/user/payout/address`.
+
+### Parameters
+
+Required | Name | Description
+---------|------|------------
+Yes | `APIKey` | An active API key belonging to the merchant
+
+## Changing Payout Address
 
 > Change the payout address:
 
 ```js
-let result = await axios.post(
-  'https://api.gateway.cash/address',
+let result = await axios.patch(
+  'https://api.gateway.cash/v2/user/payout/address',
   {
     APIKey: 'YOUR_API_KEY',
     newAddress: 'BITCOIN_CASH_ADDRESS'
@@ -274,14 +626,14 @@ let result = await axios.post(
 }
 ```
 
-Allows a merchant to specify a new payout address for their account.
+To specify a new payout address for a merchant account, send a PATCH request to `/user/payout/address`.
 
 ### Parameters
 
 Required | Name | Description
 ---------|------|------------
-YES | `APIKey` | The API key of the merchant who's payout address is to be updated
-YES | `newAddress` | The new payout address for the merchant
+Yes | `APIKey` | An active API key belonging to the merchant
+Yes | `newAddress` | The new payout address for the merchant
 
 <aside class="notice">
 Please provide your Bitcoin Cash address in CashAddress format. If it is given
@@ -289,53 +641,121 @@ in any other format, it will be translated prior to being stored in the
 database. If we can't understand your address, we can't pay you!
 </aside>
 
-## POST /password
+## Getting Payout XPUB
 
-> Change the account password:
+> Get the payout XPUB key for the merchant account:
 
 ```js
-let result = await axios.post(
-  'https://api.gateway.cash/password',
+let result = await axios.get(
+  'https://api.gateway.cash/v2/user/payout/xpub',
   {
-    APIKey: 'YOUR_API_KEY',
-    newPassword: 'B@nk3rSh!llzSkillz#!/bin/sh'
+    params: {
+      APIKey: 'YOUR_API_KEY'
+    }
   }
 )
 ```
 
-> Your password will not be sent back for confirmation, so store it safely!
-> It's generally a good idea to encrypt credentials when plausible. Passwords
-> are always hashed and salted prior to being stored.
+> A successful response will look like this:
 
 ```json
 {
-  "status": "success"
+  "status": "success",
+  "payoutXPUB": "EXTENDED_PUBLIC_KEY"
 }
 ```
 
-Allows a merchant to specify a new password for their account.
+To retrieve the payout XPUB key, send a GET request to `/user/payout/xpub`.
 
 ### Parameters
 
 Required | Name | Description
 ---------|------|------------
-YES | `APIKey` | The API key of the merchant who's password is to be updated
-YES | `newPassword` | The new password for the merchant account
+Yes | `APIKey` | An active API key belonging to the merchant
+
+## Changing Payout XPUB
+
+> Change the payout XPUB key:
+
+```js
+let result = await axios.patch(
+  'https://api.gateway.cash/v2/user/payout/xpub',
+  {
+    APIKey: 'YOUR_API_KEY',
+    newXPUB: 'EXTENDED_PUBLIC_KEY'
+  }
+)
+```
+
+> Your new XPUB key will be sent back for confirmation, in addition to the
+> address derivation index used for the key, which is generally 0 for new keys.
+
+```json
+{
+  "status": "success",
+  "newXPUB": "EXTENDED_PUBLIC_KEY",
+  "XPUBIndex": 0
+}
+```
+
+Gateway assumes you are using BIP44 derivation for XPUB keys. When your new key
+is provided, the XPUB index (the address index in BIP44 derivation) is reset to
+0.
+
+To specify a new payout XPUB key for a merchant account, send a PATCH request
+to `/user/payout/xpub`.
+
+### Parameters
+
+Required | Name | Description
+---------|------|------------
+Yes | `APIKey` | An active API key belonging to the merchant
+Yes | `newXPUB` | The new payout XPUB key for the merchant
 
 <aside class="notice">
-The API server does not evaluate the security or entropy of provided passwords.
-It is the responsibility of the end user and/or the front-end
-service provider to ensure that a secure password is provided. Passwords
-are always salted and hashed prior to being stored in the database.
+Valid XPUB keys are around 112 characters in length and begin with "xpub".
+Invalid XPUN keys will be rejected by the server.
 </aside>
 
-## POST /username
+## Getting Your Username
+
+> Get the current username for the merchant account:
+
+```js
+let result = await axios.get(
+  'https://api.gateway.cash/v2/user/name',
+  {
+    params: {
+      APIKey: 'YOUR_API_KEY'
+    }
+  }
+)
+```
+
+> A successful response will look like this:
+
+```json
+{
+  "status": "success",
+  "username": "johngalt12"
+}
+```
+
+To return your current username, send a GET request to `/user/name`.
+
+### Parameters
+
+Required | Name | Description
+---------|------|------------
+Yes | `APIKey` | An active API key belonging to the merchant
+
+## Changing Your Username
 
 > Change the account username:
 
 ```js
 let result = await axios.post(
-  'https://api.gateway.cash/username',
+  'https://api.gateway.cash/v2/user/name',
   {
     APIKey: 'YOUR_API_KEY',
     newUsername: 'JohnGalt12'
@@ -349,18 +769,18 @@ let result = await axios.post(
 ```json
 {
   "status": "success",
-  "username": "johngalt12"
+  "newUsername": "johngalt12"
 }
 ```
 
-Allows a merchant to specify a new username for their account.
+To update your username, send a PATCH request to `/user/name`.
 
 ### Parameters
 
 Required | Name | Description
 ---------|------|------------
-YES | `APIKey` | The API key of the merchant who's username is to be updated
-YES | `newUsername` | The new username for the merchant account
+Yes | `APIKey` | An active API key belonging to the merchant
+Yes | `newUsername` | The new username for the merchant account
 
 <aside class="notice">
 Your username must be between 5 and 24 characters, must be unique, must not
@@ -368,334 +788,128 @@ contain spaces/tabs or other odd characters and will be converted to lower case
 before being stored in the database.
 </aside>
 
-# GET Endpoints
+## Changing Your Password
 
-GET endpoints are generally for retrieving information from the server rather
-than updating or changing it.
-
-## GET /login
-
-> You may either log into Gateway using your payout address or your username.
-> Logging in by address:
+> Change the account password:
 
 ```js
-let result = await axios.get(
-  'https://api.gateway.cash/login',
+let result = await axios.patch(
+  'https://api.gateway.cash/v2/user/password',
   {
-    params: {
-      address: 'BITCOIN_CASH_ADDRESS',
-      password: 'IHeartDagney'
-    }
+    APIKey: 'YOUR_API_KEY',
+    newPassword: 'B@nk3rSh!llzSkillz#!/bin/sh'
   }
 )
 ```
 
-> Logging in by username:
-
-```js
-let result = await axios.get(
-  'https://api.gateway.cash/login',
-  {
-    params: {
-      username: 'JohnGalt12',
-      password: 'IHeartDagney'
-    }
-  }
-)
-```
-
-> Whichever method you choose, a successful response will look like this:
+> Your password will not be sent back for confirmation, so store it safely!
+> It's generally a good idea to encrypt credentials when plausible. Passwords
+> are always hashed and salted prior to being stored in the database.
 
 ```json
 {
-  "status": "success",
-  "APIKey": "YOUR_API_KEY"
+  "status": "success"
 }
 ```
 
-> Use the API key you receive when calling other endpoints.
-
-The `GET /login` endpoint simply retrieves the API key for your account. You
-may then use the key to access other portions of the API.
+To set a new password, send a PATCH request to `/user/password`.
 
 ### Parameters
 
-One of `address` or `username` is required along with a `password`.
-
-Name | Description
------|------------
-`address` | The merchant account payout address
-`username` | The username for the merchant account
-`password` | The merchant account password
+Required | Name | Description
+---------|------|------------
+Yes | `APIKey` | An active API key belonging to the merchant
+Yes | `newPassword` | The new password for the merchant account
 
 <aside class="notice">
-The API key for any account will generally remain the same unless GET
-/newapikey is called. If you store the key somewhere, just be aware that it can
-be used to access and change merchant account settings, including the payout
-address. If you're building something like a mobile app where login information
-is generally saved, you should store the API key rather than the username and
-password. You should always encrypt credentials when plausible.
+The API server does not thoroughly evaluate the security or entropy of provided
+passwords. It is the responsibility of the end user and/or the front-end
+service provider to ensure that a secure password is provided. Passwords
+are always salted and hashed prior to being stored in the database.
 </aside>
 
-## GET /payments
+## Viewing API Keys
 
-> Get a list of invoices for your account:
+> Get a list of all API keys associated with your account:
 
 ```js
 let result = await axios.get(
-  'https://api.gateway.cash/payments',
+  'https://api.gateway.cash/v2/api/keys',
   {
     params: {
-      APIKey: 'YOUR_API_KEY',
-      includeKeys: 'NO',
-      includeUnpaid: 'NO'
+      APIKey: 'YOUR_API_KEY'
     }
   }
 )
 ```
 
-> The response will look something like this:
+> The request will result in a response like this:
 
 ```json
 {
-  "status": "success",
-  "numberOfPayments": 4,
-  "payments": [
+  "APIKeys": [
     {
-      "paymentAddress":"bitcoincash:qqet0p878uc7e8trwvxqefgmqtkkvqzsvs4vrk4h9s",
-      "paidAmount":9003,
-      "paymentTXID":"ec396d7a28997df889a0c7dfda6d01740ba9e151ac4df182076185d844a687bc",
-      "transferTXID":"8a17fc8f308cbc45e030e41cd0a8a393d9afd3aaf44d86093126f09cbce826fc",
-      "paymentID": "order-fe43dcb493ac",
-      "created": "2018-10-22T23:49:53.000Z",
-      "paymentKey": "hidden"
+      "created": "TIMESTAMP",
+      "active": "true",
+      "APIKey": "API_KEY",
+      "label": "Created at registration"
     },
     {
-      "paymentAddress":"bitcoincash:qqucfprkhtwknhhdvthj0jazk5f6erxmxqgjp4ht5q",
-      "paidAmount":10000,
-      "paymentTXID":"afee8509dc5139e28ae8e0ee0b1ea3b6e45aa62bce973a3f942281501cb9b526",
-      "transferTXID":"bc0985d2b7b9ec955318a56cde3481d8beecd87bd325f0c78ee5f79ced96907e",
-      "paymentID":"donation",
-      "created":"2018-10-22T02:10:38.000Z",
-      "paymentKey":"hidden"
-    },
-    {
-      "paymentAddress":"bitcoincash:qzm62utwlfccx55qvm0lxjk4cq0x4ag3tsmc8h22jt",
-      "paidAmount":9011,
-      "paymentTXID":"526e318e120fc3d43faf2a502c6de88748457418051090b680ede4760b639f51",
-      "transferTXID":"7974696486a82be8eebd14f3592f902a8f0ee3b50f6f15abace91faf7e548fa7",
-      "paymentID":"null",
-      "created":"2018-10-21T23:32:33.000Z",
-      "paymentKey":"hidden"
-    },
-    {
-      "paymentAddress":"bitcoincash:qphqgzujdyp7034q6p472wdyyxsy5k83hur9d425c9",
-      "paidAmount":100000,
-      "paymentTXID":"0544124297f8ebd0cf8652f3855bc94da57afa0fcbba99da84c07a015aedfc39",
-      "transferTXID":"653ae98d262fde67a7fbef7ad103fd790d61f693ab617b71fe45400b64ed1e0f",
-      "paymentID":"donation-0.001",
-      "created":"2018-10-20T13:30:35.000Z",
-      "paymentKey":"hidden"
+      "created": "TIMESTAMP",
+      "active": "false",
+      "APIKey": "API_KEY",
+      "label": "Test",
+      "revokedDate": "TIMESTAMP"
     }
   ]
 }
 ```
 
-This endpoint allows merchants to get a list of their payment invoices.
+To get a list of the API keys for your account, send a GET request to
+`/api/keys`.
 
 ### Parameters
 
-Required | Name | Default | Description
----------|------|---------|------------
-YES | `APIKey` | `N/A` | The merchant account API key
-NO | `includeKeys` | `NO` | Include payment address private keys in the response
-NO | `includeUnpaid` | `NO` | Include broken, unpaid or half-complete invoices
+Required | Name | Description
+---------|------|------------
+Yes | `APIKey` | An active API key belonging to the merchant
 
 <aside class="notice">
-Private keys are never included by default. You may always request that private
-keys for payment addresses be included by using the "includeKeys" parameter and
-giving a value of uppercase "YES". This may be useful if you'd like to process
-your own payments or for debugging.
+For now, all active Gateway API keys have all permissions on the merchant
+account. In the future, you will be able to create "read-only" keys and manage
+the permissions specific to each key.
 </aside>
 
-<aside class="notice">
-You may set the "includeUnpaid" parameter to uppercase "YES" to include invoices
-that are broken, unpaid, half-processed or otherwise deformed. This is useful
-for hunting down stuck payments (which can be recovered with "includeKeys"), and
-for debugging your payment invoices.
-</aside>
+## Adding an API Key
 
-## GET /address
-
-> Get the payout address for the merchant account:
+> Add a new API key:
 
 ```js
-let result = await axios.get(
-  'https://api.gateway.cash/address',
+let result = await axios.put(
+  'https://api.gateway.cash/v2/api/key',
   {
-    params: {
-      APIKey: 'YOUR_API_KEY'
-    }
+    "APIKey": "YOUR_OTHER_API_KEY",
+    "label": "NEW_KEY_LABEL"
   }
 )
 ```
 
-> A successful response will look like this:
 
-```json
-{
-  "status": "success",
-  "payoutAddress": "BITCOIN_CASH_ADDRESS"
-}
-```
 
-This endpoint returns the current merchant account payout address.
+## Deleting an API Key
 
-### Parameters
 
-Required | Name | Description
----------|------|------------
-YES | `APIKey` | The merchant account API key
 
-## GET /merchantid
+## Deactivating or Reactivating an API Key
 
-> Get the merchant ID for the account:
 
-```js
-let result = await axios.get(
-  'https://api.gateway.cash/merchantid',
-  {
-    params: {
-      APIKey: 'YOUR_API_KEY'
-    }
-  }
-)
-```
 
-> A successful response will look like this:
+# Making Payments
 
-```json
-{
-  "status": "success",
-  "merchantID": "MERCHANT_ID"
-}
-```
+This section covers the process of making and receiving payments with Gateway.
+The process is fairly straightforward, and no API keys are required.
 
-This endpoint returns the merchant ID.
-
-### Parameters
-
-Required | Name | Description
----------|------|------------
-YES | `APIKey` | The merchant account API key
-
-## GET /username
-
-> Get the current username for the merchant account:
-
-```js
-let result = await axios.get(
-  'https://api.gateway.cash/username',
-  {
-    params: {
-      APIKey: 'YOUR_API_KEY'
-    }
-  }
-)
-```
-
-> A successful response will look like this:
-
-```json
-{
-  "status": "success",
-  "username": "johngalt12"
-}
-```
-
-This endpoint returns the current merchant account username.
-
-### Parameters
-
-Required | Name | Description
----------|------|------------
-YES | `APIKey` | The merchant account API key
-
-## GET /totalsales
-
-> Get total sales information for the merchant account:
-
-```js
-let result = await axios.get(
-  'https://api.gateway.cash/totalsales',
-  {
-    params: {
-      APIKey: 'YOUR_API_KEY'
-    }
-  }
-)
-```
-
-> A successful response will look like this:
-
-```json
-{
-  "status": "success",
-  "totalsales": 133706969
-}
-```
-
-This endpoint returns the total sales for the merchant account.
-
-### Parameters
-
-Required | Name | Description
----------|------|------------
-YES | `APIKey` | The merchant account API key
-
-<aside class="notice">
-Total sales are returned in units of satoshi.
-</aside>
-
-## GET /newapikey
-
-> Generate a new API key for the merchant account:
-
-```js
-let result = await axios.get(
-  'https://api.gateway.cash/newapikey',
-  {
-    params: {
-      APIKey: 'YOUR_API_KEY'
-    }
-  }
-)
-```
-
-> A successful response will look like this:
-
-```json
-{
-  "status": "success",
-  "newAPIKey": "NEW_API_KEY"
-}
-```
-
-This endpoint will generate a new API key for your account, invalidating the
-old API key.
-
-### Parameters
-
-Required | Name | Description
----------|------|------------
-YES | `APIKey` | The old merchant account API key
-
-<aside class="notice">
-When you change your API key, your old key immediately becomes invalid. You must
-use your new API key for subsequent requests.
-</aside>
-
-# Payment Processing
+## Payment Processing
 
 Payment processing with Gateway is intuitive and simple. Merchants and
 developers put PayButtons on their websites and apps so that customers can
@@ -715,7 +929,7 @@ any payment information given to them by the merchant website (`paymentID`,
 Once the payment is complete, the customer's browser uses the `POST /paid`
 endpoint and sends the `paymentAddress` with the `paymentTXID` back to Gateway.
 
-At this point, the customer is done and can move on with their day. Gateway adds the payment to the list of pending payments. Pending payments are processed every 30 seconds by the `fundsTransferService`.
+At this point, the customer is done and can move on with their day. Gateway maks the payment as pending. Pending payments are processed every 30 seconds by the `fundsTransferService`.
 
 <aside class="notice">
 The Gateway payment processing daemon now runs every 30 seconds! This means a
@@ -725,20 +939,30 @@ payments.
 
 ## Funds Transfer Service
 
-The Gateway `fundsTransferService` manages payments sent using the Gateway API. It checks the pending payments list (stored in the `pending` table of the Gateway database) every 30 seconds for new payments.
+The Gateway `fundsTransferService` manages payments sent using the Gateway API.
+Every 30 seconds, it checks for and processes payments which have been marked
+as `"pending"`.
 
-For each payment in the pending payments list, `fundsTransferService` will do the following:
+For each payment marked as pending, `fundsTransferService` will do the
+following:
 
+- Check if the payment was made to a merchant who uses XPUB keys. If so,
+  call the callbackURL (if provided), update total sales and move on,
+  skipping the rest of the steps below.
 - Check the `paymentAddress` of the payment for a balance. If there is no
   balance `fundsTransferService` moves to the next payment.
 - Retrieve information from the database about the merchant and payment.
 - Get the UTXOs associated with `paymentAddress` from a block explorer.
+- Deduct Gateway contributions from the payment and send them to Gateway.
+- Deduct any platform commissions and send them to the owner of the platform.
 - Create a transaction sending the `paymentUTXOs` from `paymentAddress` to the
   merchant's `payoutAddress`.
 - Broadcast the transaction to the Bitcoin Cash (BCH) network.
-- Delete the payment from the pending payments list.
-- Add the `paidAmount`, `paymentTXID` and `transferTXID` to the payments table.
+- Set the status of the payment to be `"complete"`
 - Increment `totalSales` for the merchant.
+- Increment `totalSales` for the platform (if applicable).
+- Increment `totalContributed` to the merchant, if the merchant contributes to
+  Gateway.
 - If a `callbackURL` was provided at the time of the invoice being created,
   execute the callback as documented in the <b>Callback URLs</b> section.
 
@@ -757,21 +981,298 @@ address.
 
 The Gateway Broken Payments Service runs every 12 hours and checks the balances
 of all addresses over which Gateway has custody. Any invoices who's payment
-addresses have a balance are immediately moved to the pending payments list
+addresses have a balance are immediately assigned `"pending"` status
 at which point the payment is processed as normal.
-
-<aside class="notice">
-You may notice payments with TXIDs like "broken-payment-txid-unknown-xxxxx".
-These payments were made to invoice addresses without the customer's browser
-calling the POST /paid endpoint after paying. Gateway intends to eventually
-discover the TXIDs for these broken payments.
-</aside>
 
 ## Extended Public Keys (XPUB)
 
-There are plans to support the use of merchant extended public keys for invoice
-address derivation in the future. When this is implemented, payments are never
-held in the custody of Gateway and Gateway will only provide invoice tracking and address derivation.
+When a merchant sets their payout method to `XPUB` and provides a valid XPUB
+key for their account, there is no need for Gateway to forward the payment. The
+merchant is always in control of their money, and Gateway never sees the coins.
+
+However, this can create some issues with contributions and Platforms. See the
+<b>Registration</b> and <b>Platforms</b> sections for more details.
+
+## Creating an Invoice
+
+> Create a new invoice and generate a payment address:
+
+```js
+let result = await axios.post(
+  'https://api.gateway.cash/v2/pay',
+  {
+    merchantID: 'MERCHANT_ID',
+    paymentID: 'PAYMENT_ID',
+    callbackURL: 'CALLBACK_URL'
+  }
+)
+```
+
+> If successful, you will get back something like this:
+
+```json
+{
+  "status": "success",
+  "paymentAddress": "BITCOIN_CASH_ADDRESS"
+}
+```
+
+> So, to print your payment address:
+
+```js
+console.log(result.data.paymentAddress)
+```
+
+To open a new invoice with a merchant, send a POST request to `/pay`. Include
+their merchant ID in the request and you'll get a payment address back.
+
+### Parameters
+
+Required | Name | Description
+---------|------|------------
+Yes | `merchantID` | The ID for the merchant for whom the payment is intended
+No | `paymentID` | An identifier for the payment which will be shown to the merchant
+No | `callbackURL` | See the Callbacks section
+
+<aside class="success">
+Nope! You don't need an API key when using this endpoint.
+</aside>
+
+<aside class="warning">
+Merchants who leverage callback URLs must be careful and make sure to
+validate that payments they receive are legitimate. <b>CALLBACK URLS ARE
+PUBLIC!!!</b> When you receive a callback from Gateway, it will ALWAYS contain
+a property called "transferTXID" which is a Bitcoin Cash transaction moving
+funds to the merchant's address. <b>Merchants MUST verify that this transaction
+is valid and that an acceptable amount has been paid.</b>
+</aside>
+
+## Marking Invoices as Paid
+
+> Send the request with the payment address and TXID:
+
+```js
+let result = await axios.post(
+  'https://api.gateway.cash/v2/paid',
+  {
+    paymentAddress: 'PAYMENT_ADDRESS',
+    paymentTXID: 'PAYMENT_TXID'
+  }
+)
+```
+
+> If successful, you should get back something like this:
+
+```json
+{
+  "status": "success"
+}
+```
+
+Once an invoice has been paid, send a POST request to `/paid` to give the
+payment TXID to the server for processing.
+
+### Parameters
+
+Required | Name | Description
+---------|------|------------
+Yes | `paymentAddress` | The payment address of the invoice
+Yes | `paymentTXID` | The TXID of the transaction which pays the invoice
+
+<aside class="success">
+Nope! You don't need an API key when using this endpoint.
+</aside>
+
+<aside class="notice">
+If an invoice is paid without calling the POST /paid endpoint, the payment
+will still eventually be forwarded to the merchant via the Gateway broken
+payments service within 24 hours. However, applications should always send a
+POST /paid request whenever possible so the merchant can receive the payment
+instantaneously.
+</aside>
+
+# Gateway Platforms
+
+
+
+## Overview
+
+
+
+## Creating a Platform
+
+
+
+## Listing Your Platforms
+
+
+
+## Changing Platform Settings
+
+
+
+## Listing Users
+
+
+
+## Listing Commissions
+
+
+
+## Adding a Commission
+
+
+
+## Changing a Commission
+
+
+
+## Deleting a Commission
+
+
+
+# Contributing to Gateway
+
+When you contribute to Gateway, a portion of each payment made to your merchant
+account is deducted and sent to the Gateway donation address. We use these
+donations to make Gateway better and to help build new ideas in the Gateway
+ecosystem.
+
+If you run a platform, you can add a Gateway contribution option for your
+users. Platform user accounts can set contribution settings in the same way as
+any other normal Gateway merchant account.
+
+Contributions to Gateway are deducted before platform commissions, so there may
+be cases in which the platform commission is not paid since the payment isn't
+enough to cover both.
+
+## Contribution Rules
+
+Contribution rules are very similar to the rules used for platform commissions. They take the form:
+
+"I would like to contribute `{A}`% or `{B}` `{C}`, whichever is `{D}`."
+
+We substitute as follows:
+
+`{A}` = A percentage
+
+`{B}` = An amount (in units if `{C}`)
+
+`{C}` = A three-digit currency code like `BCH`
+
+`{D}` = Either `"less"` or `"more"`
+
+## Getting Contribution Info
+
+> Get current contribution settings for your account:
+
+```js
+let result = await axios.get(
+  'https://api.gateway.cash/v2/user/contribution',
+  {
+    params: {
+      APIKey: 'YOUR_API_KEY'
+    }
+  }
+)
+```
+
+> The above request will return a result like this:
+
+```json
+{
+  "status": "success",
+  "contributionAmount": "0.1",
+  "contributionCurrency": "USD",
+  "contributionPercentage": "30",
+  "contributionLessMore": "less"
+}
+```
+
+To get current contribution settings for the user, send a GET request to
+`/user/contribution`.
+
+### Parameters
+
+Required | Name | Description
+---------|------|------------
+Yes | `APIKey` | An active API key belonging to the merchant
+
+## Return Values
+
+The request returns a JSON object with the following parameters:
+
+
+Parameter | Description
+----------|------------
+`contributionTotal` | The total ever contributed to Gateway by this user
+`contributionAmount` | The amount, in units of `contributionCurrency`, to contribute
+`contributionCurrency` | A three-digit currency code. Possible values: `USD`, `EUR`, `JPY`, `CNY` and of course `BCH` which is the default
+`contributionPercentage` | A percentage of each payment to send to Gateway
+`contributionLessMore` | Indicates whether the lesser or the greater of the two values should be contributed
+
+## Updating Contribution Settings
+
+> Set updated contribution settings for your account:
+
+```js
+let result = await axios.patch(
+  'https://api.gateway.cash/v2/user/contribution',
+  {
+    APIKey: 'YOUR_API_KEY',
+    newContributionAmount: '0.25',
+    newContributionCurrency: 'EUR',
+    newContributionPercentage: '2',
+    newContributionLessMore: 'less'
+  }
+)
+```
+
+> Values are sent back for confirmation:
+
+```json
+{
+  "status": "success",
+  "newContributionAmount": "0.25",
+  "newContributionCurrency": "EUR",
+  "newContributionPercentage": "2",
+  "newContributionLessMore": "less"
+}
+```
+
+To update the contribution values for a merchant account, send a PATCH request
+to `/user/contribution`.
+
+### Parameters
+
+Required | Name | Description
+---------|------|------------
+Yes | `APIKey` | An active API key belonging to the merchant
+No | `newContributionAmount` | The amount, in units of `newContributionCurrency`, to contribute
+No | `newContributionCurrency` | A three-digit currency code. Possible values: `USD`, `EUR`, `JPY`, `CNY` and of course `BCH` which is the default
+No | `newContributionPercentage` | A percentage of each payment to send to Gateway
+No | `newContributionLessMore` | Indicates whether the lesser or the greater of the two values should be contributed
+
+If you don't include all four values in your request, the ones included will be
+updated and the others will stay  the same. All four values will always be sent
+back for confirmation.
+
+## In Case of Errors
+
+Suppose Alice has a merchant account with the following generous contribution
+rules:
+
+"I would like to contribute `10`% or `1.00` `USD`, whichever is `more`."
+
+Now, suppose Bob pays Alice `0.13` `USD`. Since `1.00` `USD` (the greater of the two values) cannot be deducted from the payment, Alice receives the entire payment of `0.13` `USD`.
+
+In another case, if Carol sent Alice a large payment of `1337.00` `USD`, Gateway would receive `133.70` `USD` and Alice would receive the rest of the payment, minus transaction fees.
+
+## Contribution Defaults
+
+Gateway will never enable contributions by default. In other words:
+
+"I would like to contribute `0`% or `0` `BCH`, whichever is `less`."
 
 # Callback URLs
 
@@ -787,7 +1288,6 @@ you need to keep in mind when building your applications.
 
 ```json
 {
-  "transferTXID": "VALIDATE_THE_TRANSFER_TXID_BEFORE_SHIPPING_ORDERS",
   "paymentAddress": "GATEWAY_INVOICE_PAYMENT_ADDRESS",
   "paymentTXID": "CUSTOMER_PAYMENT_TXID"
 }
@@ -799,29 +1299,42 @@ callback URL becomes public. This means that any malicious customer can see
 your callback URL and make illegitimate callbacks.
 
 To solve this rather large problem, Gateway will always and only send a
-callback containing the Transaction Identifier (TXID) of a transaction which
-transfers funds directly to your merchant account payout address.
+callback containing information that can (and must) be independently validated
+by you.
 
-This TXID will always be in a field called `"transferTXID"`. However, since
-callback URLs are public, it is not enough simply to verify the field exists.
-Merchants MUST, I repeat, <b>MUST VERIFY that the `transferTXID` field points at a Bitcoin Cash transaction transferring AN ACCEPTABLE payment amount to AN ADDRESS CONTROLLED BY THE MERCHANT.</b>
+The Bitcoin Cash payment information, including the payment address and TXIDs
+asociated with relevant transactions will be included in legitimate callback
+requests.
 
-Failure to perform this validation <b>will lead to hackers defrauding you</b>.
+As the merchant, you must, I repeat <b>MUST VALIDATE that the provided
+transaction data satisfies your requirements</B>. TXIDs can be queried from
+block explorers or a trusted Bitcoin Cash node. You need to ensure that the
+following are true:
+
+- The payment address is either an address derived from your `payoutXPUB` o an
+  address generated by Gateway for the payment.
+- In the case of XPUB, the transaction with `type` of `"payment"` moves an
+  amount of BCH <b>acceptable to you as payment for your goods or services</b>
+  to the XPUB-derived address.
+- If you use a payout address, the amount transferred to you (minus transaction
+  fees) is <b>an acceptable amount of BCH as payment for your goods or
+  services</b>.
+
+Gateway has plans to release software that will make this easier in the future,
+but for now it may be advisable not to use callback URLs. You may prefer to log
+into gateway.cash and manually verify and ship your orders.
+
+Failure to perform these validations <b>will result in hackers defrauding
+you</b>.
 
 ## Parameters
 
-In addition to the above, callbacks contain several pieces of information.
+Legitimate callbacks contain several pieces of information:
 
 Required | Name | Description
 ---------|------|------------
-YES | `transferTXID` | A TXID moving an appropriate amount of funds to a merchant address (MUST BE VALIDATED BY MERCHANT!!!)
-NO | `paymentAddress` | The Gateway payment address used by the customer to pay the invoice
-NO | `paymentTXID` | The TXID of a transaction moving funds from the customer's address to the Gateway invoice address
-
-<aside class="warning">
-The "paymentTXID" was provided by the customer and so may not be valid. It is
-provided for record keeping and the customer's convenience only.
-</aside>
+Yes | `transactions` | An array of transactions pertaining to the payment
+No | `paymentAddress` | The Gateway payment address used by the customer to pay the invoice
 
 <aside class="notice">
 The amount of information contained in callbacks is intentionally kept sparse.
