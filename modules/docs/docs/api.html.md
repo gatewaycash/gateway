@@ -108,8 +108,8 @@ can retrieve an API key with /user/login.
 
 # Accounts, Access and Keys
 
-This section covers topics related to accessing and managing your user account,
-API keys and related topics.
+This section covers accessing and managing your user account, API keys and
+related topics.
 
 ## Registration
 
@@ -165,11 +165,11 @@ view payments for each button, track your total sales and much more.
 
 Required | Name | Description
 ---------|------|------------
-Sometimes | `address` | The Bitcoin Cash address to use for your merchant account. Required when `XPUB` is not provided.
-Sometimes | `XPUB` | The extended public key (XPUB) for your merchant account. Required when `address` is not provided.
-Yes | `username` | The username for your merchant account, required when logging in.
-Yes | `password` | A unique and strong password to protect your new account.
-No | `platformID` | Makes this user a Gateway Platforms user. See the Platforms section below for more info.
+Sometimes | `address` | The Bitcoin Cash address to use for your merchant account. Required when `XPUB` is not provided
+Sometimes | `XPUB` | The extended public key (XPUB) for your merchant account. Required when `address` is not provided
+Yes | `username` | The username for your merchant account
+Yes | `password` | A unique and strong password to protect your new account
+No | `platformID` | Makes this user a Gateway Platforms user. See the Platforms section below for more info
 
 ### A Warning About XPUB with Platforms Users
 
@@ -199,14 +199,14 @@ database. If we can't understand your address, we can't pay you!
 </aside>
 
 <aside class="notice">
-The API server does not evaluate the security or entropy of provided passwords.
+The API server does not thoroughly evaluate the security or entropy of provided passwords.
 It is the responsibility of the end user and/or the front-end
 service provider to ensure that a secure password is provided. Passwords
 are always salted and hashed prior to being stored in the database.
 </aside>
 
 <aside class="notice">
-Your username must be between 5 and 24 characters, must be unique, must not
+Your username must be between 5 and 24 characters, must be unique and must not
 contain spaces/tabs or other odd characters. Usernames are not case sensitive.
 </aside>
 
@@ -228,7 +228,7 @@ let result = await axios.get(
 )
 ```
 
-> A successful response will return a working API key for your account:
+> A successful response will always return a working API key for your account:
 
 ```json
 {
@@ -367,7 +367,7 @@ Required | Name | Description
 Yes | `APIKey` | An active API key belonging to the merchant
 
 The response, among other things, will include a field called
-`"contributionTotal"` which represents the total.
+`"contributionTotal"`.
 
 ## Viewing Your Payments
 
@@ -484,7 +484,7 @@ Name | Description
 `payments` | An array containing the payments on the current page
 `payments[x].paymentAddress` | The address associated with the payment
 `payments[x].status` | The current status of the payment
-`payments[x].privateKey` | The private key for the payments. Not applicabl to XPUB payments
+`payments[x].privateKey` | The private key for the payment. Not applicable to XPUB payments
 `payments[x].invoiceAmount` | The amount of the invoice from the user's browser
 `payments[x].created` | The timestamp when the payment was created
 `payments[x].paymentID` | An identifier for the payment
@@ -613,6 +613,11 @@ Required | Name | Description
 ---------|------|------------
 Yes | `APIKey` | An active API key belonging to the merchant
 
+<aside class="warning">
+If no payout address has ever been associated with this account (the merchant
+has only ever used XPUB), the endpoint may return "null" as a response.
+</aside>
+
 ## Changing Payout Address
 
 > Change the payout address:
@@ -686,6 +691,11 @@ Required | Name | Description
 ---------|------|------------
 Yes | `APIKey` | An active API key belonging to the merchant
 
+<aside class="warning">
+If no XPUB key has ever been associated with this account (the merchant
+has only ever used an address), the endpoint may return "null" as a response.
+</aside>
+
 ## Changing Payout XPUB
 
 > Change the payout XPUB key:
@@ -727,7 +737,7 @@ Yes | `newXPUB` | The new payout XPUB key for the merchant
 
 <aside class="notice">
 Valid XPUB keys are around 112 characters in length and begin with "xpub".
-Invalid XPUN keys will be rejected by the server.
+Invalid keys will be rejected by the server.
 </aside>
 
 ## Getting Your Username
@@ -1005,7 +1015,7 @@ Required | Name | Description
 ---------|------|------------
 Yes | `APIKey` | An active API key belonging to the merchant
 Yes | `action` | The action to be performed (see below)
-Sometimes | `APIKeyToDeactivate` | The ke to be deactivated
+Sometimes | `APIKeyToDeactivate` | The key to be deactivated
 Sometimes | `APIKeyToReactivate` | The key to be reactivated
 
 ### Possible Actions
@@ -1162,9 +1172,9 @@ Nope! You don't need an API key when using this endpoint.
 Merchants who leverage callback URLs must be careful and make sure to
 validate that payments they receive are legitimate. <b>CALLBACK URLS ARE
 PUBLIC!!!</b> When you receive a callback from Gateway, it will ALWAYS contain
-a property called "transferTXID" which is a Bitcoin Cash transaction moving
-funds to the merchant's address. <b>Merchants MUST verify that this transaction
-is valid and that an acceptable amount has been paid.</b>
+TXIDs that must be validated by the merchant. <b>Merchants MUST verify these
+transactions are valid and that an acceptable amount has been paid to an address
+they control before shipping items.</b>
 </aside>
 
 ## Marking Invoices as Paid
@@ -1219,7 +1229,7 @@ section describes how to create, manage and deploy Platforms.
 
 ## Overview
 
-In this context, a platform refers to s website where users interact with each
+In this context, a platform refers to any website where users interact with each
 other, with each other's content or where they can buy things. Each project you
 work on shouldn't generally require more than one platform, but you can set
 commission rules so that certain things apply in certain cases but not others.
@@ -1237,8 +1247,16 @@ permissions and rights to change certain aspects of a platform.
 
 ## Platform Users
 
-Platform users are created in the same manner as normal users. Generally, the
+Platform users are created in the same manner as normal users. See the
+<b>Registration</b> section for more info. Include the `platformID` with a
+registration request to create a new Platforms user.
 
+The new user will be exclusively owned by the platform and any payments sent to
+their `merchantID` will be subject to the commissions of the platform.
+
+<aside class="notice">
+No, Platforms users can not create their own platforms. Nice try :)
+</aside>
 
 ## Creating a Platform
 
@@ -1274,6 +1292,11 @@ Required | Name | Description
 Yes | `APIKey` | An active API key belonging to the merchant
 Yes | `name` | The name of the new platform
 No | `description` | The platform description (defaults to "New Platform")
+
+When you create a new platform, the merchant account who's API key was used to
+send the PUT request will be made the owner of the new platform. Until they
+delegate permission to others, their API key must be used in any request that
+deals with the commissions or policies of their new platform.
 
 ## Listing Your Platforms
 
@@ -1356,7 +1379,7 @@ platform. Currently, setting a new name and description are supported.
 
 Required | Name | Description
 ---------|------|------------
-Yes | `APIKey` | An active API key belonging to someone with appropriate permissions over this platform
+Yes | `APIKey` | An active API key belonging to someone with permission
 Yes | `platformID` | The ID of the platform to be updated
 Sometimes | `newName` | A new name for the platform
 Sometimes | `newDescription` | A new description for the platform
@@ -1364,13 +1387,13 @@ Sometimes | `newDescription` | A new description for the platform
 At least one of `newName` and `newDescription` is required.
 
 <aside class="notice">
-There are plans for this endpoint to include support for many other featurs,
+There are plans for this endpoint to include support for many other features,
 including permissions management, dis/allowing the use of XPUB keys and more.
 </aside>
 
 ## Commission Rules
 
-Commisson rules are directives given to the Gateway payment processing service
+Commission rules are directives given to the Gateway payment processing service
 which determine when and how much of a commission is taken from which payments,
 and where the commission is to be sent.
 
@@ -1454,7 +1477,7 @@ total. The merchant receives 50% of the total minus transaction fees.
 
 ### Return Values
 
-This endpoint returns an array called `"commissions"`. This aray contains the
+This endpoint returns an array called `"commissions"`. This array contains the
 following values for each commission in the array:
 
 Name | Description
@@ -1522,7 +1545,7 @@ Yes | `commissionAmount` | An amount in units of `commissionCurrency`
 Yes | `commissionCurrency` | Three-digit currency code, `BCH` by default
 Yes | `commissionPercentage` | A percentage, for example `0.25` for 0.25% or `25` for 25%
 Yes | `commissionLessMore` | A less/more value indicating whether the lesser or the greater of commissionAmount or commissionPercentage should be charged
-Yes | `commissionMethod` | The payout method, either `"XPUB"` o `"address"`
+Yes | `commissionMethod` | The payout method, either `"XPUB"` or `"address"`
 Sometimes | `commissionAddress` | Required when `commissionMethod` is `"address"`
 Sometimes | `commissionXPUB` | Required when `commissionMethod` is `"XPUB"`
 
@@ -1577,7 +1600,7 @@ No | `newCommissionAmount` | An amount in units of `newCommissionCurrency`
 No | `newCommissionCurrency` | Three-digit currency code, `BCH` by default
 No | `newCommissionPercentage` | A percentage, for example `0.25` for 0.25% or `25` for 25%
 No | `newCommissionLessMore` | A less/more value indicating whether the lesser or the greater of `newCommissionAmount` or `newCommissionPercentage` should be charged
-No | `newCommissionMethod` | The payout method, either `"XPUB"` o `"address"`
+No | `newCommissionMethod` | The payout method, either `"XPUB"` or `"address"`
 Sometimes | `newCommissionAddress` | Required when `newCommissionMethod` is being changed to `"address"`
 Sometimes | `newCommissionXPUB` | Required when `newCommissionMethod` is being changed to `"XPUB"`
 
@@ -1796,11 +1819,11 @@ transaction data satisfies your requirements</B>. TXIDs can be queried from
 block explorers or a trusted Bitcoin Cash node. You need to ensure that the
 following are true:
 
-- The payment address is either an address derived from your `payoutXPUB` o an
+- The payment address is either an address derived from your `payoutXPUB` or an
   address generated by Gateway for the payment.
-- In the case of XPUB, the transaction with `type` of `"payment"` moves an
+- If you use XPUB, the transaction with `type` of `"payment"` moves an
   amount of BCH <b>acceptable to you as payment for your goods or services</b>
-  to the XPUB-derived address.
+  to an XPUB-derived address which <b>YOU CONTROL!!</b>
 - If you use a payout address, the amount transferred to you (minus transaction
   fees) is <b>an acceptable amount of BCH as payment for your goods or
   services</b>.
@@ -1816,13 +1839,14 @@ you</b>.
 
 Legitimate callbacks contain several pieces of information:
 
-Required | Name | Description
----------|------|------------
-Yes | `transactions` | An array of transactions pertaining to the payment
-No | `paymentAddress` | The Gateway payment address used by the customer to pay the invoice
+Name | Description
+-----|------------
+`transactions` | An array of transactions pertaining to the payment
+`paymentAddress` | The Gateway payment address used by the customer to pay the invoice
 
 <aside class="notice">
 The amount of information contained in callbacks is intentionally kept sparse.
 In particular, the amount being paid is never sent so that the merchant
-validates this information by querying the transferTXID from the network.
+validates this information by querying from the Bitcoin Cash network, as they
+should.
 </aside>
