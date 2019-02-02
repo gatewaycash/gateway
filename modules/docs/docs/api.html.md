@@ -17,7 +17,8 @@ search: true
 > understand something, glance over and you'll find some handy examples.
 
 Welcome to the Gateway.cash API! You can use our API to create and manage
-merchant accounts, make and receive Bitcoin Cash payments, keep track of invoices and more!
+merchant accounts, make and receive Bitcoin Cash payments, keep track of
+invoices and more!
 
 <aside class="notice">
 This documentation is for the Gateway.cash back-end server API. If you want to
@@ -40,7 +41,9 @@ then your requests will start with that URL.
 ### URL Prefixes
 
 API endpoints are prefixed with a version number, in the format
-`BASEPOINT/vX/endpoint`. `X` represents the API version. New API versions are released when a "breaking change" is made which would cause old clients to stop working. The current version of the API is `v2`.
+`BASEPOINT/vX/endpoint`. `X` represents the API version. New API versions are
+released when a "breaking change" is made which would cause old clients to stop
+working. The current version of the API is `v2`.
 
 For example, the endpoint for `/user/login` is
 `http://127.0.0.1:8080/v2/user/login` on your local instance. The examples in
@@ -74,7 +77,10 @@ Making a request to the API will result in a JSON object string being
 returned. The `"status"` property of the object will either be `"success"` or
 `"error"` for all requests.
 
-When `"status"` is `"error"`, the JSON object will always contain an `"error"` property which will consist of a brief error message. `"description"` will contain a more in-depth explanation of the problem, suitable for showing to your users.
+When `"status"` is `"error"`, the JSON object will always contain an `"error"`
+property which will consist of a brief error message. `"description"` will
+contain a more in-depth explanation of the problem, suitable for showing to
+your users.
 
 When `"status"` is `"success"`, the object will contain the information
 documented here.
@@ -102,7 +108,8 @@ can retrieve an API key with /user/login.
 
 # Accounts, Access and Keys
 
-This section covers topics related to accessing and managing your user account, API keys and related topics.
+This section covers topics related to accessing and managing your user account,
+API keys and related topics.
 
 ## Registration
 
@@ -232,7 +239,8 @@ let result = await axios.get(
 
 > Use the API key you receive when calling other endpoints.
 
-When you need to retrieve a working API key for your account, send a GET request to `/user/login` and one will be returned.
+When you need to retrieve a working API key for your account, send a GET request
+to `/user/login` and one will be returned.
 
 ### Parameters
 
@@ -349,7 +357,8 @@ let result = await axios.get(
 
 > All values are in units of Satoshi.
 
-To retrieve the total amount ever contributed to Gateway by this merchant, send a GET request to `/user/contribution`.
+To retrieve the total amount ever contributed to Gateway by this merchant, send
+a GET request to `/user/contribution`.
 
 ### Parameters
 
@@ -449,7 +458,9 @@ let result = await axios.get(
 }
 ```
 
-To retrieve your payments, send a GET request to `/user/payments`. Since some merchants have a lot of payments, this endpoint splits them into pages and allows you to cycle through to find the one you are looking for.
+To retrieve your payments, send a GET request to `/user/payments`. Since some
+merchants have a lot of payments, this endpoint splits them into pages and
+allows you to cycle through to find the one you are looking for.
 
 ### Parameters
 
@@ -556,7 +567,8 @@ let result = await axios.patch(
 }
 ```
 
-To update the payout method, first make sure you've provided a valid address or XPUB key, then send a PATCH request to `/user/payout/method`.
+To update the payout method, first make sure you've provided a valid address or
+XPUB key, then send a PATCH request to `/user/payout/method`.
 
 ### Parameters
 
@@ -626,7 +638,8 @@ let result = await axios.patch(
 }
 ```
 
-To specify a new payout address for a merchant account, send a PATCH request to `/user/payout/address`.
+To specify a new payout address for a merchant account, send a PATCH request to
+`/user/payout/address`.
 
 ### Parameters
 
@@ -1034,7 +1047,9 @@ any payment information given to them by the merchant website (`paymentID`,
 Once the payment is complete, the customer's browser uses the `POST /paid`
 endpoint and sends the `paymentAddress` with the `paymentTXID` back to Gateway.
 
-At this point, the customer is done and can move on with their day. Gateway maks the payment as pending. Pending payments are processed every 30 seconds by the `fundsTransferService`.
+At this point, the customer is done and can move on with their day. Gateway maks
+the payment as pending. Pending payments are processed every 30 seconds by the
+`fundsTransferService`.
 
 <aside class="notice">
 The Gateway payment processing daemon now runs every 30 seconds! This means a
@@ -1199,14 +1214,15 @@ instantaneously.
 # Gateway Platforms
 
 Gateway Platforms are an innovative way for website operators, service
-providers and developers to take commissions from Bitcoin Cash payments while
-continuing to take full advantage of its property of decentralization.
+providers and developers to take commissions from Bitcoin Cash payments. This
+section describes how to create, manage and deploy Platforms.
 
 ## Overview
 
 In this context, a platform refers to s website where users interact with each
-other, each other's content or buy things, in the same way that Facebook or
-eBay are platforms for interaction and selling respectively.
+other, with each other's content or where they can buy things. Each project you
+work on shouldn't generally require more than one platform, but you can set
+commission rules so that certain things apply in certain cases but not others.
 
 On Gateway, each platform has a merchant account designated as its owner. The
 owner can set commission rules for the platform and take a percentage of the
@@ -1221,6 +1237,7 @@ permissions and rights to change certain aspects of a platform.
 
 ## Platform Users
 
+Platform users are created in the same manner as normal users. Generally, the
 
 
 ## Creating a Platform
@@ -1365,6 +1382,13 @@ prior to commissions payments. Refer to the <b>In Case of Errors</b> subsection
 of the <b>Contributing to Gateway</b> section for details.
 </aside>
 
+<aside class="notice">
+There are plans to support far more advanced commission rules. For example, a
+commission of 1.5% might only apply for payments between 50 and 100 euros, where
+the paymentID of the payment begins with "electronics-". We expect this will be
+extremely useful for inventory management solutions and shopping sites.
+</aside>
+
 ## Listing Commissions
 
 > Get a list of commissions:
@@ -1414,14 +1438,15 @@ let result = await axios.get(
 }
 ```
 
-To get a list of all commissions associated with a platform, send a GET request to `/commissions`.
+To get a list of all commissions associated with a platform, send a GET request
+to `/commissions`.
 
 ### Parameters
 
 Required | Name | Description
 ---------|------|------------
-Yes | `APIKey` | An active API key belonging to someone with the right to access this information
-Yes | `platformID` | The ID of the platform for which a list of commissions is to be generated
+Yes | `APIKey` | An active API key belonging to someone with permission
+Yes | `platformID` | The ID of the platform for which a list is to be generated
 
 In this example, two commissions are applied to all payments made through this
 platform. The first takes 30% of the total and the second takes 20% of the
@@ -1437,16 +1462,16 @@ Name | Description
 `label` | A label for the commission
 `commissionID` | A unique identifier for the commission
 `commissionAmount` | An amount (in units of `commissionCurrency`) to be charged
-`commissionCurrency` | A three-digit currency code indicating the denomination of `commissionAmount`
+`commissionCurrency` | A three-digit currency code
 `commissionPercentage` | A percentage value for the commission
-`commissionLessMore` | A "less/more" value which determines which of the two values to charge
-`commissionMethod` | Indicates whether the commission is to be paid to an `"address"` or to an `"XPUB"` key
+`commissionLessMore` | A "less/more" value which determines which of `commissionAmount` and `commissionPercentage` to charge
+`commissionMethod` | Method of payout: either `"address"` or `"XPUB"`
 `commissionAddress` | The address to which the commission is to be paid
 `commissionXPUB` | The XPUB key to which the commission is to be paid
 
 ## Adding a Commission
 
-> Add a commission rule to a platform:
+> Add a commission to a platform:
 
 ```js
 let result = await axios.put(
@@ -1465,13 +1490,127 @@ let result = await axios.put(
 )
 ```
 
+> When successful, the information is sent back along with a new commissionID:
+
+```json
+{
+  "status": "success",
+  "commissionID": "NEW_COMMISSION_ID",
+  "platformID": "YOUR_PLATFORM_ID",
+  "commissionLabel": "Sales Tax",
+  "commisionAddress": "BITCOIN_CASH_ADDRESS",
+  "commissionXPUB": null,
+  "commissionMethod": "address",
+  "commissionAmount": "0",
+  "commissionCurrency": "BCH",
+  "commissionPercentage": "5.00",
+  "commissionLessMore": "more"
+}
+```
+
+You can add a commission to a platform by sending a PUT request to
+`/commissions`.
+
+### Parameters
+
+Required | Name | Description
+---------|------|------------
+Yes | `APIKey` | An active API key belonging to someone with permission
+Yes | `platformID` | The ID of the platform where the commission should be added
+Yes | `commissionLabel` | A label for the new commission
+Yes | `commissionAmount` | An amount in units of `commissionCurrency`
+Yes | `commissionCurrency` | Three-digit currency code, `BCH` by default
+Yes | `commissionPercentage` | A percentage, for example `0.25` for 0.25% or `25` for 25%
+Yes | `commissionLessMore` | A less/more value indicating whether the lesser or the greater of commissionAmount or commissionPercentage should be charged
+Yes | `commissionMethod` | The payout method, either `"XPUB"` o `"address"`
+Sometimes | `commissionAddress` | Required when `commissionMethod` is `"address"`
+Sometimes | `commissionXPUB` | Required when `commissionMethod` is `"XPUB"`
+
+<aside class="success">
+You can add as many commissions to a single platform as you like. They can all
+pay to the same or different addresses, XPUB keys or both.
+</aside>
+
 ## Changing a Commission
 
+> Update a commission:
 
+```js
+let result = await axios.patch(
+  'https://api.gateway.cash/v2/commissions',
+  {
+    "APIKey": "YOUR_API_KEY",
+    "newCommissionID": "COMMISSION_ID",
+    "newCommissionPercentage": "6.00",
+    "newCommissionMethod": "XPUB",
+    "newCommissionXPUB": "EXTENDED_PUBLIC_KEY"
+  }
+)
+```
+
+> When successful, the new data will be sent back:
+
+```json
+{
+  "status": "success",
+  "newCommissionLabel": "Sales Tax",
+  "newCommisionAddress": "BITCOIN_CASH_ADDRESS",
+  "newCommissionXPUB": "EXTENDED_PUBLIC_KEY",
+  "newCommissionMethod": "XPUB",
+  "newCommissionAmount": "0",
+  "newCommissionCurrency": "BCH",
+  "newCommissionPercentage": "6.00",
+  "newCommissionLessMore": "more"
+}
+```
+
+You can update a commission by sending a PATCH request to `/commissions`.
+
+### Parameters
+
+Required | Name | Description
+---------|------|------------
+Yes | `APIKey` | An active API key belonging to someone with permission
+Yes | `commissionID` | The ID of the commission to update
+No | `newCommissionLabel` | A new label for the commission
+No | `newCommissionAmount` | An amount in units of `newCommissionCurrency`
+No | `newCommissionCurrency` | Three-digit currency code, `BCH` by default
+No | `newCommissionPercentage` | A percentage, for example `0.25` for 0.25% or `25` for 25%
+No | `newCommissionLessMore` | A less/more value indicating whether the lesser or the greater of `newCommissionAmount` or `newCommissionPercentage` should be charged
+No | `newCommissionMethod` | The payout method, either `"XPUB"` o `"address"`
+Sometimes | `newCommissionAddress` | Required when `newCommissionMethod` is being changed to `"address"`
+Sometimes | `newCommissionXPUB` | Required when `newCommissionMethod` is being changed to `"XPUB"`
 
 ## Deleting a Commission
 
+> Delete a commission:
 
+```js
+let result = await axios.delete(
+  'https://api.gateway.cash/v2/commissions',
+  {
+    "APIKey": "YOUR_API_KEY",
+    "commissionID": "COMMISSION_ID"
+  }
+)
+```
+
+> A successful response will look like this:
+
+```json
+{
+  "status": "success"
+}
+```
+
+To delete a commission, send a DELETE request to `/commissions`
+
+### Parameters
+
+Required | Name | Description
+---------|------|------------
+Yes | `APIKey` | An active API key belonging to someone with permission
+Yes | `commissionID` | The ID of the commission to be deleted
 
 # Contributing to Gateway
 
@@ -1490,7 +1629,8 @@ enough to cover both.
 
 ## Contribution Rules
 
-Contribution rules are very similar to the rules used for platform commissions. They take the form:
+Contribution rules are very similar to the rules used for platform commissions.
+They take the form:
 
 "I would like to contribute `{A}`% or `{B}` `{C}`, whichever is `{D}`."
 
@@ -1550,7 +1690,7 @@ Parameter | Description
 `contributionAmount` | The amount, in units of `contributionCurrency`, to contribute
 `contributionCurrency` | A three-digit currency code. Possible values: `USD`, `EUR`, `JPY`, `CNY` and of course `BCH` which is the default
 `contributionPercentage` | A percentage of each payment to send to Gateway
-`contributionLessMore` | Indicates whether the lesser or the greater of the two values should be contributed
+`contributionLessMore` | Indicates whether the lesser or the greater of contributionAmount and contributionPercentage should be contributed
 
 ## Updating Contribution Settings
 
@@ -1592,7 +1732,7 @@ Yes | `APIKey` | An active API key belonging to the merchant
 No | `newContributionAmount` | The amount, in units of `newContributionCurrency`, to contribute
 No | `newContributionCurrency` | A three-digit currency code. Possible values: `USD`, `EUR`, `JPY`, `CNY` and of course `BCH` which is the default
 No | `newContributionPercentage` | A percentage of each payment to send to Gateway
-No | `newContributionLessMore` | Indicates whether the lesser or the greater of the two values should be contributed
+No | `newContributionLessMore` | Indicates whether the lesser or the greater of `newContributionAmount` and `newContributionPercentage` should be contributed
 
 If you don't include all four values in your request, the ones included will be
 updated and the others will stay  the same. All four values will always be sent
@@ -1605,9 +1745,13 @@ rules:
 
 "I would like to contribute `10`% or `1.00` `USD`, whichever is `more`."
 
-Now, suppose Bob pays Alice `0.13` `USD`. Since `1.00` `USD` (the greater of the two values) cannot be deducted from the payment, Alice receives the entire payment of `0.13` `USD`.
+Now, suppose Bob pays Alice `0.13` `USD`. Since `1.00` `USD` (the greater of the
+  two values) cannot be deducted from the payment, Alice receives the entire
+  payment of `0.13` `USD`.
 
-In another case, if Carol sent Alice a large payment of `1337.00` `USD`, Gateway would receive `133.70` `USD` and Alice would receive the rest of the payment, minus transaction fees.
+In another case, if Carol sent Alice a large payment of `1337.00` `USD`, Gateway
+would receive `133.70` `USD` and Alice would receive the rest of the payment,
+minus transaction fees.
 
 ## Contribution Defaults
 
