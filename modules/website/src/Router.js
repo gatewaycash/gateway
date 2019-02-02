@@ -1,13 +1,6 @@
 import React from 'react'
-import { Router } from '@reach/router'
-
-// import the top-level pages
-import {
-  Welcome,
-  NotFound
-} from './pages'
-
-// import the portal's pages
+import { Router as ReactRouter } from '@reach/router'
+import { Welcome, NotFound } from './pages'
 import {
   Portal,
   Dashboard,
@@ -15,10 +8,11 @@ import {
   Payments,
   Settings
 } from './pages/portal'
+import { withStyles } from '@material-ui/core'
+import styles from 'jss/Global'
 
-// render the website
-export default () => (
-  <Router>
+const Router = ({ classes }) => (
+  <ReactRouter className={classes.router}>
     <Welcome key="Welcome" path="/" />
     <Portal key="Portal" path="portal" />
     <Dashboard key="Dashboard" path="portal/dashboard" />
@@ -26,5 +20,8 @@ export default () => (
     <Payments key="Payments" path="portal/payments" />
     <Settings key="Settings" path="portal/settings" />
     <NotFound default />
-  </Router>
+  </ReactRouter>
 )
+
+// render the website
+export default withStyles(styles)(Router)

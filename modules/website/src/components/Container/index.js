@@ -20,14 +20,9 @@ let Container = ({
     style.minWidth = '50%'
   }
   return (
-    <div
-      className="container"
-      style={style}
-    >
+    <div className="container" style={style}>
       <Paper className="paper">
-        <div className="content">
-          {children}
-        </div>
+        <div className="content">{children}</div>
       </Paper>
     </div>
   )
