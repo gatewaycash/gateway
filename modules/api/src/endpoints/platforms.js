@@ -67,6 +67,19 @@ let PUT = async (req, res) => {
   let userIndex = await auth(req.body.APIKey, res)
   if (!userIndex) return
 
+  // ensure this user is not a Platforms user
+  let platformIndex = await mysql.query(
+    'SELECT platformIndex FROM users WHERE tableIndex = ? LIMIT 1',
+    [userIndex]
+  )
+  if (platformIndex[0].platformIndex != 0) {
+    return handleError(
+      'You are a Platforms User',
+      'Sorry, but Platforms users (users who are themselves members of Gateway Platforms) cannot create their own platforms. Please use a normal Gateway merchant account for that.',
+      res
+    )
+  }
+
   // generate a new platform ID
   let platformID = sha256(require('crypto').randomBytes(32)).substr(0, 16)
 
@@ -78,7 +91,7 @@ let PUT = async (req, res) => {
     [name, description, platformID, userIndex]
   )
 
-  // send the new platform ID and info
+  // send back the new platform ID
   return handleResponse({
     platformID: platformID
   }, res)
