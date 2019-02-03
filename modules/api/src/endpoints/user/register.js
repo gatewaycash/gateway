@@ -31,7 +31,7 @@ let POST = async (req, res) => {
   let addressValid = null
   let XPUBValid = null
   if (req.body.XPUB) {
-    XPUBValid = validateXPUB(req.body.XPUB)
+    XPUBValid = validateXPUB(req.body.XPUB, res)
     if (!XPUBValid) return
   } else {
     addressValid = validateAddress(req.body.address, res)

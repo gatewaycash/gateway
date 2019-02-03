@@ -90,7 +90,7 @@ let PATCH = async (req, res) => {
   if (
     !req.body.newName &&
     !req.body.newDescription &&
-    typeof req.body.newAllowXPUB === undefined
+    typeof req.body.newAllowXPUB === 'undefined'
   ) {
     return handleError(
       'No New Data',
@@ -119,9 +119,11 @@ let PATCH = async (req, res) => {
 
   // validate newAllowXPUB value
   if (
-    typeof req.body.newAllowXPUB !== undefined &&
-    req.body.newAllowXPUB !== 'true' &&
-    req.body.newAllowXPUB !== 'false'
+    typeof req.body.newAllowXPUB !== 'undefined' &&
+    (
+      req.body.newAllowXPUB !== 'true' &&
+      req.body.newAllowXPUB !== 'false'
+    )
   ) {
     return handleError(
       'Allow XPUB Invalid',
@@ -182,6 +184,7 @@ let PATCH = async (req, res) => {
   return handleResponse({
     newName: newName,
     newDescription: newDescription,
+    newAllowXPUB: newAllowXPUB == 1,
     platformID: req.body.platformID
   }, res)
 }
