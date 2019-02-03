@@ -177,20 +177,10 @@ It is not possible to utilize Platform commissions if your Platforms user
 accounts have XPUB keys. This is because when XPUB is used, payment is
 forwarded directly to the merchant and Gateway never controls the funds.
 
-To avoid this problem, always send Platforms user registration requests with an
-address only and not an XPUB key. If you are sending Platforms user
-registration requests from the user's browser, be aware of the possibility for
-malicious activity. A user can avoid paying any commissions if they are using
-XPUB.
-
-<b>Strongly consider</b> sending the Platforms user registration requests from
-your server instead. Randomly generate usernames and passwords which are stored
-with your users' login information.
-
 If you do not ever want to take a commission and only want to use Gateway
 Platforms to track total platform sales, you can still use XPUB with Platforms
 user accounts. Include `dismissXPUBWithPlatformIDWarning=YES` with your
-request to bypass the warning. You can also disallow XPUB entirely (see below).
+request to bypass the warning.
 
 <aside class="notice">
 Please provide your Bitcoin Cash address in CashAddress format. If it is given
@@ -199,8 +189,8 @@ database. If we can't understand your address, we can't pay you!
 </aside>
 
 <aside class="notice">
-The API server does not thoroughly evaluate the security or entropy of provided passwords.
-It is the responsibility of the end user and/or the front-end
+The API server does not thoroughly evaluate the security or entropy of provided
+passwords. It is the responsibility of the end user and/or the front-end
 service provider to ensure that a secure password is provided. Passwords
 are always salted and hashed prior to being stored in the database.
 </aside>
@@ -1239,10 +1229,9 @@ owner can set commission rules for the platform and take a percentage of the
 earnings as profit.
 
 <aside class="notice">
-There are future plans for platforms to be owned by multiple accounts who must
-vote and ascent to features. There are also plans for owners to be able to
-designate administrators and managers for platforms who have differing
-permissions and rights to change certain aspects of a platform.
+There are plans for owners to be able to designate administrators and managers
+for platforms who have differing permissions and rights to change certain
+aspects of a platform. These features are under development.
 </aside>
 
 ## Platform Users
@@ -1252,10 +1241,11 @@ Platform users are created in the same manner as normal users. See the
 registration request to create a new Platforms user.
 
 The new user will be exclusively owned by the platform and any payments sent to
-their `merchantID` will be subject to the commissions of the platform.
+their `merchantID` will be subject to the commissions and policies of the
+platform.
 
 <aside class="notice">
-No, Platforms users can not create their own platforms. Nice try :)
+No, Platforms users can't create their own platforms. Nice try :)
 </aside>
 
 ## Creating a Platform
@@ -1347,7 +1337,7 @@ Yes | `APIKey` | An active API key belonging to the account for which a list of 
 
 ## Changing Platform Settings
 
-> Update the platform name and/or description:
+> Update the platform name and settings:
 
 ```js
 let result = await axios.patch(
@@ -1373,7 +1363,7 @@ let result = await axios.patch(
 ```
 
 The PATCH `/platforms` endpoint allows you to specify new settings for a
-platform. Currently, setting a new name and description are supported.
+platform. This is how the policies that govern your platforms are managed.
 
 ### Parameters
 
@@ -1381,15 +1371,9 @@ Required | Name | Description
 ---------|------|------------
 Yes | `APIKey` | An active API key belonging to someone with permission
 Yes | `platformID` | The ID of the platform to be updated
-Sometimes | `newName` | A new name for the platform
-Sometimes | `newDescription` | A new description for the platform
-
-At least one of `newName` and `newDescription` is required.
-
-<aside class="notice">
-There are plans for this endpoint to include support for many other features,
-including permissions management, dis/allowing the use of XPUB keys and more.
-</aside>
+No | `newName` | A new name for the platform
+No | `newDescription` | A new description for the platform
+No | `newAllowXPUB` | Whether XPUB keys are allowed. Either `"true"` or `"false"`.
 
 ## Commission Rules
 
