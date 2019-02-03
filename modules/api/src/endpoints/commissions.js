@@ -132,6 +132,28 @@ let PATCH = async (req, res) => {
     )
   }
 
+  // ensure commissionXPUB is provided if commissionMethod is XPUB
+  if (newCommissionMethod === 'XPUB') {
+    if (!newCommissionXPUB) {
+      return handleError(
+        'Commission Method Error',
+        'The commission method is XPUB but no XPUB key was provided',
+        res
+      )
+    }
+  }
+
+  // ensure commissionAddress is provided if commissionMethod is address
+  if (newCommissionMethod === 'address') {
+    if (!newCommissionAddress) {
+      return handleError(
+        'Commission Method Error',
+        'The commission method is address but no address was provided',
+        res
+      )
+    }
+  }
+
   // ensure commissionAddress or commissionXPUB was provided
   if (!newCommissionAddress && !newCommissionXPUB) {
     return handleError(
