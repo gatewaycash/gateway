@@ -64,6 +64,19 @@ export default async (payment) => {
     [paymentTotal, payment.merchantID]
   )
 
+  // increment total sales of the merchant's platform (if they belong to one)
+  let merchantPlatform = await mysql.query(
+    'SELECT platformIndex FROM users WHERE merchantID = ? LIMIT 1',
+    [payment.merchantID]
+  )
+  merchantPlatform = merchantPlatform[0].platformIndex
+  if (!isNaN(merchantPlatform) && merchantPlatform > 0) {
+    await mysql.query(
+      'UPDATE platforms SET totalSales = totalSales + ? WHERE tableIndex = ?',
+      [paymentTotal, merchantPlatform]
+    )
+  }
+
   // execute the callback
   await executeCallback(payment)
 
