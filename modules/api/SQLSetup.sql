@@ -76,7 +76,8 @@ CREATE TABLE IF NOT EXISTS platforms (
   name VARCHAR(36),
   description VARCHAR(160),
   ownerUserIndex VARCHAR(8),
-  totalSales INT(15) DEFAULT 0
+  totalSales INT(15) DEFAULT 0,
+  allowXPUB INT(1) DEFAULT 0
 );
 ALTER TABLE platforms AUTO_INCREMENT = 1;
 
