@@ -31,7 +31,7 @@ let POST = async (req, res) => {
   let addressValid = null
   let XPUBValid = null
   if (req.body.XPUB) {
-    XPUBValid = validateXPUB(req.body.XPUB)
+    XPUBValid = validateXPUB(req.body.XPUB, res)
     if (!XPUBValid) return
   } else {
     addressValid = validateAddress(req.body.address, res)
@@ -49,7 +49,13 @@ let POST = async (req, res) => {
   if (req.body.platformID) {
     // discover the platformIndex from platformID
     let platform = await mysql.query(
-      'SELECT tableIndex FROM platforms WHERE platformID = ? LIMIT 1',
+      `SELECT
+        allowXPUB,
+        tableIndex
+        FROM platforms
+        WHERE
+        platformID = ?
+        LIMIT 1`,
       [req.body.platformID]
     )
 
@@ -62,6 +68,27 @@ let POST = async (req, res) => {
       )
     }
     platformIndex = platform[0].tableIndex
+
+    // fail if the platform does not allow XPUB and an XPUB key is being used
+    if (platform[0].allowXPUB == 0 && XPUBValid !== null) {
+      return handleError(
+        'XPUB Not Allowed',
+        'This platform does not allow the use of merchant extended public keys',
+        res
+      )
+    }
+
+    // fail if XPUB was provided by we aren't bypassing the warning
+    if (
+      XPUBValid !== null &&
+      req.body.dismissXPUBWithPlatformIDWarning !== 'YES'
+    ) {
+      return handleError(
+        'XPUB for Platforms Users is Dangerous',
+        'You should not generally use an XPUB key with a Platforms account. Read the docs at https://api.gateway.cash/ for how to bypass this warning',
+        res
+      )
+    }
   }
 
   // create the new user account

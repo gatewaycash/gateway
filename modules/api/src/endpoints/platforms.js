@@ -23,7 +23,8 @@ let GET = async (req, res) => {
       created: '' + platforms[i].created,
       name: platforms[i].name,
       description: platforms[i].description,
-      platformID: platforms[i].platformID
+      platformID: platforms[i].platformID,
+      allowXPUB: platforms[i].allowXPUB == 1
     })
   }
   return handleResponse({
@@ -85,11 +86,15 @@ let PUT = async (req, res) => {
 
 // PATCH an existing platform with new data
 let PATCH = async (req, res) => {
-  // ensure newName or newDescription was given
-  if (!req.body.newName && !req.body.newDescription) {
+  // ensure newName, newDescription or newAllowXPUB was given
+  if (
+    !req.body.newName &&
+    !req.body.newDescription &&
+    typeof req.body.newAllowXPUB === 'undefined'
+  ) {
     return handleError(
       'No New Data',
-      'Provide a new name or description for the platform',
+      'Provide a new name, description or allowXPUB value for the platform',
       res
     )
   }
@@ -108,6 +113,21 @@ let PATCH = async (req, res) => {
     return handleError(
       'Platform Description Too Long',
       'Max length is 160 characters',
+      res
+    )
+  }
+
+  // validate newAllowXPUB value
+  if (
+    typeof req.body.newAllowXPUB !== 'undefined' &&
+    (
+      req.body.newAllowXPUB !== 'true' &&
+      req.body.newAllowXPUB !== 'false'
+    )
+  ) {
+    return handleError(
+      'Allow XPUB Invalid',
+      'The new value for the "allow XPUB" setting must be either "true" or "false"',
       res
     )
   }
@@ -142,17 +162,29 @@ let PATCH = async (req, res) => {
   // assign the new values
   let newName = req.body.newName || platform.name
   let newDescription = req.body.newDescription || platform.description
+  let newAllowXPUB
+  if (typeof req.body.newAllowXPUB !== undefined) {
+    newAllowXPUB = req.body.newAllowXPUB === 'true' ? 1 : 0
+  } else {
+    newAllowXPUB = platform.newAllowXPUB
+  }
 
   // update the record
   await mysql.query(
-    'UPDATE platforms SET name = ?, description = ? WHERE tableIndex = ?',
-    [newName, newDescription, platform.tableIndex]
+    `UPDATE platforms
+      SET name = ?,
+      description = ?,
+      allowXPUB = ?
+      WHERE
+      tableIndex = ?`,
+    [newName, newDescription, newAllowXPUB, platform.tableIndex]
   )
 
   // send the success message
   return handleResponse({
     newName: newName,
     newDescription: newDescription,
+    newAllowXPUB: newAllowXPUB == 1,
     platformID: req.body.platformID
   }, res)
 }
