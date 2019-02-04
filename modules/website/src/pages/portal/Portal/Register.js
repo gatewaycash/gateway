@@ -46,55 +46,55 @@ export default ({ className }) => {
           closed={errorClosed}
           setClosed={setErrorClosed}
         />
-        <form onSubmit={handleSubmit}>
-          <TextField
-            value={address}
-            onChange={e => setAddress(e.target.value)}
-            placeholder="Bitcoin Cash address"
-            style={{
-              width: '80%'
-            }}
-          />
-          <br />
-          <br />
-          <TextField
-            value={username}
-            onChange={e => setUsername(e.target.value)}
-            placeholder="Your new username"
-            style={{
-              width: '80%'
-            }}
-          />
-          <br />
-          <br />
-          <TextField
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            placeholder="Password"
-            type="password"
-            style={{
-              width: '80%'
-            }}
-          />
-          <br />
-          <br />
-          <TextField
-            value={passwordConfirm}
-            onChange={e => setPasswordConfirm(e.target.value)}
-            placeholder="Retype password"
-            type="password"
-            style={{
-              width: '80%'
-            }}
-          />
-          <br />
-          <br />
-          <Button variant="contained" color="primary" type="submit">
-            Register
-          </Button>
-        </form>
-        <br />
-        <Button>Advanced</Button>
+        <center>
+          <form onSubmit={handleSubmit}>
+            <TextField
+              value={address}
+              onChange={e => setAddress(e.target.value)}
+              placeholder="Bitcoin Cash address"
+              style={{
+                width: '80%'
+              }}
+            />
+            <br />
+            <br />
+            <TextField
+              value={username}
+              onChange={e => setUsername(e.target.value)}
+              placeholder="Your new username"
+              style={{
+                width: '80%'
+              }}
+            />
+            <br />
+            <br />
+            <TextField
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              placeholder="Password"
+              type="password"
+              style={{
+                width: '80%'
+              }}
+            />
+            <br />
+            <br />
+            <TextField
+              value={passwordConfirm}
+              onChange={e => setPasswordConfirm(e.target.value)}
+              placeholder="Retype password"
+              type="password"
+              style={{
+                width: '80%'
+              }}
+            />
+            <br />
+            <br />
+            <Button variant="contained" color="primary" type="submit">
+              Register
+            </Button>
+          </form>
+        </center>
       </CardContent>
     </Card>
   )

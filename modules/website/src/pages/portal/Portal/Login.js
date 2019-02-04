@@ -35,42 +35,49 @@ export default ({ className }) => {
       <CardContent>
         <h1>Log In</h1>
         <Text>
-          If you have a Gateway account, log in below using either your
-          Bitcoin&nbsp;Cash address or Gateway.cash username:
+          If you have a Gateway account, log in below using your Gateway.cash
+          username:
         </Text>
         <Error
           error={loginError}
           closed={errorClosed}
           setClosed={setErrorClosed}
         />
-        <form onSubmit={handleSubmit}>
-          <TextField
-            value={userID}
-            onChange={e => setUserID(e.target.value)}
-            placeholder="Address or username"
-            style={{
-              width: '80%'
-            }}
-          />
-          <br />
-          <br />
-          <TextField
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            placeholder="Password"
-            type="password"
-            style={{
-              width: '80%'
-            }}
-          />
-          <br />
-          <br />
-          <Button variant="contained" color="primary" type="submit">
-            log in
-          </Button>
-        </form>
+        <center>
+          <form onSubmit={handleSubmit}>
+            <TextField
+              value={userID}
+              onChange={e => setUserID(e.target.value)}
+              placeholder="Username"
+              style={{
+                width: '80%'
+              }}
+            />
+            <br />
+            <br />
+            <TextField
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              placeholder="Password"
+              type="password"
+              style={{
+                width: '80%'
+              }}
+            />
+            <br />
+            <br />
+            <Button variant="contained" color="primary" type="submit">
+              log in
+            </Button>
+          </form>
+        </center>
         <br />
-        <Button onClick={() => navigate('/portal/forgot')}>Forgot?</Button>
+        <Text>
+          If you are trying to log into an account that didn't previously have
+          a username (you only ever used your BCH address), your username has
+          been set to the <b>first 20 characters of your address</b>. Please
+          go to Settings once you've logged in and change your username.
+        </Text>
         <Text>
           If you have forgotten your Gateway.cash username and your merchant
           account's payout address or if you can't remember your password, send

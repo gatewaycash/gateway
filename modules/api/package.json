@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "test": "TEST_MODE=true mocha --require @babel/register --require @babel/polyfill --exit src/main.js",
-    "production": "pm2 start build/server.js",
+    "production": "babel-node src/main.js",
     "dev": "nodemon --ignore public src/main.js --exec babel-node --",
     "setup": "node setupEnvironment.js"
   },
