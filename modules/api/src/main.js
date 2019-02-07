@@ -6,7 +6,11 @@
 import express from 'express'
 import bodyParser from 'body-parser'
 import dotenv from 'dotenv'
-import { fundsTransferService, brokenPaymentsService } from 'services'
+import {
+  fundsTransferService,
+  brokenPaymentsService,
+  exchangeRatesService
+} from 'services'
 import tests from 'tests'
 import routes from 'routes'
 import prettyjson from 'prettyjson'
@@ -63,6 +67,8 @@ app.listen(process.env.WEB_PORT, () => {
 if (!process.env.TEST_MODE) {
   // run the main processor every 30 seconds
   setInterval(fundsTransferService, 30000)
+  // run the exchange rates service every 10 minutes
+  setInterval(exchangeRatesService, 600000)
   // run the broken payments processor every 12 hours
   setInterval(brokenPaymentsService, 43200000)
 

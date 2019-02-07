@@ -5,6 +5,8 @@
  * @param {object} payment - Payment row from the payments table
  */
 import { mysql, validateAddress, executeCallback } from 'utils'
+import broadcastTransaction from './broadcastTransaction'
+import applyRules from './applyRules'
 import bchaddr from 'bchaddrjs'
 import axios from 'axios'
 import bch from 'bitcore-lib-cash'
@@ -12,7 +14,7 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 export default async (payment) => {
-  // get the payout address and contributions info for the merchant
+  // Get the merchant record
   let merchant = await mysql.query(
     `SELECT payoutAddress,
       contributionPercentage,
@@ -24,27 +26,17 @@ export default async (payment) => {
       platformIndex
       FROM users
       WHERE
-        merchantID = ?
+      merchantID = ?
       LIMIT 1`,
     [payment.merchantID]
   )
   merchant = merchant[0]
-  let merchantAddress = await validateAddress(merchant.payoutAddress)
-  if (!merchantAddress) {
-    console.error(
-      `Could not validate merchant address for payment #${payment.tableIndex}`
-    )
-    throw 'Merchant address invalid'
-  }
-
-  // store a legacy version of paymentAddress
-  let paymentAddressLegacy = bchaddr.toLegacyAddress(payment.paymentAddress)
 
   // find all UTXOs for paymentAddress
   let paymentUTXOs
   try {
     paymentUTXOs = await axios.get(
-      `${process.env.BLOCK_EXPLORER_BASE}/addr/${paymentAddressLegacy}/utxo`
+      `${process.env.BLOCK_EXPLORER_BASE}/addr/${bchaddr.toLegacyAddress(payment.paymentAddress)}/utxo`
     )
     paymentUTXOs = paymentUTXOs.data
     console.log(
@@ -62,13 +54,10 @@ export default async (payment) => {
   }
 
   /*
-    Create a BCH transaction spending paymentUTXOs to merchantAddress
-    (and to Gateway if they elect to contribute)
-   */
+    Create a Transaction and add the inputs
+  */
   let transferTransaction = new bch.Transaction()
   let totalTransferred = 0
-
-  // the inputs for this transaction are from paymentUTXOs
   try {
     for(var i = 0, l = paymentUTXOs.length; i < l; i++) {
       transferTransaction.from({
@@ -93,70 +82,48 @@ export default async (payment) => {
     `Total inputs for payment #${payment.tableIndex}: ${(totalTransferred / 100000000)} BCH`
   )
 
-  // build the outputs
+  /*
+    Add outputs to the transaction
+  */
+
+  // store the amount contributed for later insertion into the database
+  // (and calculating the transaction fee)
   let amountContributed = 0
+
   try {
-
     /*
-      This piece of code calculates amountContributed
+      Gateway Contributions
     */
-    let contributionPercentage =
-      (merchant.contributionPercentage / 100) *
-      totalTransferred
-    let contributionAmount = merchant.contributionAmount
-    if (merchant.contributionCurrency !== 'BCH') {
-      let exchangeRate = await axios.get(
-        `https://apiv2.bitcoinaverage.com/indices/global/ticker/BCH${merchant.contributionCurrency}`
-      )
-      exchangeRate = exchangeRate.data.averages.day
-      contributionAmount *= (1 / exchangeRate)
-      contributionAmount = parseInt(contributionAmount *= 100000000)
-    } else {
-      contributionAmount = contributionAmount * 100000000
-    }
-    if (merchant.contributionLessMore === 'less') {
-      amountContributed = (contributionPercentage < contributionAmount) ?
-        contributionPercentage : contributionAmount
-    } else {
-      amountContributed = (contributionPercentage < contributionAmount) ?
-        contributionAmount : contributionPercentage
-    }
-
-    // esure amountContributed is not greater than totalTransferred
-    if (amountContributed + 1000 >= totalTransferred) {
-      amountContributed = 0
-      console.error(
-        `In payment #${payment.tableIndex}, contribution is more than the payment amount itself. Contributing zero instead`
-      )
-    }
-
-    // eliminate very small contributions
-    if (amountContributed <= 1000) {
-      amountContributed = 0
-    }
-
-    // log the contribution
+    amountContributed = await applyRules(
+      payment.tableIndex,
+      totalTransferred,
+      merchant.contributionAmount,
+      merchant.contributionCurrency,
+      merchant.contributionPercentage,
+      merchant.contributionLessMore
+    )
     if (amountContributed > 0) {
+      // log the contribution
       console.log(
         `Payment #${payment.tableIndex} from ${merchant.username} is contributing ${(amountContributed / 100000000)} BCH to Gateway!`
       )
-    }
-
-    // add the contribution to the transaction
-    if (amountContributed > 0) {
-      amountContributed = parseInt(amountContributed)
+      // add the contribution to the transaction
       transferTransaction.to(
         'bitcoincash:pz3txlyql9vc08px98v69a7700g6aecj5gc0q3xhng',
-        parseInt(amountContributed)
+        amountContributed
       )
     }
 
     /*
-      platform commissions for platform merchant accounts
+      Platform Commissions
     */
+
+    // store the total of all commissions for calculating the transaction fee
     let allCommissionsTotal = 0
+
     // check if this merchant account belongs to a platform (managed account)
     if (merchant.platformIndex != 0) {
+
       // find all commissions of this platform
       let commissions = await mysql.query(
         'SELECT * FROM commissions WHERE platformIndex = ?',
@@ -164,58 +131,38 @@ export default async (payment) => {
       )
 
       // for each commission, create an output fulfilling the commission
+      // (as long as there is enough money left to keep going)
       for (let i = 0; i < commissions.length; i++) {
-
-        /*
-          This piece of code calculates amountCommissioned
-        */
-        let commissionPercentage =
-          (commissions[i].commissionPercentage / 100) *
-          totalTransferred
-        let commissionAmount = commissions[i].commissionAmount
-        if (commissions[i].commissionCurrency !== 'BCH') {
-          let exchangeRate = await axios.get(
-            `https://apiv2.bitcoinaverage.com/indices/global/ticker/BCH${commissions[i].commissionCurrency}`
-          )
-          exchangeRate = exchangeRate.data.averages.day
-          commissionAmount *= (1 / exchangeRate)
-          commissionAmount = parseInt(commissionAmount *= 100000000)
-        } else {
-          commissionAmount = commissionAmount * 100000000
-        }
-        let amountCommissioned
-        if (commissions[i].commissionLessMore === 'less') {
-          amountCommissioned = (commissionPercentage < commissionAmount) ?
-            commissionPercentage : commissionAmount
-        } else {
-          amountCommissioned = (commissionPercentage < commissionAmount) ?
-            commissionAmount : commissionPercentage
-        }
-
-        // esure amountContributed is not greater than totalTransferred
-        if (
-          amountCommissioned + 1000 >=
-          (totalTransferred - amountContributed)
-        ) {
-          amountCommissioned = 0
-          console.error(
-            `In payment #${payment.tableIndex}, commission #${commissions[i].tableIndex} is more than the payment amount minus the Gateway contribution itself. Taking zero commission instead.`
-          )
-        }
-
-        // eliminate very small contributions
-        if (amountCommissioned <= 1000) {
-          continue
-        }
+        let amountCommissioned = await applyRules(
+          payment.tableIndex,
+          totalTransferred, // (totalTransferred - amountContributed)
+          commissions[i].commissionAmount,
+          commissions[i].commissionCurrency,
+          commissions[i].commissionPercentage,
+          commissions[i].commissionLessMore
+        )
 
         // log the commission
         console.log(
           `Payment #${payment.tableIndex} is subject to commission #${commissions[i].tableIndex}, which in this case is ${(amountCommissioned / 100000000)} BCH`
         )
 
-        // now that we know amountCommissioned, we need to know where to send it
-        // this code finds that out
-        let commissionAddress
+        // if this commission would overspend the transaction, we leave it out
+        if (
+          allCommissionsTotal +
+          amountCommissioned +
+          amountContributed +
+          2000 >
+          totalTransferred
+        ) {
+          console.log(
+            `In payment #${payment.tableIndex}, commission #${commissions[i].tableIndex} would over-spend the transaction. Leaving it out.`
+          )
+          continue
+        }
+
+        // Derive XPUB address if needed
+        let commissionAddress = commissions[i].commissionAddress
         if (commissions[i].commissionMethod === 'XPUB') {
           try {
             let hdPub = new bch.HDPublicKey(commissions[i].commissionXPUB)
@@ -231,8 +178,6 @@ export default async (payment) => {
             )
             throw e
           }
-        } else {
-          commissionAddress = commissions[i].commissionAddress
         }
 
         // finally, we build the commission output
@@ -273,7 +218,7 @@ export default async (payment) => {
     )
 
     // verify the merchant isn't getting dust
-    if (merchantAmount < 600) {
+    if (merchantAmount < 546) {
       console.error(
         `Payment #${payment.tableIndex} merchant is getting dust, failing the payment`
       )
@@ -286,7 +231,7 @@ export default async (payment) => {
 
     // the merchant output
     transferTransaction.to(
-      bchaddr.toCashAddress(merchantAddress),
+      bchaddr.toCashAddress(merchant.payoutAddress),
       parseInt(merchantAmount)
     )
 
@@ -307,31 +252,20 @@ export default async (payment) => {
     throw e
   }
 
-  /*
-    Broadcast transaction to multiple places
-  */
-  let rawTransferTransaction = transferTransaction.toString()
+  // broadcast the transaction
+  let transferTXID
+  try {
+    transferTXID = await broadcastTransaction(transferTransaction)
+  } catch (e) {
+    console.error(
+      'Error broadcasting transaction'
+    )
+    throw e
+  }
 
-  // Our current block explorer
-  let transferTXID = await axios.post(
-    `${process.env.BLOCK_EXPLORER_BASE}/tx/send`,
-    {
-      rawtx: rawTransferTransaction
-    }
-  )
-  transferTXID = transferTXID.data.txid
-
-  // log the broadcast
+  // log the transfer transaction broadcast
   console.log(
-    `Payment #${payment.tableIndex} broadcasted! TXID: ${transferTXID}`
-  )
-
-  // Blockchair.com block explorer
-  await axios.post(
-    'https://api.blockchair.com/bitcoin-cash/push/transaction',
-    {
-      data: rawTransferTransaction
-    }
+    `Payment #${payment.tableIndex} broadcasted!\nTXID: ${transferTXID}`
   )
 
   // insert the transaction into the transactions table
@@ -367,9 +301,8 @@ export default async (payment) => {
         SET totalSales = totalSales + ?
         WHERE tableIndex = ?
         LIMIT 1`,
-      [totalTransferred, merchant.tableIndex]
+      [totalTransferred, merchant.platformIndex]
     )
-
   }
 
   // execute a callback
