@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import './payment.css'
-import { Text } from 'components'
 
 let Payment = ({
   paymentAddress,
@@ -15,48 +14,48 @@ let Payment = ({
 }) => (
   <div className="payment">
     <div className="payment-inner">
-      <Text><b>Payment Address: </b>
+      <p><b>Payment Address: </b>
         <a
           href={'https://explorer.bitcoin.com/bch/address/' + paymentAddress}
         >
           {paymentAddress}
         </a>
-      </Text>
+      </p>
       {
         invoiceAmount &&
-        <Text>
+        <p>
           <b>Invoice Amount: </b>{(invoiceAmount / 100000000) + ' BCH'}
-        </Text>
+        </p>
       }
       {
         (privateKey && privateKey !== 'hidden') &&
-        <Text><b>Private Key: </b>{privateKey}</Text>
+        <p><b>Private Key: </b>{privateKey}</p>
       }
       {
         (paymentID && paymentID.length > 1) &&
-        <Text><b>Payment ID: </b>{paymentID}</Text>
+        <p><b>Payment ID: </b>{paymentID}</p>
       }
       {
         (callbackURL && callbackURL.length > 1) &&
-        <Text><b>Callback URL: </b>{callbackURL}</Text>
+        <p><b>Callback URL: </b>{callbackURL}</p>
       }
       {
         (callbackStatus && callbackStatus.length > 1) &&
-        <Text><b>Callback Status: </b>{callbackStatus}</Text>
+        <p><b>Callback Status: </b>{callbackStatus}</p>
       }
-      <Text><b>Invoice Created: </b>{created}</Text>
+      <p><b>Invoice Created: </b>{created}</p>
       {
         (transactions && transactions.length > 0) &&
         transactions.map((t, k) => (
           <div className="payment-transaction" key={k}>
-            <Text><b>Transaction Type: </b>{t.type}</Text>
-            <Text><b>TXID: </b>
+            <p><b>Transaction Type: </b>{t.type}</p>
+            <p><b>TXID: </b>
               <a
                 href={'https://explorer.bitcoin.com/bch/tx/' + t.TXID}
               >
                 {t.TXID}
               </a>
-            </Text>
+            </p>
           </div>
         ))
       }

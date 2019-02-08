@@ -1,11 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Logo from 'res/logo.svg.js'
-import styles from '../jss/Header'
+import styles from './style'
 import withStyles from '@material-ui/core/styles/withStyles'
 import { Link } from '@reach/router'
-import HeaderActions from './HeaderActions'
-import HeaderActionsMobile from './mobile/HeaderActionsMobile'
+import HeaderActions from './actions'
+import { HeaderMobile as HeaderActionsMobile } from 'components'
 
 const Header = ({ classes, children, page = 'Gateway' }) => (
   <div className={classes.header_wrap}>

@@ -1,16 +1,15 @@
 import React, { useState } from 'react'
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
-import { Text } from 'components'
 import {
   FormControlLabel,
   TextField,
   Checkbox,
-  Button
+  Button,
+  Card,
+  CardContent
 } from '@material-ui/core'
 import { merchantid } from 'API'
 import withStyles from '@material-ui/core/styles/withStyles'
-import styles from 'jss/ButtonBuilder'
+import styles from './style'
 import PropTypes from 'prop-types'
 
 const ButtonBuilder = ({ buttonProperties, setButtonProperties, classes }) => {
@@ -35,12 +34,12 @@ const ButtonBuilder = ({ buttonProperties, setButtonProperties, classes }) => {
     <Card>
       <CardContent>
         <h2>Customize Your Button</h2>
-        <Text>
+        <p>
           Use the settings below to change various aspects of your payment
           button. Once you're satisfied with the result, scroll down and copy
           the generated code onto any website where you'd like to accept
           payments.
-        </Text>
+        </p>
         <TextField
           style={{
             width: '100%'

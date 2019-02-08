@@ -1,17 +1,8 @@
 import React from 'react'
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
-import styles from '../../jss/Index'
+import { Card, CardContent } from '@material-ui/core'
+import styles from './style'
 import withStyles from '@material-ui/core/styles/withStyles'
 import PropTypes from 'prop-types'
-
-// const Card = withStyles(styles)(({ children, classes }) => (
-//   <UICard className={classes.card}>{children}</UICard>
-// ))
-// Card.propTypes = {
-//   children: PropTypes.any,
-//   classes: PropTypes.object
-// }
 
 const IndexContent = ({ classes }) => (
   <div className={classes.card_grid_wrap}>

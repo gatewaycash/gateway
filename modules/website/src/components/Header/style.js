@@ -1,4 +1,4 @@
-import { collapseThreshold } from './StyleConfig'
+import { collapseThreshold } from 'style/config'
 
 export default () => ({
   header_wrap: {

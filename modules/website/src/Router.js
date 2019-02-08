@@ -9,7 +9,7 @@ import {
   Settings
 } from './pages/portal'
 import { withStyles } from '@material-ui/core'
-import styles from 'jss/Global'
+import styles from 'style/base'
 
 const Router = ({ classes }) => (
   <ReactRouter className={classes.router}>

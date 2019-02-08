@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 import { getContribution } from 'API'
-import { Text } from 'components'
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
+import { Card, CardContent } from '@material-ui/core'
 
 export default class SupportProject extends Component {
   state = {
@@ -33,12 +31,12 @@ export default class SupportProject extends Component {
       <Card className={this.props.className}>
         <CardContent>
           <h2>Supporting the Project</h2>
-          <Text>
+          <p>
             If you'd like to support the project, you can choose to donate a
             portion of each payment made to your merchant account. This will
             always be off by default, but any support you're able to provide is
             much appreciated.
-          </Text>
+          </p>
           <p>
             Total Contributions: {this.state.totalContributed / 100000000} BCH
           </p>

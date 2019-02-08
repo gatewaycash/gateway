@@ -1,4 +1,5 @@
-import { mobileThreshold } from './StyleConfig'
+import { mobileThreshold } from 'style/config'
+
 export default () => ({
   wrap: {
     'box-shadow': '0px -2px 3px 0px rgba(144,144,224,0.3)',

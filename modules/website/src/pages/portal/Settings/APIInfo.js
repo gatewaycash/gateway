@@ -1,9 +1,7 @@
 import React, { Component } from 'react'
+import { Button, Card, CardContent } from '@material-ui/core'
 import { getapikeys } from 'API'
-import { Button } from '@material-ui/core'
-import { Text, SourceCode } from 'components'
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
+import { SourceCode } from 'components'
 
 export default class APIInfo extends Component {
   state = {
@@ -33,32 +31,32 @@ export default class APIInfo extends Component {
       <Card className={this.props.className}>
         <CardContent>
           <h2>Gateway API Access</h2>
-          <Text>
+          <p>
             Your merchant account comes with free access to the Gateway API!
             That means you can build custom services and solutions that fit your
             needs without running your own servers.
-          </Text>
+          </p>
           <h3>Your API Key</h3>
-          <Text>
+          <p>
             Your account needs to have at least one API key to operate. If all
             your keys get deleted, a new one is generated for you automatically
             at login. To learn more about the Gateway API, go{' '}
             <a href="https://api.gateway.cash">here</a>.
-          </Text>
-          <Text>
+          </p>
+          <p>
             Don't share your API keys with anyone else. With these keys, someone
             could change your password, steal your funds and hijack your
             account!
-          </Text>
+          </p>
           {this.state.showKey ? (
             <>
               <SourceCode>{this.state.APIKeys.toString()}</SourceCode>
               <h3>Generate New Key (not working yet)</h3>
-              <Text>
+              <p>
                 Generating a new API key will invalidate your current key and
                 will log out any devices and services which use your merchant
                 account.
-              </Text>
+              </p>
               <form onSubmit={this.handleSubmit}>
                 <center>
                   <Button variant="contained" color="primary" type="submit">

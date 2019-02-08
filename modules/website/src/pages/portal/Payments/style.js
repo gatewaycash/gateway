@@ -1,4 +1,4 @@
-import { tabletThreshold, mobileThreshold } from './StyleConfig'
+import { tabletThreshold, mobileThreshold } from 'style/config'
 
 export default () => ({
   content_wrap: {
