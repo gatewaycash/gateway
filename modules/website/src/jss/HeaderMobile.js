@@ -3,7 +3,8 @@ export default () => ({
   action_icon: {
     'justify-self': 'right',
     padding: 0,
-    'min-width': 0
+    'min-width': 0,
+    color: '#f3f3f3'
   },
   external_link: {
     width: '25%',
@@ -13,10 +14,15 @@ export default () => ({
     'margin-top': '-12px'
   },
   link: {
-    outline: 'none'
+    outline: 'none',
+    color: '#f3f3f3'
   },
   action_icon__label: {
     'justify-content': 'left'
+  },
+  menu_paper: {
+    'background-color': '#444',
+    'color': '#f3f3f3'
   },
   [`@media only screen and (min-width: ${collapseThreshold})`]: {
     action_icon: {

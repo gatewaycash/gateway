@@ -43,7 +43,8 @@ CREATE TABLE IF NOT EXISTS payments (
   callbackStatus VARCHAR(30) DEFAULT "",
   invoiceAmount INT(15) DEFAULT 0,
   status VARCHAR(30) DEFAULT "clicked",
-  platformID VARCHAR(16) DEFAULT ""
+  platformID VARCHAR(16) DEFAULT "",
+  processingAttempts INT(3) DEFAULT 0
 );
 ALTER TABLE payments AUTO_INCREMENT = 1;
 

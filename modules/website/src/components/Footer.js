@@ -10,6 +10,7 @@ const Footer = ({ classes }) => (
       <a
         href="https://twitter.com/cash_gateway"
         target="_blank"
+        className={classes.link}
         rel="noopener noreferrer"
       >
         Twitter
@@ -17,6 +18,7 @@ const Footer = ({ classes }) => (
       <a
         href="mailto:hello@gateway.cash"
         target="_blank"
+        className={classes.link}
         rel="noopener noreferrer"
       >
         Email
@@ -27,6 +29,7 @@ const Footer = ({ classes }) => (
       <a
         href="https://ambassador.cash"
         target="_blank"
+        className={classes.link}
         rel="noopener noreferrer"
       >
         Discord (#gatewaycash)
@@ -34,12 +37,18 @@ const Footer = ({ classes }) => (
     </div>
     <div className={classes.c}>
       <strong>Docs:</strong>
-      <a href="/docs" target="_blank" rel="noopener noreferrer">
+      <a
+        href="/docs"
+        target="_blank"
+        className={classes.link}
+        rel="noopener noreferrer"
+      >
         PayButton Docs
       </a>
       <a
         href="https://api.gateway.cash/"
         target="_blank"
+        className={classes.link}
         rel="noopener noreferrer"
       >
         API Docs
@@ -47,6 +56,7 @@ const Footer = ({ classes }) => (
       <a
         href="https://github.com/gatewaycash/gateway"
         target="_blank"
+        className={classes.link}
         rel="noopener noreferrer"
       >
         GitHub Page

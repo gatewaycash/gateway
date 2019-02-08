@@ -4,7 +4,7 @@
  * @file Defines a function for processing payments
  * @param {object} payment - Payment row from the payments table
  */
-import { mysql, validateAddress, executeCallback } from 'utils'
+import { mysql, executeCallback } from 'utils'
 import broadcastTransaction from './broadcastTransaction'
 import applyRules from './applyRules'
 import bchaddr from 'bchaddrjs'
@@ -91,9 +91,11 @@ export default async (payment) => {
   let amountContributed = 0
 
   try {
+
     /*
       Gateway Contributions
     */
+
     amountContributed = await applyRules(
       payment.tableIndex,
       totalTransferred,
@@ -255,7 +257,10 @@ export default async (payment) => {
   // broadcast the transaction
   let transferTXID
   try {
-    transferTXID = await broadcastTransaction(transferTransaction)
+    transferTXID = await broadcastTransaction(
+      transferTransaction,
+      payment.tableIndex
+    )
   } catch (e) {
     console.error(
       'Error broadcasting transaction'
