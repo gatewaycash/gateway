@@ -9,7 +9,7 @@ export default async (userID, password) => {
   if (password.length > 100) {
     return generateError(
       'Password Too Long',
-      'Your password is too long. Like, over 100 characters. Shorten it. I\'m not even gonna try man...Not even just for you.'
+      'Your password must not be longer than 100 characters.'
     )
   }
 
@@ -18,10 +18,10 @@ export default async (userID, password) => {
 
   // check the userID for sanity
   // allow 300 characters in case of XPUB attempt
-  if (userID.length > 300) {
+  if (userID.length > 100) {
     return generateError(
-      'Username or Address Too Long',
-      'Your username or address is too long. Like, over 300 characters. Shorten it. I\'m not even gonna try man...Not even just for you.'
+      'Username Too Long',
+      'Your username must not be longer than 100 characters.'
     )
   }
 
@@ -30,7 +30,7 @@ export default async (userID, password) => {
 
   // use an address if one was returned
   if (parsedID !== false) {
-    loginData.address = parsedID
+    loginData.username = parsedID.substr(12, 20)
 
   // use a username since no address could be parsed
   } else {
