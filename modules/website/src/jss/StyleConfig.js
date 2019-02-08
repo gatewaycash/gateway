@@ -1,3 +1,3 @@
 export const collapseThreshold = '750px'
-export const mobileThreshold = '510px'
-export const tabletThreshold = '800px'
+export const mobileThreshold = '680px'
+export const tabletThreshold = '1000px'

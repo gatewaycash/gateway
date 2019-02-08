@@ -4,8 +4,8 @@ export default () => ({
   header_wrap: {
     display: 'grid',
     'grid-template-columns': '1fr 1fr',
-    'box-shadow': '-1px 3px 3px 0px rgba(0,0,0,0.2)',
-    'background-color': 'white',
+    'box-shadow': '-1px 4px 4px 0px rgba(144,144,224,0.3)',
+    'background-color': '#444',
     padding: '0 2%',
     'margin-bottom': '2%',
     'align-items': 'center'
@@ -20,12 +20,13 @@ export default () => ({
     display: 'flex',
     'align-items': 'center',
     '& svg': {
-      width: '20%;',
-      'min-width': '64px'
+      width: '18%;',
+      'min-width': '56px'
     }
   },
   header_text: {
-    'margin-left': '1%'
+    'margin-left': '2%',
+    'color': '#f3f3f3'
   },
   header_actions: {
     display: 'flex',
@@ -34,21 +35,19 @@ export default () => ({
     'justify-content': 'flex-end',
     '& li': {
       transition: 'border 300ms ease-out',
-      'border-bottom': '1px transparent solid',
-      '&:hover': {
-        'border-bottom-color': 'blue'
-      }
+      'border-bottom': '1px transparent solid'
     }
   },
   external_link: {
     width: '25%',
-    color: '#3f51b5',
+    color: '#99c',
     'min-width': '12px',
     'max-width': '14px',
     'margin-top': '-12px'
   },
   what_is_bitcoin: {
-    display: 'flex'
+    display: 'flex',
+    color: '#f3f3f3'
   },
   what_is_bitcoin__label: {
     display: 'grid',

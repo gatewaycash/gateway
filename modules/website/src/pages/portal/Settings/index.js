@@ -1,6 +1,7 @@
 import React from 'react'
 import Username from './Username'
 import Password from './Password'
+import SupportProject from './SupportProject'
 import APIInfo from './APIInfo'
 import { Footer, Text } from 'components'
 import NavigationMenu from './../NavigationMenu'
@@ -15,8 +16,8 @@ const Settings = ({ classes }) => (
     <div className={classes.content_wrap}>
       <Username className={classes.username} />
       <Password className={classes.password} />
-      <APIInfo className={classes.api_info} />
-      <Card>
+      <APIInfo className={classes.api_access} />
+      <Card className={classes.display_currency}>
         <CardContent>
           <h2>Display Currency</h2>
           <Text>
@@ -29,18 +30,7 @@ const Settings = ({ classes }) => (
           <p>This feature hasn't been built yet, please check back soon.</p>
         </CardContent>
       </Card>
-      <Card className={classes.support_the_project}>
-        <CardContent>
-          <h2>Supporting the Project</h2>
-          <Text>
-            If you'd like to support the project, you can choose to donate a
-            portion of each payment made to your merchant account. This will
-            always be off by default, but any support you're able to provide is
-            much appreciated.
-          </Text>
-          <p>This feature hasn't been built yet, please check back soon.</p>
-        </CardContent>
-      </Card>
+      <SupportProject className={classes.support_project} />
     </div>
     <Footer />
   </React.Fragment>

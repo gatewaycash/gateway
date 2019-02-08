@@ -63,8 +63,8 @@ export default async (transaction, paymentIndex) => {
   )
 
   // check if the broadcast was successful
-  if (broadcastResult.data.txid) {
-    TXIDs.push(broadcastResult.data.txid)
+  if (broadcastResult.data.data.transaction_hash) {
+    TXIDs.push(broadcastResult.data.data.transaction_hash)
   } else {
     console.error(
       `Payment #${paymentIndex}: Error broadcasting transaction to https://api.blockchair.com\n`,
@@ -82,14 +82,6 @@ export default async (transaction, paymentIndex) => {
   if (!TXIDs.every(x => x === TXIDs[0])) {
     console.error(`Payment #${paymentIndex}: TXIDs do not match after broadcast:\n`, TXIDs)
     throw 'TXID mismatch'
-  }
-
-  // make sure the TXID is valid
-  let TXIDValid = validateTXID(TXIDs[0])
-  if (!TXIDValid) {
-    console.error(
-      `Payment #${paymentIndex}: Invalid TXID after broadcast:\n`, TXIDs[0]
-    )
   }
 
   // return the TXID

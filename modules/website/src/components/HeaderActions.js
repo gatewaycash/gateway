@@ -13,13 +13,6 @@ const HeaderActions = ({ classes, children }) => (
     ) : (
       <ul className={classes.header_actions}>
         <li>
-          <Link to="portal">
-            <Button color="primary">
-              {sessionStorage.gatewayAPIKey ? 'Dashboard' : 'Get Started'}
-            </Button>
-          </Link>
-        </li>
-        <li>
           <Button
             href="https://www.youtube.com/watch?v=jduVN643Prc"
             target="_blank"
@@ -29,6 +22,13 @@ const HeaderActions = ({ classes, children }) => (
             <span>What&nbsp;is&nbsp;Bitcoin&nbsp;Cash?</span>
             <OpenInNewSharp className={classes.external_link} />
           </Button>
+        </li>
+        <li>
+          <Link to="portal">
+            <Button color="primary" variant="contained">
+              {sessionStorage.gatewayAPIKey ? 'Dashboard' : 'Get Started'}
+            </Button>
+          </Link>
         </li>
       </ul>
     )}

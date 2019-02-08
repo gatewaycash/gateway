@@ -20,7 +20,7 @@ const HeaderActionsMobile = ({ classes, children }) => {
     for (let ix in children) {
       let child = children[ix]
       let node = (
-        <MenuItem onClick={handleClose} key={ix}>
+        <MenuItem classes={{root: classes.link}} onClick={handleClose} key={ix}>
           {child}
         </MenuItem>
       )
@@ -45,6 +45,7 @@ const HeaderActionsMobile = ({ classes, children }) => {
               anchorEl={anchorEl}
               open={Boolean(anchorEl)}
               onClose={handleClose}
+              classes={{paper: classes.menu_paper}}
             >
               {menuNodes}
             </Menu>
@@ -53,9 +54,12 @@ const HeaderActionsMobile = ({ classes, children }) => {
               anchorEl={anchorEl}
               open={Boolean(anchorEl)}
               onClose={handleClose}
+              classes={{paper: classes.menu_paper}}
             >
               <Link to="portal" className={classes.link}>
-                <MenuItem onClick={handleClose}>Get Started</MenuItem>
+                <MenuItem onClick={handleClose}>
+                  <span className={classes.link}>GET STARTED</span>
+                </MenuItem>
               </Link>
               <MenuItem onClick={handleClose}>
                 <a
@@ -63,7 +67,7 @@ const HeaderActionsMobile = ({ classes, children }) => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <span>What is Bitcoin Cash?</span>
+                  <span className={classes.link}>WHAT IS BITCOIN CASH?</span>
                   <OpenInNewSharp className={classes.external_link} />
                 </a>
               </MenuItem>
