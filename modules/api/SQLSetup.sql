@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS APIKeys;
 DROP TABLE IF EXISTS platforms;
 DROP TABLE IF EXISTS commissions;
 DROP TABLE IF EXISTS platformAdministrators;
+DROP TABLE IF EXISTS exchangeRates;
 
 -- create new users table
 CREATE TABLE IF NOT EXISTS users (
@@ -42,7 +43,8 @@ CREATE TABLE IF NOT EXISTS payments (
   callbackStatus VARCHAR(30) DEFAULT "",
   invoiceAmount INT(15) DEFAULT 0,
   status VARCHAR(30) DEFAULT "clicked",
-  platformID VARCHAR(16) DEFAULT ""
+  platformID VARCHAR(16) DEFAULT "",
+  processingAttempts INT(3) DEFAULT 0
 );
 ALTER TABLE payments AUTO_INCREMENT = 1;
 
@@ -113,6 +115,20 @@ CREATE TABLE IF NOT EXISTS platformAdministrators (
   platformIndex INT(8)
 );
 ALTER TABLE platformAdministrators AUTO_INCREMENT = 1;
+
+-- create new exchangeRates table
+CREATE TABLE IF NOT EXISTS exchangeRates (
+  tableIndex INT AUTO_INCREMENT PRIMARY KEY,
+  pair VARCHAR(10),
+  rate VARCHAR(30)
+);
+ALTER TABLE exchangeRates AUTO_INCREMENT = 1;
+
+-- Insert rough estimate values into exchangeRates table
+INSERT INTO exchangeRates (pair, rate) VALUES ("BCHUSD", "115.00");
+INSERT INTO exchangeRates (pair, rate) VALUES ("BCHEUR", "100.00");
+INSERT INTO exchangeRates (pair, rate) VALUES ("BCHCNY", "780.00");
+INSERT INTO exchangeRates (pair, rate) VALUES ("BCHJPY", "12600");
 
 -- TEST USERS, PLATFORMS AND PAYMENTS
 

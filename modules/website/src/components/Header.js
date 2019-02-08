@@ -7,12 +7,12 @@ import { Link } from '@reach/router'
 import HeaderActions from './HeaderActions'
 import HeaderActionsMobile from './mobile/HeaderActionsMobile'
 
-const Header = ({ classes, children }) => (
+const Header = ({ classes, children, page = 'Gateway' }) => (
   <div className={classes.header_wrap}>
     <div className={classes.header_logo_wrap}>
       <Link to="/" className={classes.header_logo}>
         <Logo />
-        <h1 className={classes.header_text}>Gateway.cash</h1>
+        <h1 className={classes.header_text}>{page}</h1>
       </Link>
     </div>
     <HeaderActions>{children}</HeaderActions>
@@ -22,7 +22,8 @@ const Header = ({ classes, children }) => (
 
 Header.propTypes = {
   classes: PropTypes.object,
-  children: PropTypes.any
+  children: PropTypes.any,
+  page: PropTypes.string
 }
 
 export default withStyles(styles)(Header)

@@ -71,6 +71,9 @@ export default async (payment) => {
   )
   merchantPlatform = merchantPlatform[0].platformIndex
   if (!isNaN(merchantPlatform) && merchantPlatform > 0) {
+    console.log(
+      `XPUB payment #${payment.tableIndex} goes to a merchant who belongs to a platform`
+    )
     await mysql.query(
       'UPDATE platforms SET totalSales = totalSales + ? WHERE tableIndex = ?',
       [paymentTotal, merchantPlatform]

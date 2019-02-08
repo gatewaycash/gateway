@@ -85,7 +85,7 @@ class Dashboard extends Component {
               </Text>
             </CardContent>
           </Card>
-          <Card>
+          <Card className={this.props.classes.why_of_crypto}>
             <CardContent>
               <h2>The "Why" of Crypto</h2>
               <Text>

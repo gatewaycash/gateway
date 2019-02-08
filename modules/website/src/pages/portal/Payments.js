@@ -102,16 +102,6 @@ const PaymentsPage = ({ classes }) => {
               }
               label="Show Unpaid and Unprocessed Payments"
             />
-          </CardContent>
-        </Card>
-        <Card className={classes.payments}>
-          <CardContent>
-            <h2>Payments</h2>
-            {payments}
-          </CardContent>
-        </Card>
-        <Card className={classes.about_private_keys}>
-          <CardContent>
             <h3>About Private Keys</h3>
             <Text>
               In short, a private key is like a password that unlocks the funds
@@ -135,6 +125,12 @@ const PaymentsPage = ({ classes }) => {
               }
               label="Show Private Keys"
             />
+          </CardContent>
+        </Card>
+        <Card className={classes.payments}>
+          <CardContent>
+            <h2>Payments</h2>
+            {payments}
           </CardContent>
         </Card>
       </div>

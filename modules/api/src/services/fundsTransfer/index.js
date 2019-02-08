@@ -37,10 +37,18 @@ let checkPayment = async (payment) => {
 
 export default async () => {
   let pendingPayments = await mysql.query(
-    'SELECT * FROM payments WHERE status = ?',
-    ['pending']
+    'SELECT * FROM payments WHERE status = ? AND processingAttempts < ?',
+    ['pending', 10]
   )
   for (let i = 0; i < pendingPayments.length; i++) {
+    // increment the number of processing attempts
+    await mysql.query(
+      `UPDATE payments
+        SET processingAttempts = processingAttempts + 1
+        WHERE tableIndex = ?`,
+      [pendingPayments[i].tableIndex]
+    )
+    // check the payment
     await checkPayment(pendingPayments[i])
   }
 }

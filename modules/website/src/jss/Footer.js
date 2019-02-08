@@ -1,11 +1,13 @@
 import { mobileThreshold } from './StyleConfig'
 export default () => ({
   wrap: {
-    'box-shadow': '0px -2px 3px 0px rgba(0,0,0,0.2)',
+    'box-shadow': '0px -2px 3px 0px rgba(144,144,224,0.3)',
     'text-align': 'center',
     padding: '1% 0',
     display: 'grid',
     'font-size': '15px',
+    color: '#f3f3f3',
+    'background-color': '#444',
     'grid-template-areas': '\'a b c\' \'. d .\'',
     'margin-top': '3%',
     '& a': {
@@ -15,8 +17,12 @@ export default () => ({
       }
     }
   },
+  link: {
+    color: '#99c'
+  },
   legal: {
-    'font-size': '13px'
+    'font-size': '13px',
+    color: '#999'
   },
   a: {
     'grid-area': 'a'
