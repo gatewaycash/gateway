@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { getContribution } from 'API'
-import { Button, TextField } from '@material-ui/core'
-import { Text, Error } from 'components'
+import { Text } from 'components'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 

@@ -63,8 +63,9 @@ let PayButton = props => {
       let marketDataURL =
         'https://apiv2.bitcoinaverage.com/indices/global/ticker/BCH' +
         props.currency
-      let marketData = await axios.get(marketDataURL)
-      let exchangeRate = marketData.data.averages.day
+      let marketData = await fetch(marketDataURL)
+      marketData = await marketData.json()
+      let exchangeRate = marketData.averages.day
       if (props.consoleOutput !== 'none') {
         console.log(
           'GATEWAY: Current',
