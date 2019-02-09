@@ -3,11 +3,10 @@ import Username from './Username'
 import Password from './Password'
 import SupportProject from './SupportProject'
 import APIInfo from './APIInfo'
-import { Footer, Text } from 'components'
+import { Footer } from 'components'
 import NavigationMenu from './../NavigationMenu'
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
-import styles from '../../../jss/Settings'
+import { Card, CardContent } from '@material-ui/core'
+import styles from './style'
 import withStyles from '@material-ui/core/styles/withStyles'
 
 const Settings = ({ classes }) => (
@@ -20,13 +19,13 @@ const Settings = ({ classes }) => (
       <Card className={classes.display_currency}>
         <CardContent>
           <h2>Display Currency</h2>
-          <Text>
+          <p>
             Bitcoin Cash (BCH) units will always be displayed. In places like
             the View Payments page, you can choose to have values converted and
             displayed in other currencies as well. When viewing payments, you
             will be shown the current value as well as what the value was at the
             time the payment was made.
-          </Text>
+          </p>
           <p>This feature hasn't been built yet, please check back soon.</p>
         </CardContent>
       </Card>

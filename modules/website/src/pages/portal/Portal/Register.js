@@ -1,10 +1,8 @@
 import React from 'react'
 import { navigate } from '@reach/router'
-import { Button, TextField } from '@material-ui/core'
+import { Button, TextField, Card, CardContent } from '@material-ui/core'
 import { register } from 'API'
-import { Text, Error } from 'components'
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
+import { Error } from 'components'
 
 export default ({ className }) => {
   let [address, setAddress] = React.useState('')
@@ -36,11 +34,11 @@ export default ({ className }) => {
     <Card className={className}>
       <CardContent>
         <h1>Register for Free</h1>
-        <Text>
+        <p>
           Sign up for a Gateway merchant account to instantly start creating
           payment buttons and tracking invoices across your websites and apps.
           All you need is a Bitcoin Cash address, a username and a password:
-        </Text>
+        </p>
         <Error
           error={registerError}
           closed={errorClosed}

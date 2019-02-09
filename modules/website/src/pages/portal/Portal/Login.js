@@ -1,10 +1,8 @@
 import React from 'react'
 import { navigate } from '@reach/router'
-import { Button, TextField } from '@material-ui/core'
+import { Button, TextField, Card, CardContent } from '@material-ui/core'
 import { login } from 'API'
-import { Text, Error } from 'components'
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
+import { Error } from 'components'
 
 export default ({ className }) => {
   let [userID, setUserID] = React.useState('')
@@ -34,10 +32,10 @@ export default ({ className }) => {
     <Card className={className}>
       <CardContent>
         <h1>Log In</h1>
-        <Text>
+        <p>
           If you have a Gateway account, log in below using your Gateway.cash
           username:
-        </Text>
+        </p>
         <Error
           error={loginError}
           closed={errorClosed}
@@ -72,18 +70,18 @@ export default ({ className }) => {
           </form>
         </center>
         <br />
-        <Text>
+        <p>
           If you are trying to log into an account that didn't previously have
           a username (you only ever used your BCH address), your username has
           been set to the <b>first 20 characters of your address</b>. Please
           go to Settings once you've logged in and change your username.
-        </Text>
-        <Text>
+        </p>
+        <p>
           If you have forgotten your Gateway.cash username and your merchant
           account's payout address or if you can't remember your password, send
           an email to passwordreset@gateway.cash and we will attempt to help
           you.
-        </Text>
+        </p>
       </CardContent>
     </Card>
   )

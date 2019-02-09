@@ -6,10 +6,10 @@ import PaymentIDInfo from './PaymentIDInfo'
 import SupportProject from './SupportProject'
 import PreviewButton from './PreviewButton'
 import ProcessingInfo from './ProcessingInfo'
-import ClientCodeExample from './ClientCodeExample'
+import ClientCode from './ClientCode'
 import ButtonBuilder from './ButtonBuilder'
 
-import styles from 'jss/CreateButtonPage'
+import styles from './style'
 import withStyles from '@material-ui/core/styles/withStyles'
 import PropTypes from 'prop-types'
 
@@ -35,7 +35,7 @@ const CreateButtonPage = ({ classes }) => {
           buttonProperties={buttonProperties}
           setButtonProperties={handleButtonPropertiesUpdate}
         />
-        <ClientCodeExample buttonProperties={buttonProperties} />
+        <ClientCode buttonProperties={buttonProperties} />
         <PreviewButton buttonProperties={buttonProperties} />
         <PaymentIDInfo />
         <ProcessingInfo />

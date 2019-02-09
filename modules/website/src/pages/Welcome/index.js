@@ -1,6 +1,6 @@
 import React from 'react'
 import { Footer, Header } from 'components'
-import IndexContent from './index/IndexContent'
+import IndexContent from './IndexContent'
 
 export default () => (
   <div>

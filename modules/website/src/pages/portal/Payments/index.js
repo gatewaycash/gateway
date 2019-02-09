@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react'
-import { FormControlLabel, Switch } from '@material-ui/core'
-import NavigationMenu from './NavigationMenu'
+import { FormControlLabel, Switch, Card, CardContent } from '@material-ui/core'
+import NavigationMenu from './../NavigationMenu'
 import { payments as fetchPayments, merchantid } from 'API'
 import PayButton from '@gatewaycash/paybutton'
-import { Text, Payment, Footer } from 'components'
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
+import { Payment, Footer } from 'components'
 import withStyles from '@material-ui/core/styles/withStyles'
-import styles from '../../jss/Payments'
+import styles from './style'
+import PropTypes from 'prop-types'
 
 const PaymentsPage = ({ classes }) => {
   const [showUnpaid, setShowUnpaid] = useState(false)
   const [showKeys, setShowKeys] = useState(false)
-  const [payments, setPayments] = useState(<Text centered>loading...</Text>)
+  const [payments, setPayments] = useState(<p>loading...</p>)
   const [merchantID, setMerchantID] = useState('')
 
   const updateView = async () => {
@@ -27,9 +26,9 @@ const PaymentsPage = ({ classes }) => {
       if (!parsedPayments.length) {
         parsedPayments = (
           <div className={classes.no_payments_wrap}>
-            <Text centered>
+            <p>
               No payments yet! Make a test payment and refresh the page.
-            </Text>
+            </p>
             {merchantID && (
               <PayButton
                 merchantID={merchantID}
@@ -39,10 +38,10 @@ const PaymentsPage = ({ classes }) => {
                 gatewayServer={process.env.REACT_APP_GATEWAY_BACKEND}
               />
             )}
-            <Text centered>
+            <p>
               Your money will be returned to your merchant payout address. it
               may take a few seconds for your payment to appear.
-            </Text>
+            </p>
           </div>
         )
       }
@@ -81,17 +80,17 @@ const PaymentsPage = ({ classes }) => {
         <Card className={classes.view_payments}>
           <CardContent>
             <h2>View Your Payments</h2>
-            <Text>
+            <p>
               This is a list of payments made to your merchant account. They are
               sorted by date, the most recent payments appearing at the top.
-            </Text>
+            </p>
             <h3>About Unpaid and Unprocessed Payments</h3>
-            <Text>
+            <p>
               Unpaid and unprocessed payments usually occur when a customer
               clicks on a payment button but then closes it without making a
               payment. Pending payments (payments that haven't yet been
               processed) will also fall into this category.
-            </Text>
+            </p>
             <FormControlLabel
               control={
                 <Switch
@@ -103,18 +102,18 @@ const PaymentsPage = ({ classes }) => {
               label="Show Unpaid and Unprocessed Payments"
             />
             <h3>About Private Keys</h3>
-            <Text>
+            <p>
               In short, a private key is like a password that unlocks the funds
               in a cryptocurrency address. Private keys should never be shared
               because anyone with your private keys can spend the money stored
               in the respective address. Likewise, no one can steal money from
               an address without the private key.
-            </Text>
-            <Text>
+            </p>
+            <p>
               Your Bitcoin wallet generally keeps track of your private keys for
               you. For addresses created by Gateway, we'll manage those keys but
               will optionally share them with you. It's your money after all!
-            </Text>
+            </p>
             <FormControlLabel
               control={
                 <Switch
@@ -137,6 +136,10 @@ const PaymentsPage = ({ classes }) => {
       <Footer />
     </React.Fragment>
   )
+}
+
+PaymentsPage.propTypes = {
+  classes: PropTypes.object
 }
 
 export default withStyles(styles)(PaymentsPage)

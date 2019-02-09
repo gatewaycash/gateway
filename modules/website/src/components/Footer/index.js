@@ -1,5 +1,5 @@
 import React from 'react'
-import styles from '../jss/Footer'
+import styles from './style'
 import withStyles from '@material-ui/core/styles/withStyles'
 import PropTypes from 'prop-types'
 

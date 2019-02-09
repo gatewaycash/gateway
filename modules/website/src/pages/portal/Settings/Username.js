@@ -1,9 +1,8 @@
 import React, { Component } from 'react'
 import { getUsername, setUsername } from 'API'
 import { Button, TextField } from '@material-ui/core'
-import { Text, Error } from 'components'
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
+import { Error } from 'components'
+import { Card, CardContent } from '@material-ui/core'
 
 export default class Username extends Component {
   state = {
@@ -53,14 +52,14 @@ export default class Username extends Component {
       <Card className={this.props.className}>
         <CardContent>
           <h2>{this.state.username.toUpperCase()}</h2>
-          <Text>
+          <p>
             Your username can be used as a more convenient way to log into
             gateway.cash instead of typing your address every time.
-          </Text>
-          <Text>
+          </p>
+          <p>
             When you reserve your username, there are some restrictions which
             allow for an easier login experience for all merchants.
-          </Text>
+          </p>
           <span>
             Your username must:
             <ul>

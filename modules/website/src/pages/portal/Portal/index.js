@@ -4,7 +4,7 @@ import Login from './Login'
 import Register from './Register'
 import { Header, Footer } from 'components'
 import OnboardingInfo from './OnboardingInfo'
-import styles from '../../../jss/Portal'
+import styles from './style'
 import withStyles from '@material-ui/core/styles/withStyles'
 import PropTypes from 'prop-types'
 

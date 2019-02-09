@@ -3,7 +3,7 @@ import OpenInNewSharp from '@material-ui/icons/OpenInNew'
 import { Button } from '@material-ui/core'
 import PropTypes from 'prop-types'
 import { Link } from '@reach/router'
-import styles from '../jss/Header'
+import styles from './style'
 import withStyles from '@material-ui/core/styles/withStyles'
 
 const HeaderActions = ({ classes, children }) => (

@@ -1,9 +1,8 @@
 import React, { Component } from 'react'
 import { setPassword } from 'API'
 import { Button, TextField } from '@material-ui/core'
-import { Text, Error } from 'components'
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
+import { Error } from 'components'
+import { Card, CardContent } from '@material-ui/core'
 
 export default class Password extends Component {
   state = {
@@ -43,10 +42,10 @@ export default class Password extends Component {
       <Card className={this.props.className}>
         <CardContent>
           <h2>Account Password</h2>
-          <Text>
+          <p>
             Your password protects the security of your account. Never share
             your password with anyone or use the same password across websites.
-          </Text>
+          </p>
           <span>
             For your security, your password must follow some guidelines which
             you should also generally use for all your passwords. Your password

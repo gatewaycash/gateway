@@ -1,33 +1,27 @@
-import { tabletThreshold, mobileThreshold } from './StyleConfig'
+import { tabletThreshold, mobileThreshold } from 'style/config'
 
 export default () => ({
-  main_content_wrap: {
+  content_wrap: {
     display: 'grid',
     'grid-template-columns': 'repeat(3, 1fr)',
     'grid-column-gap': '2rem',
+    'grid-row-gap': '2rem',
     padding: '0 2rem'
   },
-  why_of_crypto: {
-    'grid-column': 3
-  },
   [`@media only screen and (max-width: ${tabletThreshold})`]: {
-    main_content_wrap: {
-      'grid-row-gap': '1.5rem',
+    content_wrap: {
       'grid-template-columns': 'repeat(2, 1fr)',
+      'grid-column-gap': '1.5rem',
+      'grid-row-gap': '1.5rem',
       padding: '0 1.5rem'
-    },
-    why_of_crypto: {
-      'grid-column': '1/span 2'
     }
   },
   [`@media only screen and (max-width: ${mobileThreshold})`]: {
-    main_content_wrap: {
-      'grid-row-gap': '1rem',
+    content_wrap: {
       'grid-template-columns': 'none',
+      'grid-column-gap': '1rem',
+      'grid-row-gap': '1rem',
       padding: '0 1rem'
-    },
-    why_of_crypto: {
-      'grid-column': 1
     }
   }
 })

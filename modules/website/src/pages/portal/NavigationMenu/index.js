@@ -1,10 +1,10 @@
 import React from 'react'
 import { Button as MUIButton } from '@material-ui/core'
-import { Header } from '../../components'
+import { Header } from 'components'
 import { Link } from '@reach/router'
 import PropTypes from 'prop-types'
 import withStyles from '@material-ui/core/styles/withStyles'
-import styles from 'jss/NavigationMenu'
+import styles from './style'
 
 let Button = props => (
   <Link to={props.to || '/'}>
@@ -24,7 +24,9 @@ let Button = props => (
 )
 Button.propTypes = {
   to: PropTypes.string,
-  children: PropTypes.any
+  children: PropTypes.any,
+  color: PropTypes.string,
+  classes: PropTypes.object
 }
 Button = withStyles(styles)(Button)
 
@@ -45,5 +47,8 @@ let NavigationMenu = ({ page }) => (
     </Header>
   </div>
 )
+NavigationMenu.propTypes = {
+  page: PropTypes.string
+}
 
 export default withStyles(styles)(NavigationMenu)

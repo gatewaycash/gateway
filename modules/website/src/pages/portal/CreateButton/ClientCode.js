@@ -1,7 +1,6 @@
 import React from 'react'
-import { Text, SourceCode } from 'components'
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
+import { SourceCode } from 'components'
+import { Card, CardContent } from '@material-ui/core'
 import PropTypes from 'prop-types'
 
 const ClientCode = ({ buttonProperties }) => {
@@ -16,7 +15,7 @@ const ClientCode = ({ buttonProperties }) => {
     generatedCode += `\n  buttonText="${buttonProperties.buttonText}"`
   }
 
-  if (buttonProperties.amount !== '' && buttonProperties.amount != 0) {
+  if (buttonProperties.amount !== '' && buttonProperties.amount !== 0) {
     generatedCode += `\n  amount="${buttonProperties.amount}"`
 
     if (buttonProperties.currency !== 'BCH') {
@@ -44,30 +43,30 @@ const ClientCode = ({ buttonProperties }) => {
     <Card>
       <CardContent>
         <h2>Generated Code</h2>
-        <Text>
+        <p>
           Add this line of HTML once on each page you want to accept payments on:
-        </Text>
+        </p>
         <SourceCode>
           {`<script
   src="https://gateway.cash/pay.js"
 ></script>`}
         </SourceCode>
-        <Text>
+        <p>
           Add this code wherever you want to place a payment button. You can put
           as many buttons on the same page as you'd like:
-        </Text>
+        </p>
         <SourceCode>{generatedCode}</SourceCode>
-        <Text>
+        <p>
           Feel free to change any of the values in the above code block except
           your merchant ID, which is how you'll get paid.
-        </Text>
+        </p>
       </CardContent>
     </Card>
   )
 }
 
 ClientCode.propTypes = {
-  rawButtonHtml: PropTypes.string
+  buttonProperties: PropTypes.object
 }
 
 export default ClientCode
