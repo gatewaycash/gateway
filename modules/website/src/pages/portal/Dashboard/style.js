@@ -5,7 +5,8 @@ export default () => ({
     display: 'grid',
     'grid-template-columns': 'repeat(3, 1fr)',
     'grid-column-gap': '2rem',
-    padding: '0 2rem'
+    padding: '0 2rem',
+    'min-height': '70vh'
   },
   why_of_crypto: {
     'grid-column': 3

@@ -3,7 +3,6 @@ import {
   FormControlLabel,
   TextField,
   Checkbox,
-  Button,
   Card,
   CardContent
 } from '@material-ui/core'
@@ -11,23 +10,26 @@ import { merchantid } from 'API'
 import withStyles from '@material-ui/core/styles/withStyles'
 import styles from './style'
 import PropTypes from 'prop-types'
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import ExpansionPanel from '@material-ui/core/ExpansionPanel'
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary'
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails'
+import FormControl from '@material-ui/core/FormControl'
+import Select from '@material-ui/core/Select'
+import MenuItem from '@material-ui/core/MenuItem'
+import FormHelperText from '@material-ui/core/FormHelperText'
+import Fab from '@material-ui/core/Fab'
 
 const ButtonBuilder = ({ buttonProperties, setButtonProperties, classes }) => {
-  const [merchantID, setMerchantID] = useState(null)
-  const [advanced, setAdvanced] = useState(false)
-  const [anyAmount, setAnyAmount] = useState(true)
+  const [anyAmount, setAnyAmount] = useState(false)
+  const [advandedOptions, setAdvancedOptions] = useState(false)
 
-  if (!merchantID) {
+  if (!buttonProperties.merchantID) {
     merchantid().then(response => {
       if (response.status === 'success') {
-        setMerchantID(response.merchantID)
-        setButtonProperties({merchantID: response.merchantID})
+        setButtonProperties({ merchantID: response.merchantID })
       }
     })
-  }
-
-  const toggleAdvanced = () => {
-    setAdvanced(!advanced)
   }
 
   return (
@@ -53,43 +55,85 @@ const ButtonBuilder = ({ buttonProperties, setButtonProperties, classes }) => {
           helperText="Give your payment button a label"
           value={buttonProperties.buttonText}
         />
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={anyAmount}
+        <ExpansionPanel
+          className={classes.amount_controls}
+          expanded={anyAmount}
+        >
+          <ExpansionPanelSummary
+            className={classes.any_amount_checkbox}
+            classes={{
+              root: classes.expansion_summary_root,
+              content: classes.expansion_summary_content__currency
+            }}
+          >
+            <FormControlLabel
               onChange={e => {
                 setAnyAmount(e.target.checked)
-                e.target.checked && setButtonProperties({amount: '0'})
+                e.target.checked && setButtonProperties({ amount: '0' })
               }}
-              color="primary"
+              control={<Checkbox color="primary" />}
+              label="Allow any amount"
             />
-          }
-          label="Allow any amount"
-        />
-        {!anyAmount && (
-          <div className={classes.amount_controls}>
+          </ExpansionPanelSummary>
+          <ExpansionPanelDetails
+            classes={{ root: classes.amount_controls_inner }}
+          >
             <TextField
-              onChange={e => setButtonProperties({amount: e.target.value})}
+              onChange={e => setButtonProperties({ amount: e.target.value })}
               label="Payment Amount"
-              helperText={'Amount (' + buttonProperties.currency + ')'}
+              helperText={`Amount in ${buttonProperties.currency}`}
               type="number"
               value={buttonProperties.amount}
+              className={classes.amount}
             />
-            <TextField
-              onChange={e => {
-                setButtonProperties({
-                  currency: e.target.value.toUpperCase().substr(0, 3)
-                })
-              }}
-              label="Currency"
-              helperText="BCH, USD, EUR..."
-              maxLength={3}
-              value={buttonProperties.currency}
-            />
-          </div>
-        )}
-        {advanced ? (
-          <div>
+            <FormControl className={classes.currency}>
+              <Select
+                value={buttonProperties.currency}
+                onChange={e =>
+                  setButtonProperties({ currency: e.target.value })
+                }
+                inputProps={{
+                  id: 'currency-select'
+                }}
+              >
+                <MenuItem value="BCH">BCH</MenuItem>
+                <MenuItem value="USD">USD</MenuItem>
+                <MenuItem value="EUR">EUR</MenuItem>
+                <MenuItem value="CNY">CNY</MenuItem>
+                <MenuItem value="JPY">JPY</MenuItem>
+              </Select>
+              <FormHelperText>Currency</FormHelperText>
+            </FormControl>
+          </ExpansionPanelDetails>
+        </ExpansionPanel>
+        <p>
+          If you're looking for more advanced functionality, you can further
+          customize your button with some additional tweaks.
+        </p>
+        <ExpansionPanel
+          classes={{ root: classes.expansion_root }}
+          expanded={advandedOptions}
+          onChange={(ev, ex) => setAdvancedOptions(ex)}
+        >
+          <ExpansionPanelSummary
+            classes={{
+              root: classes.expansion_summary_root__reverse,
+              content: classes.expansion_summary_content
+            }}
+          >
+            <Fab color="primary">
+              <ExpandMoreIcon
+                className={
+                  advandedOptions
+                    ? classes.expand_icon__expanded
+                    : classes.expand_icon
+                }
+              />
+            </Fab>
+          </ExpansionPanelSummary>
+          <ExpansionPanelDetails
+            classes={{ root: classes.expansion_details_root }}
+          >
             <TextField
               style={{
                 width: '100%'
@@ -103,6 +147,7 @@ const ButtonBuilder = ({ buttonProperties, setButtonProperties, classes }) => {
               helperText="Title for payment dialog box"
               maxLength={25}
               value={buttonProperties.dialogTitle}
+              className={classes.dialog_title}
             />
             <TextField
               style={{
@@ -122,28 +167,18 @@ const ButtonBuilder = ({ buttonProperties, setButtonProperties, classes }) => {
               style={{
                 width: '100%'
               }}
-              onChange={e => setButtonProperties({
-                callbackURL: e.target.value
-              })}
+              onChange={e =>
+                setButtonProperties({
+                  callbackURL: e.target.value
+                })
+              }
               label="Callback URL"
               helperText="We'll notify this URL when a payment is made (see below)"
               maxLength={64}
               value={buttonProperties.callbackURL}
             />
-          </div>
-        ) : (
-          <div>
-            <p>
-              If you're looking for more advanced functionality, you can
-              further customize your button with some additional tweaks.
-            </p>
-            <center>
-              <Button color="primary" onClick={toggleAdvanced}>
-                Advanced Options
-              </Button>
-            </center>
-          </div>
-        )}
+          </ExpansionPanelDetails>
+        </ExpansionPanel>
       </CardContent>
     </Card>
   )

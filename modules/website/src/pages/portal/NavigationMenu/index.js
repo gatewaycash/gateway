@@ -11,11 +11,12 @@ let Button = props => (
     <MUIButton
       {...props}
       classes={{
-        root: props.color === 'secondary' ?
-          props.classes.button_secondary :
-          window.location.pathname === props.to ?
-            props.classes.button_active :
-            props.classes.button_normal
+        root:
+          props.color === 'secondary'
+            ? props.classes.button_secondary
+            : window.location.pathname === props.to
+              ? props.classes.button_active
+              : props.classes.button_normal
       }}
     >
       {props.children}
@@ -42,7 +43,7 @@ let NavigationMenu = ({ page }) => (
         onClick={() => delete sessionStorage.gatewayAPIKey}
         to="/"
       >
-        OUG OUT
+        LOG OUT
       </Button>
     </Header>
   </div>
