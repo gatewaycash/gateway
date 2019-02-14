@@ -15,9 +15,15 @@ const ClientCode = ({ buttonProperties }) => {
     generatedCode += `\n  buttonText="${buttonProperties.buttonText}"`
   }
 
-  if (buttonProperties.amount !== '' && buttonProperties.amount !== 0) {
+  // only display an amount when it is non-zero
+  if (
+    buttonProperties.amount !== '' &&
+    buttonProperties.amount !== 0 &&
+    buttonProperties.amount !== '0'
+  ) {
     generatedCode += `\n  amount="${buttonProperties.amount}"`
 
+    // only display a currency when an amount is being displayed
     if (buttonProperties.currency !== 'BCH') {
       generatedCode += `\n  currency="${buttonProperties.currency}"`
     }
