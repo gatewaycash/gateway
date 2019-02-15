@@ -4,24 +4,24 @@ import {
   TextField,
   Checkbox,
   Card,
-  CardContent
+  CardContent,
+  ExpansionPanel,
+  ExpansionPanelSummary,
+  ExpansionPanelDetails,
+  FormControl,
+  FormHelperText,
+  MenuItem,
+  Select,
+  Fab
 } from '@material-ui/core'
 import { merchantid } from 'API'
 import withStyles from '@material-ui/core/styles/withStyles'
 import styles from './style'
 import PropTypes from 'prop-types'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-import ExpansionPanel from '@material-ui/core/ExpansionPanel'
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary'
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails'
-import FormControl from '@material-ui/core/FormControl'
-import Select from '@material-ui/core/Select'
-import MenuItem from '@material-ui/core/MenuItem'
-import FormHelperText from '@material-ui/core/FormHelperText'
-import Fab from '@material-ui/core/Fab'
 
 const ButtonBuilder = ({ buttonProperties, setButtonProperties, classes }) => {
-  const [anyAmount, setAnyAmount] = useState(false)
+  const [anyAmount, setAnyAmount] = useState(true)
   const [advandedOptions, setAdvancedOptions] = useState(false)
 
   if (!buttonProperties.merchantID) {
@@ -57,7 +57,7 @@ const ButtonBuilder = ({ buttonProperties, setButtonProperties, classes }) => {
         />
         <ExpansionPanel
           className={classes.amount_controls}
-          expanded={anyAmount}
+          expanded={!anyAmount}
         >
           <ExpansionPanelSummary
             className={classes.any_amount_checkbox}
@@ -71,7 +71,7 @@ const ButtonBuilder = ({ buttonProperties, setButtonProperties, classes }) => {
                 setAnyAmount(e.target.checked)
                 e.target.checked && setButtonProperties({ amount: '0' })
               }}
-              control={<Checkbox color="primary" />}
+              control={<Checkbox checked={anyAmount} color="primary" />}
               label="Allow any amount"
             />
           </ExpansionPanelSummary>
