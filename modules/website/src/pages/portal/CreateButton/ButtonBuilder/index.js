@@ -8,10 +8,6 @@ import {
   ExpansionPanel,
   ExpansionPanelSummary,
   ExpansionPanelDetails,
-  FormControl,
-  FormHelperText,
-  MenuItem,
-  Select,
   Fab
 } from '@material-ui/core'
 import { merchantid } from 'API'
@@ -19,6 +15,7 @@ import withStyles from '@material-ui/core/styles/withStyles'
 import styles from './style'
 import PropTypes from 'prop-types'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import { CurrencyPicker } from 'components'
 
 const ButtonBuilder = ({ buttonProperties, setButtonProperties, classes }) => {
   const [anyAmount, setAnyAmount] = useState(true)
@@ -86,24 +83,13 @@ const ButtonBuilder = ({ buttonProperties, setButtonProperties, classes }) => {
               value={buttonProperties.amount}
               className={classes.amount}
             />
-            <FormControl className={classes.currency}>
-              <Select
-                value={buttonProperties.currency}
-                onChange={e =>
-                  setButtonProperties({ currency: e.target.value })
-                }
-                inputProps={{
-                  id: 'currency-select'
-                }}
-              >
-                <MenuItem value="BCH">BCH</MenuItem>
-                <MenuItem value="USD">USD</MenuItem>
-                <MenuItem value="EUR">EUR</MenuItem>
-                <MenuItem value="CNY">CNY</MenuItem>
-                <MenuItem value="JPY">JPY</MenuItem>
-              </Select>
-              <FormHelperText>Currency</FormHelperText>
-            </FormControl>
+            <CurrencyPicker
+              SelectProps={{
+                value: buttonProperties.currency,
+                onChange: e => setButtonProperties({ currency: e.target.value })
+              }}
+              className={classes.currency}
+            />
           </ExpansionPanelDetails>
         </ExpansionPanel>
         <p>

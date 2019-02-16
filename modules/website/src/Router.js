@@ -6,7 +6,8 @@ import {
   Dashboard,
   CreateButton,
   Payments,
-  Settings
+  Settings,
+  Platforms
 } from './pages/portal'
 import { withStyles } from '@material-ui/core'
 import styles from 'style/base'
@@ -19,6 +20,7 @@ const Router = ({ classes }) => (
     <CreateButton key="CreateButton" path="portal/create" />
     <Payments key="Payments" path="portal/payments" />
     <Settings key="Settings" path="portal/settings" />
+    <Platforms key="Platforms" path="portal/platforms" />
     <NotFound default />
   </ReactRouter>
 )

@@ -27,10 +27,13 @@ let GET = async (req, res) => {
       allowXPUB: platforms[i].allowXPUB == 1
     })
   }
-  return handleResponse({
-    platforms: result,
-    numberOfPlatforms: platforms.length
-  }, res)
+  return handleResponse(
+    {
+      platforms: result,
+      numberOfPlatforms: platforms.length
+    },
+    res
+  )
 }
 
 // PUT a new platform in the database
@@ -40,7 +43,8 @@ let PUT = async (req, res) => {
     return handleError(
       'Platform Name is Required',
       'Please provide a name for your new platform',
-      res
+      res,
+      422
     )
   }
 
@@ -52,14 +56,16 @@ let PUT = async (req, res) => {
     return handleError(
       'Platform Name Too Long',
       'Platform names are limited to 36 characters',
-      res
+      res,
+      422
     )
   }
   if (description.length > 160) {
     return handleError(
       'Platform Description Too Long',
       'Platform descriptions are limited to 160 characters',
-      res
+      res,
+      422
     )
   }
 
@@ -76,7 +82,8 @@ let PUT = async (req, res) => {
     return handleError(
       'You are a Platforms User',
       'Sorry, but Platforms users (users who are themselves members of Gateway Platforms) cannot create their own platforms. Please use a normal Gateway merchant account for that.',
-      res
+      res,
+      422
     )
   }
 
@@ -92,9 +99,12 @@ let PUT = async (req, res) => {
   )
 
   // send back the new platform ID
-  return handleResponse({
-    platformID: platformID
-  }, res)
+  return handleResponse(
+    {
+      platformID: platformID
+    },
+    res
+  )
 }
 
 // PATCH an existing platform with new data
@@ -133,10 +143,7 @@ let PATCH = async (req, res) => {
   // validate newAllowXPUB value
   if (
     typeof req.body.newAllowXPUB !== 'undefined' &&
-    (
-      req.body.newAllowXPUB !== 'true' &&
-      req.body.newAllowXPUB !== 'false'
-    )
+    (req.body.newAllowXPUB !== 'true' && req.body.newAllowXPUB !== 'false')
   ) {
     return handleError(
       'Allow XPUB Invalid',
@@ -194,12 +201,15 @@ let PATCH = async (req, res) => {
   )
 
   // send the success message
-  return handleResponse({
-    newName: newName,
-    newDescription: newDescription,
-    newAllowXPUB: newAllowXPUB == 1,
-    platformID: req.body.platformID
-  }, res)
+  return handleResponse(
+    {
+      newName: newName,
+      newDescription: newDescription,
+      newAllowXPUB: newAllowXPUB == 1,
+      platformID: req.body.platformID
+    },
+    res
+  )
 }
 
 // DELETE a plattform, including all users and commissions (maybe eventually)
