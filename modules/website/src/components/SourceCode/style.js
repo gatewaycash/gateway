@@ -6,7 +6,9 @@ export default () => ({
     'background-color': '#444444',
     margin: 0,
     'border-radius': '2px',
-    'padding-right': '2em'
+    'padding-right': '2em',
+    'overflow-wrap': 'break-word',
+    'white-space': 'pre-wrap'
   },
   source_code_wrap: {
     position: 'relative',

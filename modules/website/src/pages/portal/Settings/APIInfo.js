@@ -4,13 +4,12 @@ import { getapikeys } from 'API'
 import { SourceCode } from 'components'
 
 export default class APIInfo extends Component {
-  state = {
-    APIKeys: [],
-    showKeys: false
-  }
-
   constructor(props) {
     super(props)
+    this.state = {
+      APIKeys: [],
+      showKeys: false
+    }
     this.handleSubmit = this.handleSubmit.bind(this)
     getapikeys().then(response => {
       if (response.status === 'success') {
@@ -48,9 +47,9 @@ export default class APIInfo extends Component {
             could change your password, steal your funds and hijack your
             account!
           </p>
-          {this.state.showKey ? (
+          {this.state.showKeys ? (
             <>
-              <SourceCode>{this.state.APIKeys.toString()}</SourceCode>
+              <SourceCode>{this.state.APIKeys.map(e => e.APIKey)}</SourceCode>
               <h3>Generate New Key (not working yet)</h3>
               <p>
                 Generating a new API key will invalidate your current key and
