@@ -38,6 +38,7 @@ let NavigationMenu = ({ page }) => (
       <Button to="/portal/create">CREATE BUTTON</Button>
       <Button to="/portal/payments">PAYMENTS</Button>
       <Button to="/portal/settings">ACCOUNT</Button>
+      <Button to="/portal/platforms">PLATFORMS</Button>
       <Button
         color="secondary"
         onClick={() => delete sessionStorage.gatewayAPIKey}

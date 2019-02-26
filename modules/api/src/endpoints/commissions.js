@@ -165,13 +165,13 @@ let PATCH = async (req, res) => {
 
   // validate the address if it was given
   if (newCommissionAddress) {
-    newCommissionAddress = validateAddress(newCommissionAddress)
+    newCommissionAddress = validateAddress(newCommissionAddress, res)
     if (!newCommissionAddress) return
   }
 
   // validate the XPUB key if it was given
   if (newCommissionXPUB) {
-    newCommissionXPUB = validateXPUB(newCommissionXPUB)
+    newCommissionXPUB = validateXPUB(newCommissionXPUB, res)
     if (!newCommissionXPUB) return
   }
 
@@ -342,13 +342,13 @@ let PUT = async (req, res) => {
 
   // validate the address if it was given
   if (req.body.commissionAddress) {
-    req.body.commissionAddress = validateAddress(req.body.commissionAddress)
+    req.body.commissionAddress = validateAddress(req.body.commissionAddress, res)
     if (!req.body.commissionAddress) return
   }
 
   // validate the XPUB key if it was given
   if (req.body.commissionXPUB) {
-    req.body.commissionXPUB = validateXPUB(req.body.commissionXPUB)
+    req.body.commissionXPUB = validateXPUB(req.body.commissionXPUB, res)
     if (!req.body.commissionXPUB) return
   }
 

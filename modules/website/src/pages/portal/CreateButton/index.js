@@ -24,7 +24,7 @@ const CreateButtonPage = ({ classes }) => {
   })
 
   let handleButtonPropertiesUpdate = newValue => {
-    setButtonProperties({...buttonProperties, ...newValue})
+    setButtonProperties({ ...buttonProperties, ...newValue })
   }
 
   return (

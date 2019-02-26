@@ -5,13 +5,14 @@
  */
 import prettyjson from 'prettyjson'
 
-export default (error, description, res) => {
+export default (error, description, res, status = 400) => {
   let response = {}
   response.status = 'error'
   response.error = error
   response.description = description
-  console.log(prettyjson.render(response, {keysColor: 'red'}))
+  console.log(prettyjson.render(response, { keysColor: 'red' }))
   if (!res) return false
+  res.statusCode = status
   res.end(JSON.stringify(response))
   return false
 }
