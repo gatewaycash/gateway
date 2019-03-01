@@ -1,4 +1,4 @@
-export default () => ({
+const styles = {
   selected_platform_title_wrap: {
     'text-align': 'center',
     display: 'grid',
@@ -26,5 +26,32 @@ export default () => ({
   },
   notice_icon: {
     'margin-right': '1%'
+  },
+  edit_controls: {
+    display: 'grid',
+    'grid-auto-flow': 'column'
+  },
+  title_edit_input: {
+    padding: '10px',
+    'text-align': 'center',
+    'font-size': '2em'
+  },
+  save_platform: {
+    '& > *': {
+      'pointer-events': 'none'
+    }
+  },
+  editable_text_wrapper: {
+    'justify-content': 'center',
+    display: 'grid'
+  }
+}
+export default () => ({
+  ...styles,
+  textfield: {
+    ...styles.selected_platform_description,
+    'justify-self': 'center',
+    display: 'grid',
+    width: '100%'
   }
 })

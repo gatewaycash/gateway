@@ -1,19 +1,22 @@
 import React, { useState, useMemo } from 'react'
 import PropTypes from 'prop-types'
-import Table from '@material-ui/core/Table'
-import TableBody from '@material-ui/core/TableBody'
-import TableCell from '@material-ui/core/TableCell'
-import TableHead from '@material-ui/core/TableHead'
-import TableRow from '@material-ui/core/TableRow'
+import {
+  TableRow,
+  TableHead,
+  TableCell,
+  TableBody,
+  Table
+} from '@material-ui/core'
 import NewCommissionModal from './NewCommissionModal'
 import styles from './style'
 import withStyles from '@material-ui/core/styles/withStyles'
 import { getCommissions } from 'API'
 import CommissionLineItem from './CommissionLineItem'
 
-const CommissionList = ({ classes, platformID }) => {
+const CommissionList = ({ classes, platformID, context }) => {
   const [commissionList, setCommissionList] = useState([])
   const [commissionListComponent, setCommissionListComponent] = useState()
+  const [updateCommissionList, setUpdateCommissionList] = useState(0)
   const [
     shouldUpdateCommissionsList,
     setShouldUpdateCommissionsList
@@ -25,7 +28,7 @@ const CommissionList = ({ classes, platformID }) => {
         setCommissionList(commissions)
       })
     },
-    [platformID, shouldUpdateCommissionsList]
+    [platformID, shouldUpdateCommissionsList, updateCommissionList]
   )
   useMemo(
     () => {
@@ -34,13 +37,17 @@ const CommissionList = ({ classes, platformID }) => {
         commissionLineItems.push(
           <CommissionLineItem
             commission={commission}
+            tableContext={context}
             key={commission.commissionID}
+            updateCommissionList={() =>
+              setUpdateCommissionList(updateCommissionList + 1)
+            }
           />
         )
       })
       setCommissionListComponent(<TableBody>{commissionLineItems}</TableBody>)
     },
-    [commissionList]
+    [commissionList, context]
   )
 
   return (
@@ -54,28 +61,35 @@ const CommissionList = ({ classes, platformID }) => {
           }
         />
       </div>
-      <Table padding="dense" className={classes.commissions_table}>
-        <TableHead>
-          <TableRow>
-            <TableCell>Label</TableCell>
-            <TableCell>Amount</TableCell>
-            <TableCell>Percentage</TableCell>
-            <TableCell>Currency</TableCell>
-            <TableCell>Less/More</TableCell>
-            <TableCell>Method</TableCell>
-            <TableCell>Address/XPUB</TableCell>
-            <TableCell />
-          </TableRow>
-        </TableHead>
-        {commissionListComponent}
-      </Table>
+      <form>
+        <Table padding="dense" className={classes.commissions_table}>
+          <TableHead>
+            <TableRow>
+              <TableCell>Label</TableCell>
+              <TableCell>Amount</TableCell>
+              <TableCell>Percentage</TableCell>
+              <TableCell>Currency</TableCell>
+              <TableCell>Less/More</TableCell>
+              <TableCell>Method</TableCell>
+              <TableCell>Address/XPUB</TableCell>
+              <TableCell
+                className={context.isEditing ? classes.delete_commission : ''}
+              >
+                {context.isEditing && context.deleteButton}
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          {commissionListComponent}
+        </Table>
+      </form>
     </div>
   )
 }
 
 CommissionList.propTypes = {
   classes: PropTypes.object,
-  platformID: PropTypes.string.isRequired
+  platformID: PropTypes.string.isRequired,
+  context: PropTypes.object
 }
 
 export default withStyles(styles)(CommissionList)

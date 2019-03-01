@@ -9,13 +9,25 @@ import PlatformList from './PlatformList'
 
 const Platforms = ({ classes }) => {
   const [selectedPlatform, setSelectedPlatform] = useState(void 0)
+  const [shouldUpdatePlatformList, setShouldUpdatePlatformList] = useState(0)
 
   return (
     <React.Fragment>
       <NavigationMenu page="Platforms" />
       <div className={classes.content_wrap}>
-        <PlatformList setSelectedPlatform={setSelectedPlatform} />
-        <PlatformDetails selectedPlatform={selectedPlatform} />
+        <PlatformList
+          selectedPlatform={selectedPlatform}
+          setSelectedPlatform={setSelectedPlatform}
+          setShouldUpdatePlatformList={setShouldUpdatePlatformList}
+          shouldUpdatePlatformList={shouldUpdatePlatformList}
+        />
+        <PlatformDetails
+          selectedPlatform={selectedPlatform}
+          setSelectedPlatform={setSelectedPlatform}
+          updatePlatformList={() =>
+            setShouldUpdatePlatformList(shouldUpdatePlatformList + 1)
+          }
+        />
       </div>
       <Footer />
     </React.Fragment>

@@ -9,15 +9,22 @@ import List from '@material-ui/core/List'
 import { getPlatforms } from 'API'
 import PropTypes from 'prop-types'
 
-const PlatformList = ({ classes, setSelectedPlatform }) => {
+const PlatformList = ({
+  classes,
+  selectedPlatform,
+  setSelectedPlatform,
+  shouldUpdatePlatformList,
+  setShouldUpdatePlatformList
+}) => {
   const [platformList, setPlatformList] = useState([])
   const [platformListComponent, setPlatformListComponent] = useState()
-  const [shouldUpdatePlatformList, setShouldUpdatePlatformList] = useState(0)
 
   useMemo(
     () => {
       getPlatforms().then(platforms => {
-        setSelectedPlatform(platforms[0])
+        platforms.length &&
+          !selectedPlatform &&
+          setSelectedPlatform(platforms[0])
         setPlatformList(platforms)
       })
     },
@@ -60,7 +67,10 @@ const PlatformList = ({ classes, setSelectedPlatform }) => {
 
 PlatformList.propTypes = {
   classes: PropTypes.object,
-  setSelectedPlatform: PropTypes.func
+  setSelectedPlatform: PropTypes.func,
+  shouldUpdatePlatformList: PropTypes.number,
+  setShouldUpdatePlatformList: PropTypes.func,
+  selectedPlatform: PropTypes.object
 }
 
 export default withStyles(styles)(PlatformList)

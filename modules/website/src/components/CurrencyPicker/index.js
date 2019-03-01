@@ -11,14 +11,17 @@ const CurrencyPicker = ({
   className,
   inputProps,
   showHelperText,
-  SelectProps
+  SelectProps,
+  SelectComponent,
+  value
 }) => {
-  const [value, setValue] = useState('BCH')
+  const [valueState, setValue] = useState(value || 'BCH')
+  SelectComponent = SelectComponent || Select
   return (
     <FormControl className={className}>
-      <Select
+      <SelectComponent
         {...SelectProps}
-        value={(SelectProps && SelectProps.value) || value}
+        value={(SelectProps && SelectProps.value) || valueState}
         onChange={
           (SelectProps && SelectProps.onChange) ||
           (ev => setValue(ev.target.value))
@@ -33,7 +36,7 @@ const CurrencyPicker = ({
         <MenuItem value="EUR">EUR</MenuItem>
         <MenuItem value="CNY">CNY</MenuItem>
         <MenuItem value="JPY">JPY</MenuItem>
-      </Select>
+      </SelectComponent>
       {showHelperText !== false && <FormHelperText>Currency</FormHelperText>}
     </FormControl>
   )
@@ -43,7 +46,9 @@ CurrencyPicker.propTypes = {
   className: PropTypes.string,
   inputProps: PropTypes.object,
   showHelperText: PropTypes.bool,
-  SelectProps: PropTypes.object
+  SelectProps: PropTypes.object,
+  SelectComponent: PropTypes.any,
+  value: PropTypes.string
 }
 
 export default CurrencyPicker
