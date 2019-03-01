@@ -5,7 +5,14 @@ export default () => ({
   },
   commissions_table: {
     '& td, & th': {
-      'padding-left': '16px'
+      'padding-left': '12px'
     }
+  },
+  tr_loading: {
+    opacity: '0.2'
+  },
+  delete_commission: {
+    display: 'grid',
+    'justify-content': 'right'
   }
 })

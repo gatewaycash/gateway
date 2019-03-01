@@ -1,6 +1,6 @@
 import { getapikeys } from 'API'
 
-const fetchForEachApiKey = async (endpoint, keys, params) => {
+const fetchForEachApiKey = async (endpoint, keys, params, method = 'GET') => {
   let requests = []
   let responses = []
   keys = keys || (await getapikeys()).APIKeys
@@ -15,16 +15,17 @@ const fetchForEachApiKey = async (endpoint, keys, params) => {
       fetch(
         `${process.env.REACT_APP_GATEWAY_BACKEND}/v2/${endpoint}?APIKey=${
           key.APIKey
-        }${serializedParams}`
+        }${serializedParams}`,
+        { method }
       ).then(
         response =>
           response.ok &&
-          response
-            .json()
-            .then(
-              response =>
-                response.status !== 'error' && responses.push(response)
-            )
+          response.json().then(response => {
+            if (response.status !== 'error') {
+              response.APIKey = key.APIKey
+              responses.push(response)
+            }
+          })
       )
     )
   )
@@ -36,7 +37,12 @@ const fetchFromApi = async (endpoint, keys, params) => {
   let dataList = []
   let responses = await fetchForEachApiKey(endpoint, keys, params)
   responses.forEach(response =>
-    response[endpoint].forEach(d => dataList.push(d))
+    response[endpoint].forEach(d => {
+      if (response.APIKey) {
+        d.APIKey = response.APIKey
+      }
+      dataList.push(d)
+    })
   )
   return dataList
 }

@@ -1,19 +1,25 @@
 import React from 'react'
-import { TableCell, TextField } from '@material-ui/core'
+import { TableCell } from '@material-ui/core'
 import PropTypes from 'prop-types'
-import { Context } from './CommissionLineItemContext'
 import withStyles from '@material-ui/core/styles/withStyles'
+import { EditableText } from 'components'
 
 const styles = {
+  td: {
+    padding: '4px',
+    'word-break': 'break-word'
+  },
   input: {
     padding: '10px 5px',
     'font-size': '0.8rem'
   },
   input_root: {
-    'line-height': 'normal'
+    'line-height': 'normal',
+    display: 'block'
   },
-  td: {
-    padding: '4px'
+  form_control_root: {
+    display: 'block',
+    overflow: 'hidden'
   }
 }
 
@@ -22,39 +28,39 @@ const EditableTableCell = ({
   classes,
   align,
   EditComponent,
-  name
-}) => (
-  <Context.Consumer>
-    {context => (
-      <TableCell align={align || 'left'} classes={{ root: classes.td }}>
-        {context.editable ? (
-          EditComponent ? (
-            <EditComponent>{children}</EditComponent>
-          ) : (
-            <TextField
-              type="text"
-              value={children}
-              name={name}
-              variant="outlined"
-              InputProps={{
-                classes: { input: classes.input, root: classes.input_root }
-              }}
-            />
-          )
-        ) : (
-          children
-        )}
-      </TableCell>
-    )}
-  </Context.Consumer>
-)
+  name,
+  value
+}) => {
+  return (
+    <TableCell align={align || 'left'} classes={{ root: classes.td }}>
+      <EditableText
+        EditComponent={EditComponent}
+        value={value}
+        TextFieldProps={{
+          name: name,
+          InputProps: {
+            classes: {
+              input: classes.input,
+              root: classes.input_root
+            }
+          },
+          classes: { root: classes.form_control_root }
+        }}
+      >
+        {children}
+      </EditableText>
+    </TableCell>
+  )
+}
 
 EditableTableCell.propTypes = {
   children: PropTypes.any,
   classes: PropTypes.object,
   align: PropTypes.string,
   EditComponent: PropTypes.any,
-  name: PropTypes.string
+  name: PropTypes.string,
+  value: PropTypes.any,
+  doSave: PropTypes.bool
 }
 
 export default withStyles(styles)(EditableTableCell)

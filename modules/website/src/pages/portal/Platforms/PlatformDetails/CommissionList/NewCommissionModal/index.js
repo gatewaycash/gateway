@@ -17,7 +17,6 @@ const Transition = props => <Zoom {...props} />
 
 const NewCommissionModal = ({ classes, platformID, onCreate }) => {
   const [open, setOpen] = useState(false)
-  const [lessMore, setLessMore] = useState('more')
   const [method, setMethod] = useState('address')
 
   //TODO: Abstract this out to a postForm function in API dir
@@ -117,8 +116,6 @@ const NewCommissionModal = ({ classes, platformID, onCreate }) => {
               />
               <CommissionLessMore
                 classes={{ root: classes.less_more_helper_text }}
-                value={lessMore}
-                onChange={ev => setLessMore(ev.target.value)}
               />
             </FormGroup>
             <DialogActions>
