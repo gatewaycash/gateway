@@ -1,15 +1,15 @@
-import { get, generateError } from './utils'
+import { generateError } from './utils'
+import { get } from './utils/v2'
 
-export default async () => {
+export default () => {
   if (!sessionStorage.gatewayAPIKey) {
-    return generateError(
+    generateError(
       'Not Logged In',
       'Please go back and log in before viewing this page.'
     )
+  } else {
+    return get('user/sales', sessionStorage.gatewayAPIKey).then(response =>
+      response.json()
+    )
   }
-  let response = await get(
-    '/v2/user/sales',
-    { APIKey: sessionStorage.gatewayAPIKey }
-  )
-  return response
 }

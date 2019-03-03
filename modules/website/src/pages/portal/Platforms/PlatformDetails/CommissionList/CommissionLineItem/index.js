@@ -7,7 +7,8 @@ import { Provider, Context } from 'components/EditableText'
 import styles from './style'
 import withStyles from '@material-ui/core/styles/withStyles'
 import { CurrencyPicker } from 'components'
-import { CommissionLessMore, CommissionMethod } from 'components/Platforms'
+import { LessMoreSelect } from 'components'
+import { CommissionMethod } from 'components/Platforms'
 import { CTSelect } from 'components/MUIOverrides'
 import { patchCommission } from 'API'
 import DeleteCommissionModal from './DeleteCommissionModal'
@@ -72,8 +73,7 @@ const CommissionLineItem = ({
             <EditableTableCell
               value={commission.commissionLessMore}
               EditComponent={() => (
-                <CommissionLessMore
-                  showHelperText={false}
+                <LessMoreSelect
                   SelectComponent={CTSelect}
                   inputProps={{ name: 'newCommissionLessMore' }}
                   value={commission.commissionLessMore}
