@@ -10,7 +10,8 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Zoom from '@material-ui/core/Zoom'
 import { CurrencyPicker } from 'components'
-import { CommissionLessMore, CommissionMethod } from 'components/Platforms'
+import { CommissionMethod } from 'components/Platforms'
+import { LessMoreSelect } from 'components'
 import FormGroup from '@material-ui/core/FormGroup'
 
 const Transition = props => <Zoom {...props} />
@@ -114,8 +115,10 @@ const NewCommissionModal = ({ classes, platformID, onCreate }) => {
                 required
                 helperText="Required"
               />
-              <CommissionLessMore
-                classes={{ root: classes.less_more_helper_text }}
+              <LessMoreSelect
+                helperTextClasses={{ root: classes.less_more_helper_text }}
+                inputProps={{ name: 'commissionLessMore' }}
+                helperText="Charge the lesser or greater commission fee (of percent or flat fee)"
               />
             </FormGroup>
             <DialogActions>

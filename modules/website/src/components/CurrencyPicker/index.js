@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import {
   FormControl,
   FormHelperText,
@@ -16,16 +16,17 @@ const CurrencyPicker = ({
   value
 }) => {
   const [valueState, setValue] = useState(value || 'BCH')
+  useMemo(() => setValue(value), value)
   SelectComponent = SelectComponent || Select
   return (
     <FormControl className={className}>
       <SelectComponent
         {...SelectProps}
         value={(SelectProps && SelectProps.value) || valueState}
-        onChange={
-          (SelectProps && SelectProps.onChange) ||
-          (ev => setValue(ev.target.value))
-        }
+        onChange={ev => {
+          setValue(ev.target.value)
+          SelectProps && SelectProps.onChange(ev)
+        }}
         inputProps={{
           id: 'currency-select',
           ...inputProps
