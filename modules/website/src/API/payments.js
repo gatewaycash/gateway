@@ -1,6 +1,11 @@
 import { get, generateError } from './utils'
 
-export default async (keys = 'NO', unpaid = 'NO') => {
+export default async (
+  keys = 'NO',
+  unpaid = 'NO',
+  page = 1,
+  resultsPerPage = 25
+) => {
   if (!sessionStorage.gatewayAPIKey) {
     return generateError(
       'Not Logged In',
@@ -12,7 +17,9 @@ export default async (keys = 'NO', unpaid = 'NO') => {
     {
       APIKey: sessionStorage.gatewayAPIKey,
       includeKeys: keys,
-      includeUnpaid: unpaid
+      includeUnpaid: unpaid,
+      page: page,
+      resultsPerPage: resultsPerPage
     }
   )
   return response

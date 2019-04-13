@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { FormControlLabel, Switch, Card, CardContent } from '@material-ui/core'
+import {
+  Button,
+  FormControlLabel,
+  Switch,
+  Card,
+  CardContent
+} from '@material-ui/core'
 import NavigationMenu from './../NavigationMenu'
 import { payments as fetchPayments, merchantid } from 'API'
 import PayButton from '@gatewaycash/paybutton'
@@ -12,12 +18,15 @@ const PaymentsPage = ({ classes }) => {
   const [showUnpaid, setShowUnpaid] = useState(false)
   const [showKeys, setShowKeys] = useState(false)
   const [payments, setPayments] = useState(<p>loading...</p>)
+  const [page, setPage] = useState(1)
+  const [maxPage, setMaxPage] = useState(1)
   const [merchantID, setMerchantID] = useState('')
 
-  const updateView = async () => {
+  const updateView = async newPage => {
     let response = await fetchPayments(
       showKeys ? 'YES' : 'NO',
-      showUnpaid ? 'YES' : 'NO'
+      showUnpaid ? 'YES' : 'NO',
+      newPage
     )
     if (response.status === 'success') {
       let parsedPayments = response.payments.map((payment, key) => (
@@ -46,6 +55,8 @@ const PaymentsPage = ({ classes }) => {
         )
       }
       setPayments(parsedPayments)
+      setMaxPage(response.maxPage)
+      setPage(response.page)
     }
   }
 
@@ -58,14 +69,6 @@ const PaymentsPage = ({ classes }) => {
 
   merchantID || fetchMerchantId()
 
-  const handleKeysChange = e => {
-    setShowKeys(e.target.checked)
-  }
-
-  const handleUnpaidChange = e => {
-    setShowUnpaid(e.target.checked)
-  }
-
   useEffect(
     () => {
       updateView()
@@ -74,7 +77,7 @@ const PaymentsPage = ({ classes }) => {
   )
 
   return (
-    <React.Fragment>
+    <>
       <NavigationMenu page="Your Payments" />
       <div className={classes.content_wrap}>
         <Card className={classes.view_payments}>
@@ -95,7 +98,7 @@ const PaymentsPage = ({ classes }) => {
               control={
                 <Switch
                   checked={showUnpaid}
-                  onChange={handleUnpaidChange}
+                  onChange={e => setShowUnpaid(e.target.checked)}
                   color="primary"
                 />
               }
@@ -118,7 +121,7 @@ const PaymentsPage = ({ classes }) => {
               control={
                 <Switch
                   checked={showKeys}
-                  onChange={handleKeysChange}
+                  onChange={e => setShowKeys(e.target.checked)}
                   color="primary"
                 />
               }
@@ -128,13 +131,24 @@ const PaymentsPage = ({ classes }) => {
         </Card>
         <Card className={classes.payments}>
           <CardContent>
-            <h2>Payments</h2>
+            <h1>Payments</h1>
+            <h2>Page {page} of {maxPage}</h2>
+            <Button
+              onClick={() => updateView(page < 2 ? page : page - 1)}
+            >
+              Previous
+            </Button>
+            <Button
+              onClick={() => updateView(page > maxPage ? page : page + 1)}
+            >
+              Next
+            </Button>
             {payments}
           </CardContent>
         </Card>
       </div>
       <Footer />
-    </React.Fragment>
+    </>
   )
 }
 
