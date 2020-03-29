@@ -17,7 +17,7 @@
     "bitcore-lib-cash": "^0.19.0",
     "dotenv": "^6.1.0",
     "mocha": "^5.2.0",
-    "node-mysql": "^0.4.2",
+    "mysql": "^2.18.1",
     "pm2": "^3.2.2",
     "prettyjson": "^1.2.1",
     "qrcode-terminal": "^0.12.0",

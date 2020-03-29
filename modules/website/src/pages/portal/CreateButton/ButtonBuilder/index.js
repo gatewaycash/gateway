@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   FormControlLabel,
   TextField,
@@ -21,13 +21,15 @@ const ButtonBuilder = ({ buttonProperties, setButtonProperties, classes }) => {
   const [anyAmount, setAnyAmount] = useState(true)
   const [advandedOptions, setAdvancedOptions] = useState(false)
 
-  if (!buttonProperties.merchantID) {
-    merchantid().then(response => {
-      if (response.status === 'success') {
-        setButtonProperties({ merchantID: response.merchantID })
-      }
-    })
-  }
+  useEffect(() => {
+    if (!buttonProperties.merchantID) {
+      merchantid().then(response => {
+        if (response.status === 'success') {
+          setButtonProperties({ merchantID: response.merchantID })
+        }
+      })
+    }
+  }, [buttonProperties])
 
   return (
     <Card>
