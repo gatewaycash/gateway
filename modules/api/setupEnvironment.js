@@ -4,7 +4,7 @@
  */
 const readline = require('readline')
 const fs = require('fs')
-const mysql = require('mysql')
+const mysql = require('mysql2')
 const promisify = require('util').promisify
 
 const collectInformation = async () => {
