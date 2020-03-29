@@ -47,4 +47,8 @@ modules/docs/source/index.html.md
 # Editor
 .vscode/
 
+# Docker
 docker-compose.yml
+
+# DS Store
+.DS_Store

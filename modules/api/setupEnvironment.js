@@ -80,7 +80,8 @@ const testDatabaseConnection = async (
   })
   conn.connect((err) => {
     if (err) {
-      console.log('Error connecting to database!')
+      console.log('Error connecting to database! The error was:')
+      console.log(err)
       console.log('Check your credentials and try again.')
       console.log('For help setting up a MySQL database, please see here:')
       console.log('https://dev.mysql.com/doc/refman/8.0/en/installing.html')

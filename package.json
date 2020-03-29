@@ -54,5 +54,8 @@
     "eslint-plugin-react": "^7.12.2",
     "prettier": "^1.15.2",
     "react": "16.7.0-alpha.2"
+  },
+  "engines": {
+    "node": ">=13.3.0"
   }
 }
