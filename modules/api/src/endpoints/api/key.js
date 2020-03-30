@@ -74,7 +74,7 @@ let PATCH = async (req, res) => {
     let result = await mysql.query(
       `UPDATE APIKeys
         SET active = 0,
-        revokedDate = current_timestamp
+        revocationDate = current_timestamp
         WHERE APIKey = ?
         AND userIndex = ?
         LIMIT 1`,

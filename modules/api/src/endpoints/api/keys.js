@@ -25,7 +25,7 @@ let GET = async (req, res) => {
       active: e.active === 1
     }
     if (!key.active) {
-      key.revokedDate = e.revokedDate
+      key.revocationDate = e.revocationDate
     }
     response.push(key)
   })

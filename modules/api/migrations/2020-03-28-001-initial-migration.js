@@ -10,7 +10,7 @@
 exports.up = async knex => {
   if (!(await knex.schema.hasTable('users'))) {
     await knex.schema.createTable('users', table => {
-      table.increments('userID').primary()
+      table.increments('userID').primary().unsigned()
       table.string('payoutAddress', 60)
       table.integer('totalSales', 15).defaultsTo(0)
       table.timestamp('created').defaultTo(knex.fn.now()).notNullable()
@@ -24,7 +24,7 @@ exports.up = async knex => {
   }
   if (!(await knex.schema.hasTable('transactions'))) {
     await knex.schema.createTable('transactions', table => {
-      table.increments('tableIndex').primary()
+      table.increments('tableIndex').primary().unsigned()
       table.timestamp('created').defaultTo(knex.fn.now()).notNullable()
       table.string('type', 30).defaultTo('payment')
       table.string('TXID', 64)
@@ -33,14 +33,14 @@ exports.up = async knex => {
   }
   if (!(await knex.schema.hasTable('exchangeRates'))) {
     await knex.schema.createTable('exchangeRates', table => {
-      table.increments('tableIndex').primary()
+      table.increments('tableIndex').primary().unsigned()
       table.string('pair', 10)
       table.string('rate', 30)
     })
   }
   if (!(await knex.schema.hasTable('payments'))) {
     await knex.schema.createTable('payments', table => {
-      table.increments('paymentIndex').primary()
+      table.increments('paymentIndex').primary().unsigned()
       table.string('paymentAddress', 60)
       table.integer('paidAmount', 15).defaultTo(0)
       table.timestamp('created').defaultTo(knex.fn.now()).notNullable()
@@ -50,13 +50,6 @@ exports.up = async knex => {
       table.string('paymentTXID', 64)
       table.string('transferTXID', 64)
       table.string('callbackURL', 128)
-    })
-  }
-  if (!(await knex.schema.hasTable('pending'))) {
-    await knex.schema.createTable('pending', table => {
-      table.timestamp('created').defaultTo(knex.fn.now()).notNullable()
-      table.string('address', 60)
-      table.string('txid', 64)
     })
   }
 }
@@ -73,8 +66,5 @@ exports.down = async knex => {
   }
   if (await knex.schema.hasTable('payments')) {
     await knex.schema.dropTable('payments')
-  }
-  if (await knex.schema.hasTable('pending')) {
-    await knex.schema.dropTable('pending')
   }
 }

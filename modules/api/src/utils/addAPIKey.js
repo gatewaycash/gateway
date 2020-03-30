@@ -14,7 +14,9 @@ export default async (userIndex, label, res) => {
       res
     )
   }
-  let newKey = sha256(require('crypto').randomBytes(32))
+  let newKey = sha256(
+    require('crypto').randomBytes(32)
+  ).substr(0, 32)
   await mysql.query(
     `INSERT INTO APIKeys
       (userIndex, APIKey, label)

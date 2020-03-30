@@ -19,7 +19,7 @@ export default async (APIKey, res) => {
     `SELECT
       userIndex,
       active,
-      revokedDate
+      revocationDate
     FROM APIKeys
     WHERE
       APIKey = ?
@@ -40,7 +40,7 @@ export default async (APIKey, res) => {
   if (response[0].active !== 1) {
     return handleError(
       'API Key Not Active',
-      'This API key was deactivated on ' + response[0].revokedDate,
+      'This API key was deactivated on ' + response[0].revocationDate,
       res
     )
   }
