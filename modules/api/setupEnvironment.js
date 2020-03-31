@@ -6,6 +6,7 @@ const readline = require('readline')
 const fs = require('fs')
 const mysql = require('mysql2')
 const promisify = require('util').promisify
+const knex = require('knex')
 
 const collectInformation = async () => {
   // create a new readline query stream
@@ -127,8 +128,11 @@ const setupDatabase = async (conn) => {
   }
   let question = promisify(rl.question)
 
+  console.log('Migrating your database...')
+  knex.migrate.latest()
+
   console.log(`
-Setting up a new database will erase all data, including users, transactions
+Seeding a new test database will erase all data, including users, transactions
 and private keys, from the database server you just entered. This action cannot
 be undone.
 
@@ -141,7 +145,7 @@ database you want to keep, answer NO.
   )
 
   let setup = await question(
-    'ERASE, set up and format the database for testing? [Y/N]: '
+    'ERASE and re-seed the database for development? [Y/N]: '
   )
 
   if (setup === 'N' || setup === 'n' || setup === 'no' || setup === 'NO') {
@@ -154,27 +158,9 @@ database you want to keep, answer NO.
     setup === 'yes' ||
     setup === 'YES'
   ) {
-    console.log('Setting up a new test database...')
-    const readFile = promisify(fs.readFile)
-    let data
-    try {
-      data = await readFile('SQLSetup.sql', 'utf8')
-    } catch (e) {
-      console.log('Could not open the SQLSetup.sql file!')
-      return
-    }
-    conn.query = promisify(conn.query)
-    try {
-      await conn.query(data)
-    } catch (e) {
-      console.log('\n\nError executing the code from SQLSetup.sql!\n\n')
-      e.sql = '' // hide annoying output
-      console.log(e)
-      return
-    }
-    rl.close()
-    conn.end()
-    console.log('Your test database has been successfully created!')
+    console.log('Seeding a new database...')
+    knex.seed.run()
+    console.log('Your new database has been successfully created!')
     console.log('Thank you for helping build Gateway.')
   } else {
     console.log('Please answer with either "Y" or "N"')

@@ -8,6 +8,8 @@
     "dev": "nodemon --ignore public src/main.js --exec babel-node --",
     "setup": "node setupEnvironment.js",
     "migrate:latest": "knex migrate:latest",
+    "migrate:up": "knex migrate:up",
+    "migrate:down": "knex migrate:down",
     "migrations:list": "knex migrations:list"
   },
   "dependencies": {

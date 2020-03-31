@@ -90,7 +90,7 @@ exports.up = async knex => {
     table.integer('XPUBIndex').defaultTo(0)
     table.string('commissionMethod', 10).defaultTo('address')
     table.string('commissionPercentage', 6).defaultTo('0.00')
-    table.string('commission', 8).defaultTo('0.00')
+    table.string('commissionAmount', 8).defaultTo('0.00')
     table.string('commissionCurrency', 3).defaultTo('BCH')
     table.string('commissionLessMore', 4).defaultTo('less')
     table.integer('minimumTransactionAmount', 8).defaultTo(-1)
@@ -163,7 +163,7 @@ exports.down = async knex => {
   await knex.schema.raw(
     'ALTER TABLE users CHANGE tableIndex userID int unsigned AUTO_INCREMENT'
   )
-  await knex.schema.dropTable('platforms')
   await knex.schema.dropTable('platformAdministrators')
   await knex.schema.dropTable('commissions')
+  await knex.schema.dropTable('platforms')
 }
