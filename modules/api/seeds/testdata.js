@@ -1,6 +1,10 @@
 
 exports.seed = async knex => {
 
+  await knex.schema.raw(
+    'SET @@foreign_key_checks = 0'
+  )
+
   // users
   await knex('users').del()
   await knex('users').insert([
@@ -141,4 +145,8 @@ exports.seed = async knex => {
       commissionLessMore: 'more'
     }
   ])
+
+  await knex.schema.raw(
+    'SET @@foreign_key_checks = 1'
+  )
 }

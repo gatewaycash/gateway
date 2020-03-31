@@ -6,7 +6,6 @@ const readline = require('readline')
 const fs = require('fs')
 const mysql = require('mysql2')
 const promisify = require('util').promisify
-const knex = require('knex')
 
 const collectInformation = async () => {
   // create a new readline query stream
@@ -107,14 +106,15 @@ const testDatabaseConnection = async (
           throw err
         } else {
           console.log('New API configuration saved in modules/api/.env')
-          setupDatabase(conn)
+          conn.end()
+          setupDatabase()
         }
       },
     )
   })
 }
 
-const setupDatabase = async (conn) => {
+const setupDatabase = async () => {
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
@@ -129,7 +129,8 @@ const setupDatabase = async (conn) => {
   let question = promisify(rl.question)
 
   console.log('Migrating your database...')
-  knex.migrate.latest()
+  const knex = require('knex')(require('./knexfile.js'))
+  await knex.migrate.latest()
 
   console.log(`
 Seeding a new test database will erase all data, including users, transactions
@@ -150,7 +151,6 @@ database you want to keep, answer NO.
 
   if (setup === 'N' || setup === 'n' || setup === 'no' || setup === 'NO') {
     rl.close()
-    conn.end()
     console.log('Thank you for helping build Gateway.')
   } else if (
     setup === 'Y' ||
@@ -159,14 +159,16 @@ database you want to keep, answer NO.
     setup === 'YES'
   ) {
     console.log('Seeding a new database...')
-    knex.seed.run()
+    await knex.seed.run()
     console.log('Your new database has been successfully created!')
     console.log('Thank you for helping build Gateway.')
+    rl.close()
   } else {
     console.log('Please answer with either "Y" or "N"')
     rl.close()
-    setupDatabase(conn)
+    setupDatabase()
   }
+  process.exit(0)
 }
 
 // print some informational text
