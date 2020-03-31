@@ -14,7 +14,7 @@ exports.up = async knex => {
       table.string('payoutAddress', 60)
       table.integer('totalSales', 15).defaultsTo(0)
       table.timestamp('created').defaultTo(knex.fn.now()).notNullable()
-      table.timestamp('lastPayout')
+      table.timestamp('lastPayout').nullable()
       table.string('merchantID', 16)
       table.string('password', 256)
       table.string('salt', 256)
