@@ -3,7 +3,7 @@
  * @author The Gateway Project Developers <hello@gateway.cash>
  * @file Defined a promisified wrapper for node-mysql
  */
-import mysql from 'mysql'
+import mysql from 'mysql2'
 import util from 'util'
 let promisify = util.promisify
 import dotenv from 'dotenv'
@@ -22,7 +22,7 @@ const conn = mysql.createConnection({
 conn.query = promisify(conn.query)
 
 // connect to the database
-//conn.connect()
+//conn.connect() // TODO Why is this commented?
 
 // export the promisified functions
 export default conn

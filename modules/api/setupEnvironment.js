@@ -4,7 +4,7 @@
  */
 const readline = require('readline')
 const fs = require('fs')
-const mysql = require('mysql')
+const mysql = require('mysql2')
 const promisify = require('util').promisify
 
 const collectInformation = async () => {
@@ -106,14 +106,15 @@ const testDatabaseConnection = async (
           throw err
         } else {
           console.log('New API configuration saved in modules/api/.env')
-          setupDatabase(conn)
+          conn.end()
+          setupDatabase()
         }
       },
     )
   })
 }
 
-const setupDatabase = async (conn) => {
+const setupDatabase = async () => {
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
@@ -127,8 +128,12 @@ const setupDatabase = async (conn) => {
   }
   let question = promisify(rl.question)
 
+  console.log('Migrating your database...')
+  const knex = require('knex')(require('./knexfile.js'))
+  await knex.migrate.latest()
+
   console.log(`
-Setting up a new database will erase all data, including users, transactions
+Seeding a new test database will erase all data, including users, transactions
 and private keys, from the database server you just entered. This action cannot
 be undone.
 
@@ -141,12 +146,11 @@ database you want to keep, answer NO.
   )
 
   let setup = await question(
-    'ERASE, set up and format the database for testing? [Y/N]: '
+    'ERASE and re-seed the database for development? [Y/N]: '
   )
 
   if (setup === 'N' || setup === 'n' || setup === 'no' || setup === 'NO') {
     rl.close()
-    conn.end()
     console.log('Thank you for helping build Gateway.')
   } else if (
     setup === 'Y' ||
@@ -154,33 +158,17 @@ database you want to keep, answer NO.
     setup === 'yes' ||
     setup === 'YES'
   ) {
-    console.log('Setting up a new test database...')
-    const readFile = promisify(fs.readFile)
-    let data
-    try {
-      data = await readFile('SQLSetup.sql', 'utf8')
-    } catch (e) {
-      console.log('Could not open the SQLSetup.sql file!')
-      return
-    }
-    conn.query = promisify(conn.query)
-    try {
-      await conn.query(data)
-    } catch (e) {
-      console.log('\n\nError executing the code from SQLSetup.sql!\n\n')
-      e.sql = '' // hide annoying output
-      console.log(e)
-      return
-    }
-    rl.close()
-    conn.end()
-    console.log('Your test database has been successfully created!')
+    console.log('Seeding a new database...')
+    await knex.seed.run()
+    console.log('Your new database has been successfully created!')
     console.log('Thank you for helping build Gateway.')
+    rl.close()
   } else {
     console.log('Please answer with either "Y" or "N"')
     rl.close()
-    setupDatabase(conn)
+    setupDatabase()
   }
+  process.exit(0)
 }
 
 // print some informational text

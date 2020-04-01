@@ -1,7 +1,7 @@
 var assert = require('assert')
 import dotenv from 'dotenv'
 import axios from 'axios'
-import { mysql } from 'mysql'
+import { mysql } from 'mysql2'
 dotenv.config()
 
 const BASE = 'http://localhost:' + process.env.WEB_PORT
