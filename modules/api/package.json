@@ -3,17 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "test": "TEST_MODE=true mocha --require @babel/register --require @babel/polyfill --exit src/main.js",
-    "production": "babel-node src/main.js",
-    "dev": "nodemon --ignore public src/main.js --exec babel-node --",
-    "setup": "node setupEnvironment.js",
-    "migrate:latest": "knex migrate:latest",
-    "migrate:up": "knex migrate:up",
-    "migrate:down": "knex migrate:down",
-    "migrations:list": "knex migrations:list"
+    "test": "TEST_MODE=true mocha -r @babel/register -r @babel/polyfill --exit src/main.js",
+    "start": "nodemon --ignore public src/main.js --exec node -r @babel/register -r @babel/polyfill --",
+    "setup": "node setupEnvironment.js"
   },
   "dependencies": {
-    "@babel/node": "^7.2.2",
     "@babel/polyfill": "^7.2.5",
     "@babel/register": "^7.0.0",
     "axios": "^0.18.1",
@@ -23,16 +17,9 @@
     "knex": "^0.20.13",
     "mocha": "^5.2.0",
     "mysql2": "^2.1.0",
-    "pm2": "^3.2.2",
+    "nodemon": "^2.0.2",
     "prettyjson": "^1.2.1",
     "qrcode-terminal": "^0.12.0",
     "sha256": "^0.2.0"
-  },
-  "devDependencies": {
-    "@babel/preset-env": "^7.2.3",
-    "babel-core": "^6.26.3",
-    "babel-loader": "^8.0.5",
-    "babel-polyfill": "^6.26.0",
-    "nodemon": "^1.18.7"
   }
 }

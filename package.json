@@ -17,9 +17,7 @@
     "cash"
   ],
   "scripts": {
-    "api-build": "yarn workspace @gatewaycash/api build",
-    "api-dev": "yarn workspace @gatewaycash/api dev",
-    "api-prod": "yarn workspace @gatewaycash/api production",
+    "api-start": "yarn workspace @gatewaycash/api start",
     "api-setup": "yarn workspace @gatewaycash/api setup",
     "api-test": "yarn workspace @gatewaycash/api test",
     "api-docs-build": "yarn workspace @gatewaycash/docs api",

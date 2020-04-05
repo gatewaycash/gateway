@@ -50,7 +50,7 @@ export default async (
   if (ruleCurrency !== 'BCH') {
     exchangeRate = await mysql.query(
       'SELECT rate FROM exchangeRates WHERE pair = ?',
-      ['BCH' + ruleCurrency]
+      ['BCH-' + ruleCurrency]
     )
     if (exchangeRate.length !== 1) {
       console.error(

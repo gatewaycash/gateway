@@ -10,48 +10,17 @@ import * as payoutEndpoints from 'endpoints/user/payout'
 import * as apiEndpoints from 'endpoints/api'
 
 export default app => {
-  Object.keys(endpoints).forEach((e) => {
-    if (endpoints[e].GET) app.get('/v2/' + e, endpoints[e].GET)
-    if (endpoints[e].PUT) app.put('/v2/' + e, endpoints[e].PUT)
-    if (endpoints[e].POST) app.post('/v2/' + e, endpoints[e].POST)
-    if (endpoints[e].PATCH) app.patch('/v2/' + e, endpoints[e].PATCH)
-    if (endpoints[e].DELETE) app.delete('/v2/' + e, endpoints[e].DELETE)
-  })
-  Object.keys(userEndpoints).forEach((e) => {
-    if (userEndpoints[e].GET) app.get('/v2/user/' + e, userEndpoints[e].GET)
-    if (userEndpoints[e].PUT) app.put('/v2/user/' + e, userEndpoints[e].PUT)
-    if (userEndpoints[e].POST) app.post('/v2/user/' + e, userEndpoints[e].POST)
-    if (userEndpoints[e].PATCH) {
-      app.patch('/v2/user/' + e, userEndpoints[e].PATCH)
-    }
-    if (userEndpoints[e].DELETE) {
-      app.delete('/v2/user/' + e, userEndpoints[e].DELETE)
-    }
-  })
-  Object.keys(payoutEndpoints).forEach((e) => {
-    if (payoutEndpoints[e].GET) {
-      app.get('/v2/user/payout/' + e, payoutEndpoints[e].GET)
-    }
-    if (payoutEndpoints[e].PUT) {
-      app.put('/v2/user/payout/' + e, payoutEndpoints[e].PUT)
-    }
-    if (payoutEndpoints[e].POST) {
-      app.post('/v2/user/payout/' + e, payoutEndpoints[e].POST)
-    }
-    if (payoutEndpoints[e].PATCH) {
-      app.patch('/v2/user/payout/' + e, payoutEndpoints[e].PATCH)
-    }
-    if (payoutEndpoints[e].DELETE) {
-      app.delete('/v2/user/payout/' + e, payoutEndpoints[e].DELETE)
-    }
-  })
-  Object.keys(apiEndpoints).forEach((e) => {
-    if (apiEndpoints[e].GET) app.get('/v2/api/' + e, apiEndpoints[e].GET)
-    if (apiEndpoints[e].PUT) app.put('/v2/api/' + e, apiEndpoints[e].PUT)
-    if (apiEndpoints[e].POST) app.post('/v2/api/' + e, apiEndpoints[e].POST)
-    if (apiEndpoints[e].PATCH) app.patch('/v2/api/' + e, apiEndpoints[e].PATCH)
-    if (apiEndpoints[e].DELETE) {
-      app.delete('/v2/api/' + e, apiEndpoints[e].DELETE)
-    }
-  })
+  const addRoutes = (prefix, routes) => {
+    Object.keys(routes).forEach(r => {
+      if (routes[r].GET) app.get(`/v2/${prefix}${r}`, routes[r].GET)
+      if (routes[r].PUT) app.put(`/v2/${prefix}${r}`, routes[r].PUT)
+      if (routes[r].POST) app.post(`/v2/${prefix}${r}`, routes[r].POST)
+      if (routes[r].PATCH) app.patch(`/v2/${prefix}${r}`, routes[r].PATCH)
+      if (routes[r].DELETE) app.delete(`/v2/${prefix}${r}`, routes[r].DELETE)
+    })
+  }
+  addRoutes('', endpoints)
+  addRoutes('user/', userEndpoints)
+  addRoutes('payout/', payoutEndpoints)
+  addRoutes('api/', apiEndpoints)
 }

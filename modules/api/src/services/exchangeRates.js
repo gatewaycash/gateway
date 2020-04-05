@@ -5,8 +5,6 @@
  */
 import { mysql } from 'utils'
 import axios from 'axios'
-import dotenv from 'dotenv'
-dotenv.config()
 
 export default async () => {
   let currentRates = await mysql.query(
@@ -16,15 +14,16 @@ export default async () => {
     let pair = currentRates[i].pair
     try {
       let exchangeRate = await axios.get(
-        `https://apiv2.bitcoinaverage.com/indices/global/ticker/${pair}`
+        `https://api.coinbase.com/v2/prices/${pair}/spot`
       )
-      exchangeRate = exchangeRate.data.averages.day
+      exchangeRate = exchangeRate.data.data.amount
       await mysql.query(
         'UPDATE exchangeRates SET rate = ? WHERE pair = ?',
         [exchangeRate, pair]
       )
     } catch (e) {
       console.error(`Unable to update exchange rate for ${pair}`)
+      console.error(e)
     }
   }
 }
