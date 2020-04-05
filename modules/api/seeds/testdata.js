@@ -39,19 +39,19 @@ exports.seed = async knex => {
   await knex('exchangeRates').del()
   await knex('exchangeRates').insert([
     {
-      pair: 'BCHUSD',
+      pair: 'BCH-USD',
       rate: '115.00'
     },
     {
-      pair: 'BCHEUR',
+      pair: 'BCH-EUR',
       rate: '100.00'
     },
     {
-      pair: 'BCHCNY',
+      pair: 'BCH-CNY',
       rate: '780.00'
     },
     {
-      pair: 'BCHJPY',
+      pair: 'BCH-JPY',
       rate: '12600'
     }
   ])

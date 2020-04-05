@@ -33,7 +33,7 @@ app.use((req, res, next) => {
 
 // consolidate form and request data into one place
 app.use((req, res, next) => {
-  req.body = {...req.body, ...req.params, ...req.query}
+  req.body = { ...req.body, ...req.params, ...req.query }
   next()
 })
 
@@ -44,9 +44,9 @@ app.use((req, res, next) => {
     let logObject = JSON.parse(JSON.stringify(req.body))
     if (logObject.newPassword) logObject.newPassword = '********'
     if (logObject.password) logObject.password = '********'
-    console.log(prettyjson.render(logObject, {keysColor: 'blue'}))
+    console.log(prettyjson.render(logObject, { keysColor: 'blue' }))
   } else {
-    console.log(prettyjson.render(req.body, {keysColor: 'blue'}))
+    console.log(prettyjson.render(req.body, { keysColor: 'blue' }))
   }
   next()
 })
@@ -72,7 +72,7 @@ if (!process.env.TEST_MODE) {
   // run the broken payments processor every 12 hours
   setInterval(brokenPaymentsService, 43200000)
 
-// run tests if we are in test mode
+  // run tests if we are in test mode
 } else {
   tests()
 }
