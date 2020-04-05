@@ -1,0 +1,9 @@
+{
+  "apps": [
+    {
+      "name": "gateway-api",
+      "script": "yarn",
+      "args": "api-start",
+    }
+  ]
+}
