@@ -7,6 +7,7 @@ import { mysql, auth, handleResponse, validateAddress } from 'utils'
 
 // GET endpoint for returning the payoutAddress
 let GET = async (req, res) => {
+  console.log('auth')
   let userIndex = await auth(req.body.APIKey, res)
   if (!userIndex) return
   let result = await mysql.query(

@@ -23,7 +23,7 @@
     "dev": "webpack --watch --mode development"
   },
   "dependencies": {
-    "react": "^16.7.0-alpha.2",
-    "react-dom": "^16.7.0-alpha.2"
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
   }
 }

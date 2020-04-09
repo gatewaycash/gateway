@@ -21,6 +21,6 @@ export default app => {
   }
   addRoutes('', endpoints)
   addRoutes('user/', userEndpoints)
-  addRoutes('payout/', payoutEndpoints)
+  addRoutes('user/epayout/', payoutEndpoints)
   addRoutes('api/', apiEndpoints)
 }

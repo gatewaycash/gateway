@@ -14,7 +14,7 @@ import showError from './functions/showError'
 import parseProps from './functions/parseProps'
 import PropTypes from 'prop-types'
 
-let PayButton = props => {
+const PayButton = props => {
   props = parseProps(props)
 
   // detect errors from parseProps
@@ -92,17 +92,17 @@ let PayButton = props => {
       try {
         let invoiceResult = await fetch(
           props.gatewayServer + '/v2/pay', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              merchantID: props.merchantID,
-              paymentID: props.paymentID,
-              callbackURL: props.callbackURL,
-              invoiceAmount: amountBCH
-            })
-          }
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            merchantID: props.merchantID,
+            paymentID: props.paymentID,
+            callbackURL: props.callbackURL,
+            invoiceAmount: amountBCH
+          })
+        }
         )
         invoiceResult = await invoiceResult.json()
         if (invoiceResult.status === 'error') {
@@ -185,7 +185,7 @@ let PayButton = props => {
         }
       })
 
-    // open the dialog box if Badger wasn't opened
+      // open the dialog box if Badger wasn't opened
     } else {
       setDialogOpen(true)
       // connect to the webSocket
@@ -286,15 +286,15 @@ let PayButton = props => {
     try {
       let paymentResponse = await fetch(
         props.gatewayServer + '/v2/paid', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            paymentAddress: paymentAddress,
-            paymentTXID: txid
-          })
-        }
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          paymentAddress: paymentAddress,
+          paymentTXID: txid
+        })
+      }
       )
       paymentResponse = await paymentResponse.json()
       if (paymentResponse.status === 'error') {
@@ -304,7 +304,7 @@ let PayButton = props => {
       alert(
         showError(
           'If you sent the funds, your payment has been received. However, Gateway is having trouble getting a receipt for your transaction. If you are concerned this could be a problem, please include this TXID in a support message to Gateway or to your merchant:\n\n' +
-            txid
+          txid
         )
       )
     }
@@ -335,13 +335,13 @@ let PayButton = props => {
         {paymentComplete ? (
           <PaymentComplete />
         ) : (
-          <PaymentProgress
-            amountBCH={amountBCH}
-            paymentAddress={paymentAddress}
-            hideWalletButton={props.hideWalletButton}
-            hideAddressText={props.hideAddressText}
-          />
-        )}
+            <PaymentProgress
+              amountBCH={amountBCH}
+              paymentAddress={paymentAddress}
+              hideWalletButton={props.hideWalletButton}
+              hideAddressText={props.hideAddressText}
+            />
+          )}
       </Dialog>
     </div>
   )
